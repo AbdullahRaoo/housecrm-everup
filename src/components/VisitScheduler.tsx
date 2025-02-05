@@ -9,7 +9,8 @@ interface PropertyVisit {
   id: string;
   propertyId: string;
   date: string;
-  time: string;
+  time: string; // Add this field
+  clientId: string;
   clientName: string;
   clientEmail: string;
   clientPhone: string;
@@ -22,10 +23,12 @@ export function VisitScheduler({ propertyId, onSchedule }: VisitSchedulerProps) 
     propertyId,
     date: '',
     time: '',
+    clientId: Math.random().toString(36).substring(2, 9),
     clientName: '',
     clientEmail: '',
     clientPhone: '',
-    status: 'Scheduled'
+    status: 'Scheduled',
+    notes: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {

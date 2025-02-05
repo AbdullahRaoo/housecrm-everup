@@ -4,12 +4,13 @@ import { Property } from '../../../types/property';
 
 interface MediaProps {
   register: UseFormRegister<Property>;
-  setValue: UseFormSetValue<Property>;  // Add setValue
+  setValue: UseFormSetValue<Property>;
   errors: FieldErrors<Property>;
 }
 
-export function Media({ register, setValue, errors }: MediaProps) {
+export function Media({ setValue }: MediaProps) {
   const [previews, setPreviews] = useState<string[]>([]);
+  const [base64Images, setBase64Images] = useState<string[]>([]);  // Add state for base64 images
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -19,7 +20,7 @@ export function Media({ register, setValue, errors }: MediaProps) {
 
       // Convert files to base64 strings
       const processFiles = async () => {
-        const base64Images = await Promise.all(
+        const newBase64Images = await Promise.all(
           Array.from(files).map(file => {
             return new Promise<string>((resolve) => {
               const reader = new FileReader();
@@ -31,7 +32,8 @@ export function Media({ register, setValue, errors }: MediaProps) {
           })
         );
 
-        setValue('media.images', base64Images);
+        setBase64Images(prev => [...prev, ...newBase64Images]);
+        setValue('media.images', [...base64Images, ...newBase64Images]);
       };
 
       processFiles();
@@ -40,7 +42,11 @@ export function Media({ register, setValue, errors }: MediaProps) {
 
   const removeImage = (index: number) => {
     setPreviews(prev => prev.filter((_, i) => i !== index));
-    setValue('media.images', (prev: string[]) => prev.filter((_, i) => i !== index));
+    setBase64Images(prev => {
+      const newBase64Images = prev.filter((_, i) => i !== index);
+      setValue('media.images', newBase64Images);
+      return newBase64Images;
+    });
   };
 
   return (

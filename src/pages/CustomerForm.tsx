@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Customer } from '../pages/Customers';
+import { Customer } from '../types/customer';
 import { createStorageService, StorageKeys } from '../services/storage';
 
 function CustomerForm() {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Property } from '../types/property';
@@ -10,9 +11,8 @@ import { PropertyStatistics } from '../components/PropertyStatistics';
 
 interface Visit {
   id: string;
-  propertyId: string;
   date: string;
-  time: string;
+  clientId: string; // Add this required field
   clientName: string;
   clientEmail: string;
   clientPhone: string;
@@ -69,11 +69,11 @@ function PropertyDetail() {
     if (!property || !id) return;
 
     try {
-      const newVisit: Visit = {
+      const newVisit = {
         ...visitData,
         id: Math.random().toString(36).substring(2, 9),
-        propertyId: id,
-        status: 'Scheduled'
+        clientId: Math.random().toString(36).substring(2, 9), // Generate clientId
+        status: 'Scheduled' as const
       };
 
       const updatedProperty = {
@@ -243,11 +243,10 @@ function PropertyDetail() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Status</span>
-                <span className={`px-2 py-1 rounded-full text-sm ${
-                  property.status === 'Available' ? 'bg-green-100 text-green-800' :
+                <span className={`px-2 py-1 rounded-full text-sm ${property.status === 'Available' ? 'bg-green-100 text-green-800' :
                   property.status === 'Sold' ? 'bg-red-100 text-red-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
                   {property.status}
                 </span>
               </div>
