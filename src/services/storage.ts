@@ -3,6 +3,7 @@ export const StorageKeys = {
   PROPERTIES: "crm_properties",
   VISITS: "crm_visits",
   DOCUMENTS: "crm_documents",
+  EVENTS: "crm_events" 
 } as const;
 
 export interface StorageService<T> {

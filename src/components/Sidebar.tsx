@@ -16,27 +16,31 @@ function Sidebar() {
         <nav className="mt-5">
           <Link
             to="/"
-            className={`flex items-center px-6 py-2 text-gray-100 ${
-              location.pathname === '/' ? 'bg-blue-600' : 'hover:bg-gray-700'
-            }`}
+            className={`flex items-center px-6 py-2 text-gray-100 ${location.pathname === '/' ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
           >
             <span className="mx-3">Dashboard</span>
           </Link>
           <Link
             to="/customers"
-            className={`flex items-center px-6 py-2 text-gray-100 ${
-              isActive('/customers') ? 'bg-blue-600' : 'hover:bg-gray-700'
-            }`}
+            className={`flex items-center px-6 py-2 text-gray-100 ${isActive('/customers') ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
           >
             <span className="mx-3">Customers</span>
           </Link>
           <Link
             to="/properties"
-            className={`flex items-center px-6 py-2 text-gray-100 ${
-              isActive('/properties') ? 'bg-blue-600' : 'hover:bg-gray-700'
-            }`}
+            className={`flex items-center px-6 py-2 text-gray-100 ${isActive('/properties') ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
           >
             <span className="mx-3">Properties</span>
+          </Link>
+          <Link
+            to="/calendar"
+            className={`flex items-center px-6 py-2 text-gray-100 ${isActive('/calendar') ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
+          >
+            <span className="mx-3">Calendar</span>
           </Link>
         </nav>
       </div>

@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import PropertyForm from './pages/PropertyForm';
+import CalendarPage from './pages/Calendar';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/properties/:id" element={<PropertyDetail />} />
                 <Route path="/properties/new" element={<PropertyForm />} />
                 <Route path="/properties/edit/:id" element={<PropertyForm />} />
+                <Route path="/calendar" element={<CalendarPage />} />
               </Routes>
             </main>
           </div>
