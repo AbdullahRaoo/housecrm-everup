@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createStorageService, StorageKeys } from '../services/storage';
@@ -39,7 +40,7 @@ function Customers() {
             name: 'John Smith',
             email: 'john@example.com',
             phone: '+1 234 567 890',
-            status: 'Active',
+            status: 'Active' as const,
             joinedDate: '2024-01-15',
             lastInteraction: '2024-02-20',
             totalPurchases: 3,
@@ -50,7 +51,7 @@ function Customers() {
             name: 'Jane Doe',
             email: 'jane@example.com',
             phone: '+1 234 567 891',
-            status: 'Inactive',
+            status: 'Inactive' as const,
             joinedDate: '2024-01-16',
             lastInteraction: '2024-02-19',
             totalPurchases: 1,
