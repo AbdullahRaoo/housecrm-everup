@@ -68,7 +68,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
     }
     return slots;
   }, []);
-  
+
   // Group events by day
   const eventsByDay = useMemo(() => {
     return daysToShow.map(day => ({
@@ -102,11 +102,26 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
   const getEventPosition = (event: CalendarEvent) => {
     const start = new Date(event.start);
     const end = new Date(event.end);
-    const duration = (end.getTime() - start.getTime()) / (1000 * 60); // duration in minutes
-    const top = (start.getHours() * 60 + start.getMinutes()) / (24 * 60) * 100;
-    const height = (duration / (24 * 60)) * 100;
-    return { top: `${top}%`, height: `${height}%` };
+
+    // Clamp hours to working hours (8 AM to 8 PM)
+    const startHour = Math.max(8, Math.min(20, start.getHours()));
+    const endHour = Math.max(8, Math.min(20, end.getHours()));
+
+    // Calculate percentages within working hours
+    const workingHours = 12; // 8 AM to 8 PM
+    const topPercentage = ((startHour - 8) / workingHours) * 100;
+
+    // Calculate height based on duration, but cap it
+    const durationHours = (endHour - startHour);
+    const heightPercentage = Math.min((durationHours / workingHours) * 100, 100 - topPercentage);
+
+    return {
+      top: `${topPercentage}%`,
+      height: `${heightPercentage}%`,
+    };
   };
+
+
 
   const handleTimeSlotClick = (date: Date, hour: number) => {
     const clickedDate = new Date(date);
@@ -124,8 +139,8 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
           onClick={() => handleTimeSlotClick(day, 9)}
         >
           <div className={`text-sm ${day.toDateString() === new Date().toDateString()
-              ? 'bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center'
-              : ''
+            ? 'bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center'
+            : ''
             }`}>
             {day.getDate()}
           </div>
@@ -153,7 +168,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
       <div className="sticky left-0 bg-white z-10">
         <div className="h-16 border-b"></div>
         {timeSlots.map(time => (
-          <div key={time} className="h-10 border-b flex items-center justify-center">
+          <div key={time} className="h-12 border-b flex items-center justify-center">
             <span className="text-xs text-gray-500">{time}</span>
           </div>
         ))}
@@ -171,12 +186,12 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
             </div>
           </div>
 
-          <div className="relative" style={{ height: 'calc(48 * 10px)' }}>
+          <div className="relative" style={{ height: 'calc(12 * 12 * 4px)' }}> {/* 12 hours * 12 segments * 4px */}
             {timeSlots.map((time, i) => (
               <div
                 key={time}
-                className="h-10 border-b relative group cursor-pointer"
-                onClick={() => handleTimeSlotClick(date, Math.floor(i / 2))}
+                className="h-12 border-b relative group cursor-pointer"
+                onClick={() => handleTimeSlotClick(date, Math.floor(i + 8))} // Add 8 to start from 8 AM
               >
                 <div className="absolute inset-0 group-hover:bg-blue-50/50 transition-colors"></div>
               </div>
@@ -191,12 +206,18 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
                     e.stopPropagation();
                     onEventClick(event);
                   }}
-                  className={`absolute left-1 right-1 rounded-lg shadow-sm cursor-pointer transition-all hover:shadow-md ${getEventColor(event.type)}`}
-                  style={{ top, height, minHeight: '20px' }}
+                  className={`absolute left-1 right-1 rounded-sm shadow-sm cursor-pointer transition-all hover:shadow-md ${getEventColor(event.type)}`}
+                  style={{
+                    top,
+                    height,
+                    minHeight: '24px',
+                    maxHeight: '100%',
+                    zIndex: 10
+                  }}
                 >
-                  <div className="p-1">
+                  <div className="p-1 overflow-hidden">
                     <div className="font-medium text-xs truncate">{event.title}</div>
-                    <div className="text-xs opacity-75">
+                    <div className="text-xs opacity-75 truncate">
                       {new Date(event.start).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -222,8 +243,8 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
                 key={viewType}
                 onClick={() => setView(viewType)}
                 className={`px-4 py-2 rounded-md transition-all ${view === viewType
-                    ? 'bg-white text-blue-600 shadow'
-                    : 'text-white hover:bg-white/10'
+                  ? 'bg-white text-blue-600 shadow'
+                  : 'text-white hover:bg-white/10'
                   }`}
               >
                 {viewType}
