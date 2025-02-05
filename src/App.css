@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --primary: '#2563eb';
+  --primary: '#e56e43';
   --secondary: '#64748b'
+}
+
+/* Add custom color to Tailwind configuration */
+@layer base {
+  html {
+    --color-primary: #e56e43;
+  }
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { CalendarEvent, ViewType } from '../types/calendar';
 
 interface CalendarProps {
@@ -87,7 +87,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
   const getEventColor = (type: string) => {
     switch (type) {
       case 'Visit':
-        return 'bg-blue-100 border-l-4 border-blue-500 text-blue-800';
+        return 'bg-[#e56e43]/10 border-l-4 border-[#e56e43] text-[#e56e43]';
       case 'Call':
         return 'bg-green-100 border-l-4 border-green-500 text-green-800';
       case 'Email':
@@ -139,7 +139,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
           onClick={() => handleTimeSlotClick(day, 9)}
         >
           <div className={`text-sm ${day.toDateString() === new Date().toDateString()
-            ? 'bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center'
+            ? 'bg-[#e56e43] text-white rounded-full w-7 h-7 flex items-center justify-center'
             : ''
             }`}>
             {day.getDate()}
@@ -180,7 +180,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
             <div className="text-sm text-gray-500">
               {date.toLocaleString('default', { weekday: 'short' })}
             </div>
-            <div className={`text-xl font-semibold ${date.toDateString() === new Date().toDateString() ? 'text-blue-600' : ''
+            <div className={`text-xl font-semibold ${date.toDateString() === new Date().toDateString() ? 'text-[#e56e43]' : ''
               }`}>
               {date.getDate()}
             </div>
@@ -235,7 +235,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg flex flex-col h-full">
-      <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-blue-500 to-blue-600">
+       <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-[#e56e43] to-[#e56e43]/90">
         <div className="flex items-center gap-4">
           <div className="flex gap-2 bg-white/10 p-1 rounded-lg">
             {(['Day', 'Week', 'Month'] as ViewType[]).map(viewType => (
@@ -243,7 +243,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
                 key={viewType}
                 onClick={() => setView(viewType)}
                 className={`px-4 py-2 rounded-md transition-all ${view === viewType
-                  ? 'bg-white text-blue-600 shadow'
+                  ? 'bg-white text-[#e56e43] shadow'
                   : 'text-white hover:bg-white/10'
                   }`}
               >
@@ -287,7 +287,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
 
         <button
           onClick={() => onAddEvent(currentDate)}
-          className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-all"
+          className="flex items-center gap-2 bg-white text-[#e56e43] px-4 py-2 rounded-lg hover:bg-blue-50 transition-all"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

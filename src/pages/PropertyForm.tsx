@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useProperty } from '../context/PropertyContext';
 import { BasicDetails } from '../components/forms/PropertyFormSteps/BasicDetails';
 import { Features } from '../components/forms/PropertyFormSteps/Features';
-import { Media } from '../components/forms/PropertyFormSteps/Media';
 import { Location } from '../components/forms/PropertyFormSteps/Location';
+import { Media } from '../components/forms/PropertyFormSteps/Media';
+import { useProperty } from '../context/PropertyContext';
 import { Property } from '../types/property';
 
 function PropertyForm() {
@@ -128,40 +128,58 @@ function PropertyForm() {
   const renderStepIndicator = () => {
     const steps = ['Basic Details', 'Features & Amenities', 'Location', 'Media'];
     return (
-      <div className="flex mb-8">
+      <div className="flex mb-8 relative">
         {steps.map((stepName, index) => (
           <div
             key={stepName}
-            className={`flex-1 text-center ${
-              index + 1 === step
-                ? 'text-blue-600'
-                : index + 1 < step
-                ? 'text-green-600'
+            className={`flex-1 text-center ${index + 1 === step
+              ? 'text-[#e56e43]'
+              : index + 1 < step
+                ? 'text-[#e56e43]/80'
                 : 'text-gray-400'
-            }`}
+              }`}
           >
             <div className="relative">
               <div
-                className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center ${
-                  index + 1 === step
-                    ? 'bg-blue-100 border-2 border-blue-600'
+                className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center
+                  transition-all duration-300 transform relative z-50
+                  ${index + 1 === step
+                    ? 'bg-[#e56e43] text-white shadow-lg scale-110'
                     : index + 1 < step
-                    ? 'bg-green-100 border-2 border-green-600'
-                    : 'bg-gray-100 border-2 border-gray-400'
-                }`}
+                      ? 'bg-[#e56e43] border-2 border-[#e56e43]'
+                      : 'bg-gray-50 border-2 border-gray-200'
+                  }`}
               >
                 {index + 1 < step ? (
-                  <span className="text-green-600">✓</span>
+                  <svg
+                    className={`w-5 h-5 ${index + 1 < step ? 'text-white' : 'text-[#e56e43]'
+                      }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
                 ) : (
-                  <span>{index + 1}</span>
+                  <span className={`text-base font-semibold ${index + 1 === step ? 'text-white' : 'text-gray-400'
+                    }`}>
+                    {index + 1}
+                  </span>
                 )}
               </div>
-              <div className="text-sm mt-2">{stepName}</div>
+              <div className="text-sm mt-3 font-medium">{stepName}</div>
               {index < steps.length - 1 && (
                 <div
-                  className={`absolute top-4 left-1/2 w-full h-0.5 ${
-                    index + 1 < step ? 'bg-green-600' : 'bg-gray-300'
-                  }`}
+                  className={`absolute top-5 left-1/2 w-full h-[2px] transition-all duration-300
+                    ${index + 1 < step
+                      ? 'bg-[#e56e43]'
+                      : 'bg-gray-200'
+                    }`}
                 />
               )}
             </div>
@@ -174,11 +192,11 @@ function PropertyForm() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">Add New Property</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add New Property</h1>
 
         {renderStepIndicator()}
 
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 border border-gray-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {renderStep()}
 
@@ -187,7 +205,9 @@ function PropertyForm() {
                 type="button"
                 onClick={handlePrevious}
                 disabled={step === 1 || isSubmitting}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50"
+                className="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg
+                  hover:bg-gray-50 transition-colors duration-200
+                  disabled:opacity-50 disabled:hover:bg-white"
               >
                 Previous
               </button>
@@ -196,7 +216,9 @@ function PropertyForm() {
                   type="button"
                   onClick={handleNext}
                   disabled={!validateStep() || isSubmitting}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
+                    hover:bg-[#e56e43]/90 transition-colors duration-200
+                    disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -204,7 +226,9 @@ function PropertyForm() {
                 <button
                   type="submit"
                   disabled={!isValid || !isLastStepValid || isSubmitting}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
+                    hover:bg-[#e56e43]/90 transition-colors duration-200
+                    disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Property'}
                 </button>

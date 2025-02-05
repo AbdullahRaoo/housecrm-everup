@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar } from '../components/Calendar';
 import { EventForm } from '../components/EventForm';
-import { CalendarEvent, EventType } from '../types/calendar';
 import { createStorageService, StorageKeys } from '../services/storage';
+import { CalendarEvent, EventType } from '../types/calendar';
 
 function CalendarPage() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -97,12 +97,15 @@ function CalendarPage() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Calendar</h1>
-        <div className="flex gap-2">
+        <h1 className="text-2xl font-semibold text-gray-800">Calendar</h1>
+        <div className="flex gap-3">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value as EventType | 'All')}
-            className="rounded-lg border-gray-300 p-2"
+            className="px-4 py-2 rounded-lg border border-gray-200
+              focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
+              transition-colors duration-200 bg-white text-gray-800
+              shadow-sm appearance-none cursor-pointer"
           >
             <option value="All">All Events</option>
             <option value="Visit">Visits</option>
@@ -112,8 +115,13 @@ function CalendarPage() {
           </select>
           <button
             onClick={handleAddEvent}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            className="bg-[#e56e43] text-white px-6 py-2 rounded-lg
+              hover:bg-[#e56e43]/90 transition-colors duration-200
+              font-medium shadow-sm flex items-center gap-2"
           >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
             Add Event
           </button>
         </div>
@@ -128,16 +136,19 @@ function CalendarPage() {
       {showEventModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg max-w-md w-full m-4">
-            <div className="p-4">
+            <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-lg font-semibold text-gray-800">
                   {selectedEvent ? 'Edit Event' : 'Add Event'}
                 </h3>
                 <button
                   onClick={() => setShowEventModal(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700
+                    transition-colors duration-200 p-1"
                 >
-                  ×
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
               <EventForm
@@ -146,10 +157,12 @@ function CalendarPage() {
                 onCancel={() => setShowEventModal(false)}
               />
               {selectedEvent && (
-                <div className="mt-4 flex justify-end">
+                <div className="mt-6 flex justify-end">
                   <button
                     onClick={() => handleEventDelete(selectedEvent.id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg
+                      hover:bg-red-600 transition-colors duration-200
+                      font-medium shadow-sm"
                   >
                     Delete Event
                   </button>

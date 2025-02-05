@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createStorageService, StorageKeys } from '../services/storage';
 
@@ -192,7 +192,7 @@ function Customers() {
           )}
           <Link
             to="/customers/new"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
+            className="bg-[#e56e43] hover:bg-[#e56e43] text-white px-4 py-2 rounded-lg flex items-center"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -234,163 +234,162 @@ function Customers() {
       {/* Customers Table */}
       <div className="mt-8 bg-white shadow rounded-lg overflow-hidden">
         <table className="min-w-full leading-normal">
-        <thead>
-  <tr>
-    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100">
-      <input
-        type="checkbox"
-        checked={selectedCustomers.length === filteredCustomers.length}
-        onChange={(e) => handleSelectAll(e.target.checked)}
-        className="rounded border-gray-300"
-      />
-    </th>
-    <th
-      className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-      onClick={() => handleSort('name')}
-    >
-      <div className="flex items-center">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</span>
-        {filters.sortBy === 'name' && (
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-            />
-          </svg>
-        )}
-      </div>
-    </th>
-    <th
-      className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-      onClick={() => handleSort('email')}
-    >
-      <div className="flex items-center">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</span>
-        {filters.sortBy === 'email' && (
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-            />
-          </svg>
-        )}
-      </div>
-    </th>
-    <th
-      className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-      onClick={() => handleSort('phone')}
-    >
-      <div className="flex items-center">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</span>
-        {filters.sortBy === 'phone' && (
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-            />
-          </svg>
-        )}
-      </div>
-    </th>
-    <th
-      className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-      onClick={() => handleSort('status')}
-    >
-      <div className="flex items-center">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</span>
-        {filters.sortBy === 'status' && (
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-            />
-          </svg>
-        )}
-      </div>
-    </th>
-    <th
-      className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-      onClick={() => handleSort('joinedDate')}
-    >
-      <div className="flex items-center">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined Date</span>
-        {filters.sortBy === 'joinedDate' && (
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-            />
-          </svg>
-        )}
-      </div>
-    </th>
-    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left">
-      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</span>
-    </th>
-  </tr>
-</thead>
+          <thead>
+            <tr>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100">
+                <input
+                  type="checkbox"
+                  checked={selectedCustomers.length === filteredCustomers.length}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="rounded border-gray-300"
+                />
+              </th>
+              <th
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
+                onClick={() => handleSort('name')}
+              >
+                <div className="flex items-center">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</span>
+                  {filters.sortBy === 'name' && (
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                      />
+                    </svg>
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
+                onClick={() => handleSort('email')}
+              >
+                <div className="flex items-center">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</span>
+                  {filters.sortBy === 'email' && (
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                      />
+                    </svg>
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
+                onClick={() => handleSort('phone')}
+              >
+                <div className="flex items-center">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</span>
+                  {filters.sortBy === 'phone' && (
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                      />
+                    </svg>
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
+                onClick={() => handleSort('status')}
+              >
+                <div className="flex items-center">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</span>
+                  {filters.sortBy === 'status' && (
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                      />
+                    </svg>
+                  )}
+                </div>
+              </th>
+              <th
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
+                onClick={() => handleSort('joinedDate')}
+              >
+                <div className="flex items-center">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined Date</span>
+                  {filters.sortBy === 'joinedDate' && (
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                      />
+                    </svg>
+                  )}
+                </div>
+              </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left">
+                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</span>
+              </th>
+            </tr>
+          </thead>
           <tbody>
-  {paginatedCustomers.map((customer) => (
-    <tr key={customer.id} className="hover:bg-gray-50">
-      <td className="px-5 py-5 border-b border-gray-200">
-        <input
-          type="checkbox"
-          checked={selectedCustomers.includes(customer.id)}
-          onChange={() => handleSelectCustomer(customer.id)}
-          className="rounded border-gray-300"
-        />
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <div className="flex items-center">
-          <div className="flex-shrink-0 w-10 h-10">
-            <img
-              className="w-full h-full rounded-full"
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
-              alt={customer.name}
-            />
-          </div>
-          <div className="ml-3">
-            <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
-          </div>
-        </div>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-          customer.status === 'Active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-red-100 text-red-800'
-        }`}>
-          {customer.status}
-        </span>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap">
-          {new Date(customer.joinedDate).toLocaleDateString()}
-        </p>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200">
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEditCustomer(customer)}
-            className="text-blue-600 hover:text-blue-900"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => {
-              setSelectedCustomers([customer.id]);
-              setShowDeleteModal(true);
-            }}
-            className="text-red-600 hover:text-red-900"
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
-  ))}
-</tbody>
+            {paginatedCustomers.map((customer) => (
+              <tr key={customer.id} className="hover:bg-gray-50">
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <input
+                    type="checkbox"
+                    checked={selectedCustomers.includes(customer.id)}
+                    onChange={() => handleSelectCustomer(customer.id)}
+                    className="rounded border-gray-300"
+                  />
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-10 h-10">
+                      <img
+                        className="w-full h-full rounded-full"
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
+                        alt={customer.name}
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.status === 'Active'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                    }`}>
+                    {customer.status}
+                  </span>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <p className="text-gray-900 whitespace-no-wrap">
+                    {new Date(customer.joinedDate).toLocaleDateString()}
+                  </p>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditCustomer(customer)}
+                      className="text-[#e56e43] hover:text-blue-900"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedCustomers([customer.id]);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
 
@@ -417,9 +416,8 @@ function Customers() {
               <button
                 key={page}
                 onClick={() => setFilters(prev => ({ ...prev, page }))}
-                className={`px-4 py-2 border rounded-lg ${
-                  filters.page === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 border rounded-lg ${filters.page === page ? 'bg-[#e56e43] text-white' : 'hover:bg-gray-50'
+                  }`}
               >
                 {page}
               </button>
@@ -474,7 +472,7 @@ function Customers() {
               </button>
               <button
                 onClick={() => handleUpdateCustomer(customerToEdit)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]"
               >
                 Save Changes
               </button>

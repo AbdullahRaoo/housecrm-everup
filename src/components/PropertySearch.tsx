@@ -40,28 +40,34 @@ export function PropertySearch({ onSearch }: PropertySearchProps) {
     onSearch(filters);
   };
 
+
+  const inputClasses = `mt-1 block w-full px-4 py-2 rounded-lg border border-gray-200
+    focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
+    transition-colors duration-200 bg-white text-gray-800
+    placeholder-gray-400 shadow-sm`;
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Search</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Search</label>
           <input
             type="text"
             name="query"
             value={filters.query}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className={inputClasses}
             placeholder="Search properties..."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Type</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
           <select
             name="type"
             value={filters.type}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className={`${inputClasses} appearance-none cursor-pointer`}
           >
             <option value="">All Types</option>
             <option value="Sale">For Sale</option>
@@ -70,12 +76,12 @@ export function PropertySearch({ onSearch }: PropertySearchProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Status</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
           <select
             name="status"
             value={filters.status}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className={`${inputClasses} appearance-none cursor-pointer`}
           >
             <option value="">All Status</option>
             <option value="Available">Available</option>
@@ -85,10 +91,11 @@ export function PropertySearch({ onSearch }: PropertySearchProps) {
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-6">
         <button
           type="submit"
-          className="w-full md:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          className="w-full md:w-auto px-6 py-2.5 bg-[#e56e43] text-white rounded-lg
+            hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium shadow-sm"
         >
           Search Properties
         </button>

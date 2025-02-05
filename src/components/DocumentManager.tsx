@@ -36,7 +36,7 @@ export function DocumentManager() {
         <h3 className="text-lg font-medium">Documents</h3>
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          className="px-4 py-2 bg-[#e56e43] text-white rounded-lg"
         >
           Upload Document
         </button>
