@@ -25,7 +25,7 @@ function PropertyForm() {
     setValue,
     watch,
     reset,
-    formState: { errors, isValid }
+    formState: { errors }
   } = useForm<Property>({
     mode: 'onChange',
     defaultValues: {
@@ -93,12 +93,13 @@ function PropertyForm() {
 
   const mediaImages = watch('media.images');
 
-  const isLastStepValid = step === 4 ? mediaImages && mediaImages.length > 0 : true;
-
-
-
   const onSubmit = async (data: Property | Omit<Property, 'id'>) => {
-    if (step === 4 && (!mediaImages || mediaImages.length === 0)) {
+    if (step !== 4) {
+      handleNext();
+      return;
+    }
+
+    if (!mediaImages || mediaImages.length === 0) {
       alert('Please upload at least one image');
       return;
     }
@@ -141,9 +142,10 @@ function PropertyForm() {
       case 2:
         return !errors.features && !errors.propertyType;
       case 3:
-        return !errors.location;
+        // Don't block navigation if Google Maps API key is missing
+        return !errors.location?.address;
       case 4:
-        return true; // Don't validate media on step change
+        return true;
       default:
         return false;
     }
@@ -271,28 +273,18 @@ function PropertyForm() {
               >
                 Previous
               </button>
-              {step < 4 ? (
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={!validateStep() || isSubmitting}
-                  className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
-                    hover:bg-[#e56e43]/90 transition-colors duration-200
-                    disabled:opacity-50"
-                >
-                  Next
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={!isValid || !isLastStepValid || isSubmitting}
-                  className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
-                    hover:bg-[#e56e43]/90 transition-colors duration-200
-                    disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Saving...' : 'Save Property'}
-                </button>
-              )}
+              <button
+                type="submit"
+                disabled={!validateStep() || isSubmitting}
+                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
+                  hover:bg-[#e56e43]/90 transition-colors duration-200
+                  disabled:opacity-50"
+              >
+                {step === 4
+                  ? isSubmitting ? 'Saving...' : 'Save Property'
+                  : 'Next'
+                }
+              </button>
             </div>
           </form>
         </div>
