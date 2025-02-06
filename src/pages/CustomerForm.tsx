@@ -15,7 +15,8 @@ function CustomerForm() {
     joinedDate: new Date().toISOString().split('T')[0],
     lastInteraction: new Date().toISOString(),
     totalPurchases: 0,
-    notes: ''
+    notes: '',
+    propertiesViewed: 0
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
