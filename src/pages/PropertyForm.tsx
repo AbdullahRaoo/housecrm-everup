@@ -1,14 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Property } from '../types/property';
+import { useProperty } from '../context/PropertyContext';
+import { createStorageService, StorageKeys } from '../services/storage';
 import { BasicDetails } from '../components/forms/PropertyFormSteps/BasicDetails';
 import { Features } from '../components/forms/PropertyFormSteps/Features';
 import { Location } from '../components/forms/PropertyFormSteps/Location';
 import { Media } from '../components/forms/PropertyFormSteps/Media';
-import { useProperty } from '../context/PropertyContext';
-import { Property } from '../types/property';
-import { createStorageService, StorageKeys } from '../services/storage';
 
 function PropertyForm() {
   const navigate = useNavigate();
@@ -16,7 +15,9 @@ function PropertyForm() {
   const { addProperty, updateProperty } = useProperty();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setIsLoading] = useState(true);
   const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
+  const [initialized, setInitialized] = useState(false);
 
   const {
     register,
@@ -40,7 +41,7 @@ function PropertyForm() {
       location: {
         address: '',
         coordinates: {
-          lat: 51.5074, // Default to London coordinates
+          lat: 51.5074,
           lng: -0.1278
         },
         area: ''
@@ -65,21 +66,36 @@ function PropertyForm() {
     }
   });
 
+  // Load existing property data
   useEffect(() => {
-    if (id) {
-      const property = propertyStorage.getById(id);
-      if (property) {
-        reset(property);
-        setValue('media.images', property.media.images);
-      } else {
-        navigate('/properties');
-        alert('Property not found');
-      }
+    if (!id || initialized) {
+      setIsLoading(false);
+      return;
     }
-  }, []);
+
+    try {
+      const property = propertyStorage.getById(id);
+      if (!property) {
+        navigate('/properties');
+        return;
+      }
+
+      reset(property);
+      setInitialized(true);
+    } catch (error) {
+      console.error('Error loading property:', error);
+      navigate('/properties');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, propertyStorage, navigate, reset, initialized]);
+
 
   const mediaImages = watch('media.images');
+
   const isLastStepValid = step === 4 ? mediaImages && mediaImages.length > 0 : true;
+
+
 
   const onSubmit = async (data: Property | Omit<Property, 'id'>) => {
     if (step === 4 && (!mediaImages || mediaImages.length === 0)) {
@@ -90,19 +106,22 @@ function PropertyForm() {
     try {
       setIsSubmitting(true);
 
+      const propertyData = {
+        ...data,
+        media: {
+          ...data.media,
+          images: mediaImages || []
+        },
+        updatedAt: new Date().toISOString()
+      };
+
       if (id) {
-        // Update existing property
-        await updateProperty({
-          ...data as Property,
-          updatedAt: new Date().toISOString()
-        });
+        await updateProperty(propertyData as Property);
         alert('Property updated successfully!');
       } else {
-        // Create new property
         await addProperty({
-          ...data,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          ...propertyData,
+          createdAt: new Date().toISOString()
         });
         alert('Property created successfully!');
       }
@@ -115,7 +134,6 @@ function PropertyForm() {
       setIsSubmitting(false);
     }
   };
-
   const validateStep = () => {
     switch (step) {
       case 1:
@@ -125,7 +143,7 @@ function PropertyForm() {
       case 3:
         return !errors.location;
       case 4:
-        return mediaImages && mediaImages.length > 0;
+        return true; // Don't validate media on step change
       default:
         return false;
     }
@@ -152,7 +170,14 @@ function PropertyForm() {
       case 3:
         return <Location register={register} setValue={setValue} errors={errors} />;
       case 4:
-        return <Media register={register} setValue={setValue} errors={errors} />;
+        return (
+          <Media
+            register={register}
+            setValue={setValue}
+            watch={watch}
+            errors={errors}
+          />
+        );
       default:
         return null;
     }

@@ -100,17 +100,7 @@ function Properties() {
           className="group relative bg-white rounded-lg shadow-md overflow-hidden
           hover:shadow-lg transition-all duration-200"
           >
-            <Link
-            to={`/properties/${property.id}`}
-            className="block"
-          >
-            <div className="relative">
-              <img
-                src={property.media.images[0] || 'https://via.placeholder.com/400x300'}
-                alt={property.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute top-4 right-4 space-x-2 opacity-0 group-hover:opacity-100
+            <div className="absolute top-4 right-4 space-x-2 opacity-0 group-hover:opacity-100
                 transition-opacity duration-200 z-10 flex">
                 <Link
                   to={`/properties/edit/${property.id}`}
@@ -134,6 +124,17 @@ function Properties() {
                   </svg>
                 </button>
               </div>
+            <Link
+            to={`/properties/${property.id}`}
+            className="block"
+          >
+            <div className="relative">
+              <img
+                src={property.media.images[0] || 'https://via.placeholder.com/400x300'}
+                alt={property.title}
+                className="w-full h-48 object-cover"
+              />
+
             </div>
 
             <div className="p-4">
