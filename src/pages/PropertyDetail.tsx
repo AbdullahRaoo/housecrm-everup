@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Property } from '../types/property';
 import { createStorageService, StorageKeys } from '../services/storage';
 import { PropertyMap } from '../components/PropertyMap';
@@ -8,6 +8,8 @@ import { PropertyGallery } from '../components/PropertyGallery';
 import { DocumentManager } from '../components/DocumentManager';
 import { VisitScheduler } from '../components/VisitScheduler';
 import { PropertyStatistics } from '../components/PropertyStatistics';
+
+type TabType = 'details' | 'features' | 'location' | 'documents';
 
 interface Visit {
   id: string;
@@ -23,56 +25,61 @@ interface Visit {
 function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
   const [property, setProperty] = useState<Property | null>(null);
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState<TabType>('details');
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProperty = () => {
-      if (!id) {
-        setError('Property ID is missing');
-        return;
-      }
+  // Create storage service outside useEffect to avoid recreation
+  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
 
-      try {
-        setLoading(true);
-        const foundProperty = propertyStorage.getById(id);
-        if (foundProperty) {
-          setProperty(foundProperty);
-          propertyStorage.update(id, {
-            ...foundProperty,
-            statistics: {
-              ...foundProperty.statistics,
-              views: foundProperty.statistics.views + 1
-            }
-          });
-        } else {
-          setError('Property not found');
-          navigate('/properties');
-        }
-      } catch (error) {
-        setError('Error fetching property');
-        console.error('Error fetching property:', error);
+  const fetchProperty = useCallback(() => {
+    if (!id) {
+      setError('Property ID is missing');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const foundProperty = propertyStorage.getById(id);
+
+      if (foundProperty) {
+        const updatedProperty = {
+          ...foundProperty,
+          statistics: {
+            ...foundProperty.statistics,
+            views: foundProperty.statistics.views + 1
+          }
+        };
+
+        propertyStorage.update(id, updatedProperty);
+        setProperty(updatedProperty);
+      } else {
+        setError('Property not found');
         navigate('/properties');
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchProperty();
+    } catch (error) {
+      setError('Error fetching property');
+      console.error('Error fetching property:', error);
+      navigate('/properties');
+    } finally {
+      setLoading(false);
+    }
   }, [id, navigate]);
 
-  const handleScheduleVisit = async (visitData: Omit<Visit, 'id' | 'propertyId' | 'status'>) => {
+  useEffect(() => {
+    fetchProperty();
+  }, [fetchProperty]);
+
+  const handleScheduleVisit = useCallback(async (visitData: Omit<Visit, 'id' | 'propertyId' | 'status'>) => {
     if (!property || !id) return;
 
     try {
       const newVisit = {
         ...visitData,
-        id: Math.random().toString(36).substring(2, 9),
-        clientId: Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(),
+        clientId: crypto.randomUUID(),
         status: 'Scheduled' as const
       };
 
@@ -92,7 +99,11 @@ function PropertyDetail() {
       console.error('Failed to schedule visit:', error);
       alert('Failed to schedule visit. Please try again.');
     }
-  };
+  }, [property, id]);
+
+  const handleTabChange = useCallback((tab: TabType) => {
+    setActiveTab(tab);
+  }, []);
 
   if (loading) {
     return (
@@ -108,10 +119,108 @@ function PropertyDetail() {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
           <p className="font-bold">Error</p>
           <p className="mt-1">{error || 'Property not found'}</p>
+          <button
+            onClick={() => navigate('/properties')}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Back to Properties
+          </button>
         </div>
       </div>
     );
   }
+
+  const renderTabContent = () => {
+    if (!property) return null;
+
+    switch (activeTab) {
+      case 'details':
+        return (
+          <div>
+            <p className="text-gray-700 leading-relaxed">{property.description}</p>
+            <div className="mt-6 grid grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">Location</h3>
+                <p className="text-gray-600">{property.location.address}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">Price</h3>
+                <p className="text-[#e56e43] text-xl font-bold">
+                  ${property.price.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'features':
+        return (
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-4">Property Features</h3>
+              <ul className="space-y-3">
+                <li className="flex justify-between items-center">
+                  <span className="text-gray-600">Bedrooms</span>
+                  <span className="font-medium text-[#e56e43]">{property.features.bedrooms}</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-gray-600">Bathrooms</span>
+                  <span className="font-medium text-[#e56e43]">{property.features.bathrooms}</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-gray-600">Area</span>
+                  <span className="font-medium text-[#e56e43]">{property.features.area} sq ft</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-4">Amenities</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {property.features.amenities.map((amenity) => (
+                  <div key={amenity} className="flex items-center">
+                    <svg
+                      className="w-4 h-4 text-[#e56e43] mr-2"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-600">{amenity}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'location':
+        return (
+          <div className="h-[400px]">
+            {property.location?.coordinates ? (
+              <PropertyMap
+                latitude={property.location.coordinates.lat}
+                longitude={property.location.coordinates.lng}
+                isEditable={false}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                <p className="text-gray-500">Location coordinates not available</p>
+              </div>
+            )}
+          </div>
+        );
+        
+      case 'documents':
+        return <DocumentManager />;
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -123,15 +232,13 @@ function PropertyDetail() {
         <div className="flex gap-3">
           <button
             onClick={() => navigate(`/properties/edit/${id}`)}
-            className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
-              hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
+            className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
           >
             Edit Property
           </button>
           <button
             onClick={() => setShowVisitModal(true)}
-            className="px-4 py-2 border border-[#e56e43] text-[#e56e43] rounded-lg
-              hover:bg-[#e56e43]/10 transition-colors duration-200 font-medium"
+            className="px-4 py-2 border border-[#e56e43] text-[#e56e43] rounded-lg hover:bg-[#e56e43]/10 transition-colors duration-200 font-medium"
           >
             Schedule Visit
           </button>
@@ -144,12 +251,11 @@ function PropertyDetail() {
 
           <div className="bg-white rounded-lg shadow-md mt-6">
             <div className="flex border-b">
-              {['details', 'features', 'location', 'documents'].map(tab => (
+              {(['details', 'features', 'location', 'documents'] as TabType[]).map(tab => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 transition-colors duration-200
-                    ${activeTab === tab
+                  onClick={() => handleTabChange(tab)}
+                  className={`px-6 py-3 transition-colors duration-200 ${activeTab === tab
                       ? 'border-b-2 border-[#e56e43] text-[#e56e43] font-medium'
                       : 'text-gray-600 hover:text-gray-800'
                     }`}
@@ -158,87 +264,7 @@ function PropertyDetail() {
                 </button>
               ))}
             </div>
-
-            <div className="p-6">
-              {activeTab === 'details' && (
-                <div>
-                  <p className="text-gray-700 leading-relaxed">{property.description}</p>
-                  <div className="mt-6 grid grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="font-semibold text-gray-800 mb-2">Location</h3>
-                      <p className="text-gray-600">{property.location.address}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 mb-2">Price</h3>
-                      <p className="text-[#e56e43] text-xl font-bold">
-                        ${property.price.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'features' && (
-                <div className="grid grid-cols-2 gap-8">
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-4">Property Features</h3>
-                    <ul className="space-y-3">
-                      <li className="flex justify-between items-center">
-                        <span className="text-gray-600">Bedrooms</span>
-                        <span className="font-medium text-[#e56e43]">
-                          {property.features.bedrooms}
-                        </span>
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <span className="text-gray-600">Bathrooms</span>
-                        <span className="font-medium text-[#e56e43]">
-                          {property.features.bathrooms}
-                        </span>
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <span className="text-gray-600">Area</span>
-                        <span className="font-medium text-[#e56e43]">
-                          {property.features.area} sq ft
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-4">Amenities</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {property.features.amenities.map((amenity) => (
-                        <div key={amenity} className="flex items-center">
-                          <svg
-                            className="w-4 h-4 text-[#e56e43] mr-2"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className="text-gray-600">{amenity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'location' && (
-                <div className="h-[400px]">
-                  <PropertyMap
-                    latitude={property.location.coordinates.lat}
-                    longitude={property.location.coordinates.lng}
-                    isEditable={false}
-                  />
-                </div>
-              )}
-
-              {activeTab === 'documents' && <DocumentManager />}
-            </div>
+            <div className="p-6">{renderTabContent()}</div>
           </div>
         </div>
 
@@ -248,8 +274,7 @@ function PropertyDetail() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Status</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium
-                  ${property.status === 'Available'
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${property.status === 'Available'
                     ? 'bg-[#e56e43]/10 text-[#e56e43]'
                     : property.status === 'Sold'
                       ? 'bg-red-100 text-red-800'
@@ -301,18 +326,14 @@ function PropertyDetail() {
                 <h3 className="text-lg font-semibold text-gray-800">Schedule a Visit</h3>
                 <button
                   onClick={() => setShowVisitModal(false)}
-                  className="text-gray-500 hover:text-gray-700
-                    transition-colors duration-200 p-1"
+                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-1"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-              <VisitScheduler
-                propertyId={property.id}
-                onSchedule={handleScheduleVisit}
-              />
+              <VisitScheduler propertyId={property.id} onSchedule={handleScheduleVisit} />
             </div>
           </div>
         </div>

@@ -1,24 +1,29 @@
-import { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { BasicDetails } from '../components/forms/PropertyFormSteps/BasicDetails';
 import { Features } from '../components/forms/PropertyFormSteps/Features';
 import { Location } from '../components/forms/PropertyFormSteps/Location';
 import { Media } from '../components/forms/PropertyFormSteps/Media';
 import { useProperty } from '../context/PropertyContext';
 import { Property } from '../types/property';
+import { createStorageService, StorageKeys } from '../services/storage';
 
 function PropertyForm() {
   const navigate = useNavigate();
-  const { addProperty } = useProperty();
+  const { id } = useParams();
+  const { addProperty, updateProperty } = useProperty();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isValid }
   } = useForm<Property>({
     mode: 'onChange',
@@ -31,6 +36,14 @@ function PropertyForm() {
         bathrooms: 0,
         area: 0,
         amenities: []
+      },
+      location: {
+        address: '',
+        coordinates: {
+          lat: 51.5074, // Default to London coordinates
+          lng: -0.1278
+        },
+        area: ''
       },
       media: {
         images: [],
@@ -52,11 +65,23 @@ function PropertyForm() {
     }
   });
 
-  // Watch media images to validate
+  useEffect(() => {
+    if (id) {
+      const property = propertyStorage.getById(id);
+      if (property) {
+        reset(property);
+        setValue('media.images', property.media.images);
+      } else {
+        navigate('/properties');
+        alert('Property not found');
+      }
+    }
+  }, []);
+
   const mediaImages = watch('media.images');
   const isLastStepValid = step === 4 ? mediaImages && mediaImages.length > 0 : true;
 
-  const onSubmit = async (data: Omit<Property, 'id'>) => {
+  const onSubmit = async (data: Property | Omit<Property, 'id'>) => {
     if (step === 4 && (!mediaImages || mediaImages.length === 0)) {
       alert('Please upload at least one image');
       return;
@@ -64,16 +89,24 @@ function PropertyForm() {
 
     try {
       setIsSubmitting(true);
-      await addProperty({
-        ...data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
 
-      // Show success message
-      alert('Property saved successfully!');
+      if (id) {
+        // Update existing property
+        await updateProperty({
+          ...data as Property,
+          updatedAt: new Date().toISOString()
+        });
+        alert('Property updated successfully!');
+      } else {
+        // Create new property
+        await addProperty({
+          ...data,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        alert('Property created successfully!');
+      }
 
-      // Redirect to properties list
       navigate('/properties');
     } catch (error) {
       console.error('Failed to save property:', error);
@@ -192,7 +225,9 @@ function PropertyForm() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add New Property</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">
+          {id ? 'Edit Property' : 'Add New Property'}
+        </h1>
 
         {renderStepIndicator()}
 

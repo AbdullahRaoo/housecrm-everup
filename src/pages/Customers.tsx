@@ -459,27 +459,124 @@ function Customers() {
 
       {/* Edit Customer Modal */}
       {showEditModal && customerToEdit && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-lg font-medium mb-4">Edit Customer</h3>
-            {/* Add your edit form here */}
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleUpdateCustomer(customerToEdit)}
-                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-lg max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium">Edit Customer</h3>
+        <button
+          onClick={() => setShowEditModal(false)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Name
+          </label>
+          <input
+            type="text"
+            value={customerToEdit.name}
+            onChange={(e) => setCustomerToEdit({
+              ...customerToEdit,
+              name: e.target.value
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md
+              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+          />
         </div>
-      )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            value={customerToEdit.email}
+            onChange={(e) => setCustomerToEdit({
+              ...customerToEdit,
+              email: e.target.value
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md
+              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone
+          </label>
+          <input
+            type="tel"
+            value={customerToEdit.phone}
+            onChange={(e) => setCustomerToEdit({
+              ...customerToEdit,
+              phone: e.target.value
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md
+              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            value={customerToEdit.status}
+            onChange={(e) => setCustomerToEdit({
+              ...customerToEdit,
+              status: e.target.value as 'Active' | 'Inactive'
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md
+              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Notes
+          </label>
+          <textarea
+            value={customerToEdit.notes}
+            onChange={(e) => setCustomerToEdit({
+              ...customerToEdit,
+              notes: e.target.value
+            })}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md
+              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]
+              resize-none"
+          />
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end gap-2">
+        <button
+          onClick={() => setShowEditModal(false)}
+          className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50
+            transition-colors duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => handleUpdateCustomer(customerToEdit)}
+          className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
+            hover:bg-[#e56e43]/90 transition-colors duration-200"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

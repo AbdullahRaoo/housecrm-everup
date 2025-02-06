@@ -29,27 +29,22 @@ export function Location({ register, setValue, errors }: LocationProps) {
           placeholder="Enter property address"
         />
         {errors.location?.address && (
-          <p className="mt-2 text-sm text-red-500 flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
-            </svg>
-            {errors.location.address.message}
-          </p>
+          <p className="mt-2 text-sm text-red-500">{errors.location.address.message}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">Map Location</label>
-        <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
           <PropertyMap
-            latitude={51.5074}
+            latitude={51.5074} // Default to London coordinates
             longitude={-0.1278}
             onLocationSelect={handleLocationSelect}
             isEditable={true}
           />
         </div>
         <p className="mt-2 text-sm text-gray-500">
-          Click on the map or use the search box to set the property location
+          Click on the map or search for a location to set the property coordinates
         </p>
       </div>
     </div>

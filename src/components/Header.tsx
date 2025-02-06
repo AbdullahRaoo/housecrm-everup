@@ -19,18 +19,7 @@ function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
-      <div className="flex items-center">
-        <input
-          className="w-64 px-4 py-2 text-gray-800 bg-gray-50 rounded-lg
-            placeholder-gray-400 border border-gray-200
-            focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
-            transition-colors duration-200"
-          type="search"
-          placeholder="Search..."
-        />
-      </div>
-
+    <header className="flex items-center justify-end px-6 py-4 bg-white border-b border-gray-100">
       <div className="flex items-center relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}

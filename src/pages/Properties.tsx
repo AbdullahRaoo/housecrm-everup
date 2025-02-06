@@ -36,9 +36,12 @@ function Properties() {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
         await deleteProperty(id);
+        const updatedProperties = properties.filter(p => p.id !== id);
+        setFilteredProperties(updatedProperties);
       } catch (error) {
         console.error('Failed to delete property:', error);
       }
@@ -92,11 +95,14 @@ function Properties() {
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProperties.map((property) => (
-          <Link
+          <div
+          key={property.id}
+          className="group relative bg-white rounded-lg shadow-md overflow-hidden
+          hover:shadow-lg transition-all duration-200"
+          >
+            <Link
             to={`/properties/${property.id}`}
-            key={property.id}
-            className="group relative bg-white rounded-lg shadow-md overflow-hidden
-              hover:shadow-lg transition-all duration-200"
+            className="block"
           >
             <div className="relative">
               <img
@@ -136,13 +142,12 @@ function Properties() {
                   <h4 className="text-xl font-semibold text-gray-800">{property.title}</h4>
                   <p className="text-gray-600 text-sm mt-1">{property.location.address}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  property.status === 'Available'
+                <span className={`px-3 py-1 rounded-full text-sm ${property.status === 'Available'
                     ? 'bg-[#e56e43]/10 text-[#e56e43]'
                     : property.status === 'Sold'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800'
-                }`}>
+                  }`}>
                   {property.status}
                 </span>
               </div>
@@ -194,6 +199,7 @@ function Properties() {
               </div>
             </div>
           </Link>
+          </div>
         ))}
       </div>
 
