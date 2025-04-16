@@ -25,9 +25,16 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('token');
+  });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,44 +52,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check auth status on mount
   useEffect(() => {
     const checkAuthStatus = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('/api/auth/status');
-        const { authenticated, user, token } = response.data;
+      // If we have a token, verify it's still valid
+      if (token) {
+        try {
+          setLoading(true);
+          const response = await authApi.getProfile(token);
+          if (response) {
+            setIsAuthenticated(true);
+            setUser(response);
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('user', JSON.stringify(response));
+            localStorage.setItem('token', token);
+          }
+        } catch (error) {
+          console.error('Authentication check failed:', error);
+          setIsAuthenticated(false);
+          setUser(null);
+          setToken(null);
+          localStorage.removeItem('isAuthenticated');
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
 
-        if (authenticated && user) {
-          setIsAuthenticated(true);
-          setUser(user);
-          setToken(token);
+          // Only redirect if not already on login page
+          if (location.pathname !== '/login') {
+            navigate('/login');
+          }
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Authentication check failed:', error);
-        setIsAuthenticated(false);
-        setUser(null);
-        setToken(null);
-
-        // Only redirect if not already on login page
+      } else {
+        setLoading(false);
         if (location.pathname !== '/login') {
           navigate('/login');
         }
-      } finally {
-        setLoading(false);
       }
     };
 
     checkAuthStatus();
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, token]);
 
   const login = async (credentials: { email: string; password: string }) => {
     try {
-      // Call login API
       const authData = await authApi.login(credentials);
 
       setIsAuthenticated(true);
       setUser(authData.user);
       setToken(authData.token);
 
-      // Get the redirect path from location state or default to '/'
+      // Persist auth state
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(authData.user));
+      localStorage.setItem('token', authData.token);
+
       const from = location.state?.from?.pathname || '/';
       navigate(from);
     } catch (error) {
@@ -93,15 +114,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      // Call logout API endpoint
       await axios.post('/api/auth/logout');
     } catch (error) {
       console.error('Logout API call failed:', error);
     } finally {
-      // Clear local state regardless of API success
+      // Clear local state and storage
       setIsAuthenticated(false);
       setUser(null);
       setToken(null);
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       navigate('/login');
     }
   };

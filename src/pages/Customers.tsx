@@ -1,19 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createStorageService, StorageKeys } from '../services/storage';
-
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: 'Active' | 'Inactive';
-  joinedDate: string;
-  lastInteraction?: string;
-  totalPurchases?: number;
-  notes?: string;
-}
+import { useCustomer } from '../context/CustomerContext';
+import { useAuth } from '../hooks/useAuth';
+import { Customer } from '../types/customer';
 
 interface FilterState {
   search: string;
@@ -25,49 +15,8 @@ interface FilterState {
 }
 
 function Customers() {
-  const customerStorage = createStorageService<Customer>(StorageKeys.CUSTOMERS);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-
-  // Load customers from storage on component mount
-  useEffect(() => {
-    const loadCustomers = () => {
-      const storedCustomers = customerStorage.getAll();
-      if (storedCustomers.length === 0) {
-        // Initialize with mock data if storage is empty
-        const mockCustomers = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john@example.com',
-            phone: '+1 234 567 890',
-            status: 'Active' as const,
-            joinedDate: '2024-01-15',
-            lastInteraction: '2024-02-20',
-            totalPurchases: 3,
-            notes: 'Interested in luxury properties'
-          },
-          {
-            id: '2',
-            name: 'Jane Doe',
-            email: 'jane@example.com',
-            phone: '+1 234 567 891',
-            status: 'Inactive' as const,
-            joinedDate: '2024-01-16',
-            lastInteraction: '2024-02-19',
-            totalPurchases: 1,
-            notes: 'Looking for rental properties'
-          }
-        ];
-        mockCustomers.forEach(customer => customerStorage.add(customer));
-        setCustomers(mockCustomers);
-      } else {
-        setCustomers(storedCustomers);
-      }
-    };
-
-    loadCustomers();
-  }, []);
-
+  const { token } = useAuth();
+  const { state: { customers, loading, error }, fetchCustomers, updateCustomer, deleteCustomer } = useCustomer();
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     status: 'all',
@@ -82,8 +31,15 @@ function Customers() {
   const [customerToEdit, setCustomerToEdit] = useState<Customer | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Load customers from context on component mount
+  useEffect(() => {
+    if (token) {
+      fetchCustomers();
+    }
+  }, [token, fetchCustomers]);
+
   // Filter and sort customers
-  const filteredCustomers = customers
+  const filteredCustomers = (customers || [])
     .filter(customer => {
       const matchesSearch = customer.name.toLowerCase().includes(filters.search.toLowerCase()) ||
         customer.email.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -129,13 +85,6 @@ function Customers() {
     );
   };
 
-  const handleBulkDelete = () => {
-    selectedCustomers.forEach(id => customerStorage.delete(id));
-    setCustomers(prev => prev.filter(c => !selectedCustomers.includes(c.id)));
-    setSelectedCustomers([]);
-    setShowDeleteModal(false);
-  };
-
   const handleSearch = (value: string) => {
     setFilters(prev => ({
       ...prev,
@@ -157,12 +106,9 @@ function Customers() {
     setShowEditModal(true);
   };
 
-  const handleUpdateCustomer = (updatedCustomer: Customer) => {
+  const handleUpdateCustomer = async (updatedCustomer: Customer) => {
     try {
-      customerStorage.update(updatedCustomer.id, updatedCustomer);
-      setCustomers(prev => prev.map(c =>
-        c.id === updatedCustomer.id ? updatedCustomer : c
-      ));
+      await updateCustomer(updatedCustomer);
       setShowEditModal(false);
       setCustomerToEdit(null);
     } catch (error) {
@@ -170,6 +116,38 @@ function Customers() {
       alert('Failed to update customer. Please try again.');
     }
   };
+
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedCustomers.map(id => deleteCustomer(id)));
+      setShowDeleteModal(false);
+      setSelectedCustomers([]);
+    } catch (error) {
+      console.error('Failed to delete customers:', error);
+      alert('Failed to delete customers. Please try again.');
+    }
+  };
+
+  // Show loading state while fetching data
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#e56e43]"></div>
+      </div>
+    );
+  }
+
+  // Show error message if there was a problem
+  if (error) {
+    return (
+      <div className="container mx-auto px-6 py-8">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline ml-2">{error}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -459,124 +437,124 @@ function Customers() {
 
       {/* Edit Customer Modal */}
       {showEditModal && customerToEdit && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-lg max-w-md w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium">Edit Customer</h3>
-        <button
-          onClick={() => setShowEditModal(false)}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">Edit Customer</h3>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Name
-          </label>
-          <input
-            type="text"
-            value={customerToEdit.name}
-            onChange={(e) => setCustomerToEdit({
-              ...customerToEdit,
-              name: e.target.value
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md
-              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
-          />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={customerToEdit.name}
+                  onChange={(e) => setCustomerToEdit({
+                    ...customerToEdit,
+                    name: e.target.value
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={customerToEdit.email}
+                  onChange={(e) => setCustomerToEdit({
+                    ...customerToEdit,
+                    email: e.target.value
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={customerToEdit.phone}
+                  onChange={(e) => setCustomerToEdit({
+                    ...customerToEdit,
+                    phone: e.target.value
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={customerToEdit.status}
+                  onChange={(e) => setCustomerToEdit({
+                    ...customerToEdit,
+                    status: e.target.value as 'Active' | 'Inactive'
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
+                <textarea
+                  value={customerToEdit.notes}
+                  onChange={(e) => setCustomerToEdit({
+                    ...customerToEdit,
+                    notes: e.target.value
+                  })}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]
+                    resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50
+                  transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleUpdateCustomer(customerToEdit)}
+                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
+                  hover:bg-[#e56e43]/90 transition-colors duration-200"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            value={customerToEdit.email}
-            onChange={(e) => setCustomerToEdit({
-              ...customerToEdit,
-              email: e.target.value
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md
-              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Phone
-          </label>
-          <input
-            type="tel"
-            value={customerToEdit.phone}
-            onChange={(e) => setCustomerToEdit({
-              ...customerToEdit,
-              phone: e.target.value
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md
-              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Status
-          </label>
-          <select
-            value={customerToEdit.status}
-            onChange={(e) => setCustomerToEdit({
-              ...customerToEdit,
-              status: e.target.value as 'Active' | 'Inactive'
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md
-              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Notes
-          </label>
-          <textarea
-            value={customerToEdit.notes}
-            onChange={(e) => setCustomerToEdit({
-              ...customerToEdit,
-              notes: e.target.value
-            })}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md
-              focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]
-              resize-none"
-          />
-        </div>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-2">
-        <button
-          onClick={() => setShowEditModal(false)}
-          className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50
-            transition-colors duration-200"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => handleUpdateCustomer(customerToEdit)}
-          className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
-            hover:bg-[#e56e43]/90 transition-colors duration-200"
-        >
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }

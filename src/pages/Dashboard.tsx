@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Property } from '../types/property';
-import { Customer } from '../types/customer';
-import { CalendarEvent } from '../types/calendar';
+import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getDashboardData } from '../data/dashboardService';
-import { DashboardStats, TaskProgress, PropertyPerformance } from '../data/types';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Bar, BarChart } from 'recharts';
+import { DashboardStats, PropertyPerformance, TaskProgress } from '../data/types';
+import { CalendarEvent } from '../types/calendar';
+import { Customer } from '../types/customer';
+import { Property } from '../types/property';
 
 function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ function Dashboard() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const data = getDashboardData();
+        const data = await getDashboardData();
         setStats(data.stats);
         setLatestProperties(data.latestProperties);
         setActiveClients(data.activeClients);
@@ -227,8 +227,8 @@ function Dashboard() {
                 <div className="mt-2 flex justify-between items-center">
                   <span className="text-[#e56e43] font-bold">${property.price.toLocaleString()}</span>
                   <span className={`px-2 py-1 rounded-full text-xs ${property.status === 'Available'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
                     }`}>
                     {property.status}
                   </span>
@@ -254,8 +254,8 @@ function Dashboard() {
                   <p className="text-sm text-gray-500 mt-1">{task.description}</p>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs ${task.type === 'Visit'
-                    ? 'bg-[#e56e43]/10 text-[#e56e43]'
-                    : 'bg-blue-100 text-blue-800'
+                  ? 'bg-[#e56e43]/10 text-[#e56e43]'
+                  : 'bg-blue-100 text-blue-800'
                   }`}>
                   {task.type}
                 </span>
