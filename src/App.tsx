@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import PropertyForm from './pages/PropertyForm';
+import Users from './pages/Users';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                             <Route path="/properties/new" element={<PropertyForm />} />
                             <Route path="/properties/edit/:id" element={<PropertyForm />} />
                             <Route path="/calendar" element={<CalendarPage />} />
+                            <Route path="/users" element={<Users />} />
                           </Routes>
                         </main>
                       </div>

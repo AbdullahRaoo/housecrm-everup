@@ -142,50 +142,80 @@ export const calendarApi = {
 export const customerApi = {
   // Get all customers
   getCustomers: async (token: string): Promise<any[]> => {
-    const response = await fetch(`${API_URL}/customers`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_URL}/customers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch customers: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to fetch customers: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getCustomers:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Get single customer
   getCustomer: async (id: string, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/customers/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (!id) {
+        throw new Error("Customer ID is required");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch customer: ${response.status}`);
+      const response = await fetch(`${API_URL}/customers/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to fetch customer: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getCustomer:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Add a new customer
   addCustomer: async (customerData: any, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/customers`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(customerData),
-    });
+    try {
+      console.log(
+        "Adding customer with data:",
+        JSON.stringify(customerData, null, 2)
+      );
 
-    if (!response.ok) {
-      throw new Error(`Failed to add customer: ${response.status}`);
+      const response = await fetch(`${API_URL}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(customerData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to add customer: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in addCustomer:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Update an existing customer
@@ -194,33 +224,62 @@ export const customerApi = {
     customerData: any,
     token: string
   ): Promise<any> => {
-    const response = await fetch(`${API_URL}/customers/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(customerData),
-    });
+    try {
+      if (!id) {
+        throw new Error("Customer ID is required for updating");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to update customer: ${response.status}`);
+      console.log(
+        `Updating customer ${id} with data:`,
+        JSON.stringify(customerData, null, 2)
+      );
+
+      const response = await fetch(`${API_URL}/customers/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(customerData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to update customer: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in updateCustomer:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Delete a customer
   deleteCustomer: async (id: string, token: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/customers/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (!id) {
+        throw new Error("Customer ID is required for deletion");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete customer: ${response.status}`);
+      console.log(`Deleting customer with id: ${id}`);
+
+      const response = await fetch(`${API_URL}/customers/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to delete customer: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error in deleteCustomer:", error);
+      throw error;
     }
   },
 };

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCustomer } from '../context/CustomerContext';
@@ -31,14 +30,12 @@ function Customers() {
   const [customerToEdit, setCustomerToEdit] = useState<Customer | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // Load customers from context on component mount
   useEffect(() => {
     if (token) {
       fetchCustomers();
     }
   }, [token, fetchCustomers]);
 
-  // Filter and sort customers
   const filteredCustomers = (customers || [])
     .filter(customer => {
       const matchesSearch = customer.name.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -58,7 +55,6 @@ function Customers() {
       return 0;
     });
 
-  // Pagination
   const totalPages = Math.ceil(filteredCustomers.length / filters.itemsPerPage);
   const paginatedCustomers = filteredCustomers.slice(
     (filters.page - 1) * filters.itemsPerPage,
@@ -74,7 +70,7 @@ function Customers() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedCustomers(checked ? filteredCustomers.map(c => c.id) : []);
+    setSelectedCustomers(checked ? filteredCustomers.map(c => c._id || c.id) : []);
   };
 
   const handleSelectCustomer = (customerId: string) => {
@@ -86,19 +82,11 @@ function Customers() {
   };
 
   const handleSearch = (value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      search: value,
-      page: 1
-    }));
+    setFilters(prev => ({ ...prev, search: value, page: 1 }));
   };
 
   const handleStatusFilter = (status: FilterState['status']) => {
-    setFilters(prev => ({
-      ...prev,
-      status,
-      page: 1
-    }));
+    setFilters(prev => ({ ...prev, status, page: 1 }));
   };
 
   const handleEditCustomer = (customer: Customer) => {
@@ -108,27 +96,63 @@ function Customers() {
 
   const handleUpdateCustomer = async (updatedCustomer: Customer) => {
     try {
-      await updateCustomer(updatedCustomer);
+      const customerData = {
+        ...updatedCustomer,
+        id: updatedCustomer._id || updatedCustomer.id,
+        phone: updatedCustomer.phone || '',
+        address: updatedCustomer.address || '',
+        notes: updatedCustomer.notes || '',
+        propertiesViewed: updatedCustomer.propertiesViewed || [],
+        preferences: updatedCustomer.preferences || {
+          budget: { min: 0, max: 0 },
+          location: [],
+          propertyType: [],
+          features: []
+        }
+      };
+
+      await updateCustomer(customerData as Customer);
       setShowEditModal(false);
       setCustomerToEdit(null);
+      await fetchCustomers();
     } catch (error) {
       console.error('Failed to update customer:', error);
-      alert('Failed to update customer. Please try again.');
+      alert(error instanceof Error ? error.message : 'Failed to update customer');
     }
   };
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedCustomers.map(id => deleteCustomer(id)));
+      if (!selectedCustomers.length) return;
+
+      const deletePromises = selectedCustomers.map(async (id) => {
+        try {
+          if (!id) return { success: false, id: 'undefined', error: 'Invalid ID' };
+          await deleteCustomer(id);
+          return { success: true, id };
+        } catch (error) {
+          return { success: false, id, error };
+        }
+      });
+
+      const results = await Promise.all(deletePromises);
+      const successCount = results.filter(r => r.success).length;
+      const failCount = results.filter(r => !r.success).length;
+
+      if (failCount > 0) {
+        alert(`${successCount} deleted successfully. ${failCount} failed.`);
+      } else {
+        alert(`${successCount} customer(s) deleted successfully.`);
+      }
+
       setShowDeleteModal(false);
       setSelectedCustomers([]);
+      await fetchCustomers();
     } catch (error) {
-      console.error('Failed to delete customers:', error);
-      alert('Failed to delete customers. Please try again.');
+      alert('Failed to delete customers');
     }
   };
 
-  // Show loading state while fetching data
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -137,7 +161,6 @@ function Customers() {
     );
   }
 
-  // Show error message if there was a problem
   if (error) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -151,13 +174,10 @@ function Customers() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-gray-700 text-3xl font-medium">Customers</h3>
-          <p className="text-gray-500 mt-1">
-            {filteredCustomers.length} customers found
-          </p>
+          <p className="text-gray-500 mt-1">{filteredCustomers.length} customers found</p>
         </div>
         <div className="flex gap-2">
           {selectedCustomers.length > 0 && (
@@ -180,7 +200,6 @@ function Customers() {
         </div>
       </div>
 
-      {/* Search and Filter Section */}
       <div className="mt-6 flex gap-4">
         <input
           type="text"
@@ -209,7 +228,6 @@ function Customers() {
         </select>
       </div>
 
-      {/* Customers Table */}
       <div className="mt-8 bg-white shadow rounded-lg overflow-hidden">
         <table className="min-w-full leading-normal">
           <thead>
@@ -223,14 +241,17 @@ function Customers() {
                 />
               </th>
               <th
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
                 onClick={() => handleSort('name')}
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</span>
                   {filters.sortBy === 'name' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                       />
                     </svg>
@@ -238,14 +259,17 @@ function Customers() {
                 </div>
               </th>
               <th
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
                 onClick={() => handleSort('email')}
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</span>
                   {filters.sortBy === 'email' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                       />
                     </svg>
@@ -253,14 +277,17 @@ function Customers() {
                 </div>
               </th>
               <th
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
                 onClick={() => handleSort('phone')}
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</span>
                   {filters.sortBy === 'phone' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                       />
                     </svg>
@@ -268,14 +295,17 @@ function Customers() {
                 </div>
               </th>
               <th
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
                 onClick={() => handleSort('status')}
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</span>
                   {filters.sortBy === 'status' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                       />
                     </svg>
@@ -283,14 +313,17 @@ function Customers() {
                 </div>
               </th>
               <th
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
                 onClick={() => handleSort('joinedDate')}
+                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined Date</span>
                   {filters.sortBy === 'joinedDate' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                       />
                     </svg>
@@ -303,75 +336,81 @@ function Customers() {
             </tr>
           </thead>
           <tbody>
-            {paginatedCustomers.map((customer) => (
-              <tr key={customer.id} className="hover:bg-gray-50">
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <input
-                    type="checkbox"
-                    checked={selectedCustomers.includes(customer.id)}
-                    onChange={() => handleSelectCustomer(customer.id)}
-                    className="rounded border-gray-300"
-                  />
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 w-10 h-10">
-                      <img
-                        className="w-full h-full rounded-full"
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
-                        alt={customer.name}
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.status === 'Active'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                    }`}>
-                    {customer.status}
-                  </span>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <p className="text-gray-900 whitespace-no-wrap">
-                    {new Date(customer.joinedDate).toLocaleDateString()}
-                  </p>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditCustomer(customer)}
-                      className="text-[#e56e43] hover:text-blue-900"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedCustomers([customer.id]);
-                        setShowDeleteModal(true);
-                      }}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
-                  </div>
+            {paginatedCustomers.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-5 py-5 text-center text-gray-500">
+                  No customers found
                 </td>
               </tr>
-            ))}
+            ) : (
+              paginatedCustomers.map((customer) => (
+                <tr key={customer._id || customer.id} className="hover:bg-gray-50">
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <input
+                      type="checkbox"
+                      checked={selectedCustomers.includes(customer._id || customer.id)}
+                      onChange={() => handleSelectCustomer(customer._id || customer.id)}
+                      className="rounded border-gray-300"
+                    />
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 w-10 h-10">
+                        <img
+                          className="w-full h-full rounded-full"
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
+                          alt={customer.name}
+                        />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {customer.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {new Date(customer.joinedDate).toLocaleDateString()}
+                    </p>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditCustomer(customer)}
+                        className="text-[#e56e43] hover:text-blue-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedCustomers([customer._id || customer.id]);
+                          setShowDeleteModal(true);
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center">
           <span className="text-gray-600">
@@ -388,14 +427,14 @@ function Customers() {
           >
             Previous
           </button>
-          {/* Page numbers */}
           <div className="flex gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
                 onClick={() => setFilters(prev => ({ ...prev, page }))}
-                className={`px-4 py-2 border rounded-lg ${filters.page === page ? 'bg-[#e56e43] text-white' : 'hover:bg-gray-50'
-                  }`}
+                className={`px-4 py-2 border rounded-lg ${
+                  filters.page === page ? 'bg-[#e56e43] text-white' : 'hover:bg-gray-50'
+                }`}
               >
                 {page}
               </button>
@@ -411,7 +450,6 @@ function Customers() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -435,7 +473,6 @@ function Customers() {
         </div>
       )}
 
-      {/* Edit Customer Modal */}
       {showEditModal && customerToEdit && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -463,8 +500,7 @@ function Customers() {
                     ...customerToEdit,
                     name: e.target.value
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                 />
               </div>
 
@@ -479,8 +515,7 @@ function Customers() {
                     ...customerToEdit,
                     email: e.target.value
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                 />
               </div>
 
@@ -495,8 +530,7 @@ function Customers() {
                     ...customerToEdit,
                     phone: e.target.value
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                 />
               </div>
 
@@ -510,8 +544,7 @@ function Customers() {
                     ...customerToEdit,
                     status: e.target.value as 'Active' | 'Inactive'
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -529,9 +562,7 @@ function Customers() {
                     notes: e.target.value
                   })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]
-                    resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43] resize-none"
                 />
               </div>
             </div>
@@ -539,15 +570,13 @@ function Customers() {
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50
-                  transition-colors duration-200"
+                className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleUpdateCustomer(customerToEdit)}
-                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
-                  hover:bg-[#e56e43]/90 transition-colors duration-200"
+                className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200"
               >
                 Save Changes
               </button>

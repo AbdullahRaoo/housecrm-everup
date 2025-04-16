@@ -1,8 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
+import { useAuth } from '../hooks/useAuth';
 
 function Sidebar() {
   const location = useLocation();
+  const { user } = useAuth();
 
   const isActive = (path: string) => {
     return location.pathname.startsWith(path);
@@ -21,8 +23,8 @@ function Sidebar() {
           <Link
             to="/"
             className={`flex items-center px-6 py-3 transition-colors ${location.pathname === '/'
-                ? 'bg-white text-[#e56e43] font-medium'
-                : 'text-white hover:bg-white/10'
+              ? 'bg-white text-[#e56e43] font-medium'
+              : 'text-white hover:bg-white/10'
               }`}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,8 +38,8 @@ function Sidebar() {
           <Link
             to="/customers"
             className={`flex items-center px-6 py-3 transition-colors ${isActive('/customers')
-                ? 'bg-white text-[#e56e43] font-medium'
-                : 'text-white hover:bg-white/10'
+              ? 'bg-white text-[#e56e43] font-medium'
+              : 'text-white hover:bg-white/10'
               }`}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,8 +53,8 @@ function Sidebar() {
           <Link
             to="/properties"
             className={`flex items-center px-6 py-3 transition-colors ${isActive('/properties')
-                ? 'bg-white text-[#e56e43] font-medium'
-                : 'text-white hover:bg-white/10'
+              ? 'bg-white text-[#e56e43] font-medium'
+              : 'text-white hover:bg-white/10'
               }`}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,8 +68,8 @@ function Sidebar() {
           <Link
             to="/calendar"
             className={`flex items-center px-6 py-3 transition-colors ${isActive('/calendar')
-                ? 'bg-white text-[#e56e43] font-medium'
-                : 'text-white hover:bg-white/10'
+              ? 'bg-white text-[#e56e43] font-medium'
+              : 'text-white hover:bg-white/10'
               }`}
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,6 +79,24 @@ function Sidebar() {
             </svg>
             <span>Calendar</span>
           </Link>
+
+          {/* Show Users management only to admins */}
+          {user?.isAdmin && (
+            <Link
+              to="/users"
+              className={`flex items-center px-6 py-3 transition-colors ${isActive('/users')
+                ? 'bg-white text-[#e56e43] font-medium'
+                : 'text-white hover:bg-white/10'
+                }`}
+            >
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <span>Users</span>
+            </Link>
+          )}
         </nav>
       </div>
     </div>

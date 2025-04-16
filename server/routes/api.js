@@ -521,11 +521,52 @@ router.get("/customers/:id", authenticateToken, async (req, res) => {
 // Create new customer
 router.post("/customers", authenticateToken, async (req, res) => {
   try {
+    // Check if email already exists
+    if (req.body.email) {
+      const existingCustomer = await Customer.findOne({
+        email: req.body.email,
+      });
+      if (existingCustomer) {
+        return res.status(400).json({
+          error: "A customer with this email already exists",
+          field: "email",
+        });
+      }
+    }
+
+    // Validate required fields
+    if (!req.body.name) {
+      return res.status(400).json({
+        error: "Customer name is required",
+        field: "name",
+      });
+    }
+
+    if (!req.body.email) {
+      return res.status(400).json({
+        error: "Customer email is required",
+        field: "email",
+      });
+    }
+
     const newCustomer = new Customer(req.body);
     const savedCustomer = await newCustomer.save();
     res.status(201).json(savedCustomer);
   } catch (error) {
     console.error("Error creating customer:", error);
+
+    // Handle validation errors from Mongoose
+    if (error.name === "ValidationError") {
+      const errors = {};
+      for (const field in error.errors) {
+        errors[field] = error.errors[field].message;
+      }
+      return res.status(400).json({
+        error: "Validation failed",
+        details: errors,
+      });
+    }
+
     res.status(500).json({ error: "Failed to create customer" });
   }
 });
@@ -643,6 +684,177 @@ router.get("/users", authenticateToken, isAdmin, async (req, res) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// Get single user (admin only)
+router.get("/users/:id", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+// Create new user (admin only)
+router.post("/users", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { name, email, password, role, isAdmin } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        error: "A user with this email already exists",
+        field: "email",
+      });
+    }
+
+    // Validate required fields
+    if (!name) {
+      return res.status(400).json({
+        error: "Name is required",
+        field: "name",
+      });
+    }
+
+    if (!email) {
+      return res.status(400).json({
+        error: "Email is required",
+        field: "email",
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        error: "Password is required",
+        field: "password",
+      });
+    }
+
+    // Hash the password
+    const hashedPassword = crypto
+      .createHash("sha256")
+      .update(password)
+      .digest("hex");
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "user",
+      isAdmin: isAdmin || false,
+    });
+
+    const savedUser = await newUser.save();
+
+    // Return the user without password
+    const userResponse = {
+      id: savedUser._id,
+      name: savedUser.name,
+      email: savedUser.email,
+      role: savedUser.role,
+      isAdmin: savedUser.isAdmin,
+      createdAt: savedUser.createdAt,
+    };
+
+    res.status(201).json(userResponse);
+  } catch (error) {
+    console.error("Error creating user:", error);
+
+    // Handle validation errors from Mongoose
+    if (error.name === "ValidationError") {
+      const errors = {};
+      for (const field in error.errors) {
+        errors[field] = error.errors[field].message;
+      }
+      return res.status(400).json({
+        error: "Validation failed",
+        details: errors,
+      });
+    }
+
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
+// Update user (admin only)
+router.put("/users/:id", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { name, email, password, role, isAdmin } = req.body;
+    const updates = { name, email, role, isAdmin };
+
+    // Don't update password if it's not provided
+    if (password) {
+      updates.password = crypto
+        .createHash("sha256")
+        .update(password)
+        .digest("hex");
+    }
+
+    // Check if updating to an email that already exists
+    if (email) {
+      const existingUser = await User.findOne({
+        email,
+        _id: { $ne: req.params.id },
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          error: "A user with this email already exists",
+          field: "email",
+        });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    }).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+// Delete user (admin only)
+router.delete("/users/:id", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    // Prevent deletion of the last admin user
+    if (req.params.id === req.user.id) {
+      return res.status(400).json({
+        error: "You cannot delete your own account",
+      });
+    }
+
+    const adminCount = await User.countDocuments({ isAdmin: true });
+    const userToDelete = await User.findById(req.params.id);
+
+    if (userToDelete?.isAdmin && adminCount <= 1) {
+      return res.status(400).json({
+        error: "Cannot delete the last admin user",
+      });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
   }
 });
 

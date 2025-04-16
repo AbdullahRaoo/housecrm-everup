@@ -16,35 +16,67 @@ export const getDashboardData = async () => {
   let events: CalendarEvent[] = [];
 
   try {
-    properties = (await propertyStorage.getAll()) || [];
-    customers = (await customerStorage.getAll()) || [];
-    events = (await eventStorage.getAll()) || [];
+    // Fetch data with better type handling
+    try {
+      const propertiesResponse = await propertyStorage.getAll();
+      properties = Array.isArray(propertiesResponse) ? propertiesResponse : [];
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+    }
+
+    try {
+      const customersResponse = await customerStorage.getAll();
+      customers = Array.isArray(customersResponse) ? customersResponse : [];
+    } catch (err) {
+      console.error("Error fetching customers:", err);
+    }
+
+    try {
+      const eventsResponse = await eventStorage.getAll();
+      console.log("Events from API:", eventsResponse);
+      events = Array.isArray(eventsResponse) ? eventsResponse : [];
+    } catch (err) {
+      console.error("Error fetching events:", err);
+    }
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("General error fetching data:", error);
   }
 
-  // Make sure properties is always an array
-  if (!Array.isArray(properties)) {
-    properties = [];
-  }
+  console.log("Events after processing:", events);
+  console.log("Is events array?", Array.isArray(events));
 
-  // Calculate property stats
+  // Extra safeguard for all arrays
+  if (!Array.isArray(properties)) properties = [];
+  if (!Array.isArray(customers)) customers = [];
+  if (!Array.isArray(events)) events = [];
+
+  // Calculate property stats (with extra safeguards)
   const propertyStats = properties.reduce((acc, property) => {
-    const status = property.status?.toLowerCase() || "unknown";
-    acc[status] = (acc[status] || 0) + 1;
+    if (property && typeof property === "object") {
+      const status = property.status?.toLowerCase() || "unknown";
+      acc[status] = (acc[status] || 0) + 1;
+    }
     return acc;
   }, {} as Record<string, number>);
 
-  // Calculate revenue
+  // Calculate revenue (with extra safeguards)
   const revenue = properties
-    .filter((p) => p.status === "Sold")
+    .filter((p) => p && p.status === "Sold")
     .reduce((sum, p) => sum + (p.price || 0), 0);
 
+  // Calculate pendingTasks with a defensive approach
+  let pendingTasks = 0;
+  if (Array.isArray(events)) {
+    pendingTasks = events.filter((e) => e && e.status === "Pending").length;
+  }
+
   const stats: DashboardStats = {
-    totalCustomers: customers.length,
-    activeDeals: properties.filter((p) => p.status === "Available").length,
+    totalCustomers: Array.isArray(customers) ? customers.length : 0,
+    activeDeals: Array.isArray(properties)
+      ? properties.filter((p) => p && p.status === "Available").length
+      : 0,
     totalRevenue: revenue,
-    pendingTasks: events.filter((e) => e.status === "Pending").length,
+    pendingTasks,
     propertyStats: {
       available: propertyStats.available || 0,
       sold: propertyStats.sold || 0,
@@ -80,45 +112,55 @@ export const getDashboardData = async () => {
     },
   ];
 
-  // Get latest properties (with null check)
-  const latestProperties = [...properties]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt || 0).getTime() -
-        new Date(a.createdAt || 0).getTime()
-    )
-    .slice(0, 5);
+  // Get latest properties (with extra safeguards)
+  const latestProperties = Array.isArray(properties)
+    ? [...properties]
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
+        )
+        .slice(0, 5)
+    : [];
 
-  // Get active clients (with null check)
-  const activeClients = customers
-    .filter((client) => client.status === "Active")
-    .sort(
-      (a, b) =>
-        new Date(b.lastInteraction ?? 0).getTime() -
-        new Date(a.lastInteraction ?? 0).getTime()
-    )
-    .slice(0, 5);
+  // Get active clients (with extra safeguards)
+  const activeClients = Array.isArray(customers)
+    ? customers
+        .filter((client) => client && client.status === "Active")
+        .sort(
+          (a, b) =>
+            new Date(b.lastInteraction ?? 0).getTime() -
+            new Date(a.lastInteraction ?? 0).getTime()
+        )
+        .slice(0, 5)
+    : [];
 
-  // Get upcoming tasks (with null check)
-  const today = new Date();
-  const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const upcomingTasks = events
-    .filter((event) => {
-      const eventDate = new Date(event.start);
-      return eventDate >= today && eventDate <= nextWeek;
-    })
-    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-    .slice(0, 5);
+  // Get upcoming tasks (with extra safeguards)
+  let upcomingTasks: CalendarEvent[] = [];
+  if (Array.isArray(events)) {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    upcomingTasks = events
+      .filter((event) => {
+        if (!event || !event.start) return false;
+        const eventDate = new Date(event.start);
+        return eventDate >= today && eventDate <= nextWeek;
+      })
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+      .slice(0, 5);
+  }
 
-  // Property performance data (with null check)
-  const propertyPerformance: PropertyPerformance[] = latestProperties.map(
-    (property) => ({
-      name: property.title?.substring(0, 15) + "..." || "Untitled",
-      views: property.statistics?.views || 0,
-      inquiries: property.statistics?.inquiries || 0,
-      sales: property.type === "Sale" ? 1 : 0,
-    })
-  );
+  // Property performance data (with extra safeguards)
+  const propertyPerformance: PropertyPerformance[] = Array.isArray(
+    latestProperties
+  )
+    ? latestProperties.map((property) => ({
+        name: property.title?.substring(0, 15) + "..." || "Untitled",
+        views: property.statistics?.views || 0,
+        inquiries: property.statistics?.inquiries || 0,
+        sales: property.type === "Sale" ? 1 : 0,
+      }))
+    : [];
 
   return {
     stats,

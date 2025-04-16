@@ -1,35 +1,59 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createStorageService, StorageKeys } from '../services/storage';
+import { useCustomer } from '../context/CustomerContext';
+import { useAuth } from '../hooks/useAuth';
 import { Customer } from '../types/customer';
 
 function CustomerForm() {
   const navigate = useNavigate();
-  const customerStorage = createStorageService<Customer>(StorageKeys.CUSTOMERS);
+  const { addCustomer } = useCustomer();
+  const { token } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState<Omit<Customer, 'id'>>({
     name: '',
     email: '',
     phone: '',
+    address: '',
     status: 'Active',
-    joinedDate: new Date().toISOString().split('T')[0],
-    lastInteraction: new Date().toISOString(),
-    totalPurchases: 0,
     notes: '',
-    propertiesViewed: 0
+    joinedDate: new Date().toISOString().split('T')[0],
+    propertiesViewed: [],
+    preferences: {
+      budget: { min: 0, max: 0 },
+      location: [],
+      propertyType: [],
+      features: []
+    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      const newCustomer = customerStorage.add(formData);
-      console.log('Customer created:', newCustomer);
+      if (!token) {
+        throw new Error('You must be logged in to add customers');
+      }
+
+      // Make sure all required fields are filled
+      if (!formData.name.trim()) {
+        throw new Error('Name is required');
+      }
+
+      if (!formData.email.trim()) {
+        throw new Error('Email is required');
+      }
+
+      // Add customer through the context which uses API
+      await addCustomer(formData);
+      console.log('Customer created successfully');
       navigate('/customers');
     } catch (error) {
       console.error('Failed to create customer:', error);
-      alert('Failed to create customer. Please try again.');
+      setError(error instanceof Error ? error.message : 'Failed to create customer. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -44,6 +68,12 @@ function CustomerForm() {
     <div className="container mx-auto px-6 py-8">
       <div className="max-w-lg mx-auto">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add New Customer</h1>
+
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 border border-gray-100">
           <div className="space-y-4">
@@ -76,7 +106,16 @@ function CustomerForm() {
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 className={inputClasses}
-                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Address</label>
+              <input
+                type="text"
+                value={formData.address}
+                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                className={inputClasses}
               />
             </div>
 
@@ -84,11 +123,12 @@ function CustomerForm() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'Active' | 'Inactive' }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'Active' | 'Inactive' | 'Lead' }))}
                 className={`${inputClasses} appearance-none cursor-pointer`}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
+                <option value="Lead">Lead</option>
               </select>
             </div>
 

@@ -18,40 +18,48 @@ function CalendarPage() {
   const eventStorage = createStorageService<CalendarEvent>(StorageKeys.EVENTS);
 
   useEffect(() => {
-    const loadEvents = () => {
-      const storedEvents = eventStorage.getAll();
-      if (storedEvents.length === 0) {
-        // Add some mock events if none exist
-        const mockEvents: Omit<CalendarEvent, 'id'>[] = [
-          {
-            title: 'Property Viewing',
-            type: 'Visit',
-            start: new Date(2024, 1, 15, 10, 0).toISOString(),
-            end: new Date(2024, 1, 15, 11, 0).toISOString(),
-            description: 'Show luxury apartment to potential client',
-            status: 'Pending',
-            propertyId: '1',
-            isGoogleCalendarSync: true
-          },
-          {
-            title: 'Client Call',
-            type: 'Call',
-            start: new Date(2024, 1, 15, 14, 0).toISOString(),
-            end: new Date(2024, 1, 15, 14, 30).toISOString(),
-            description: 'Follow up on property inquiry',
-            status: 'Pending',
-            customerId: '1',
-            isGoogleCalendarSync: false
-          }
-        ];
+    const loadEvents = async () => {
+      try {
+        const storedEvents = await eventStorage.getAll();
+        if (Array.isArray(storedEvents) && storedEvents.length > 0) {
+          setEvents(storedEvents);
+        } else {
+          // Add some mock events if none exist
+          const mockEvents: Omit<CalendarEvent, 'id'>[] = [
+            {
+              title: 'Property Viewing',
+              type: 'Visit',
+              start: new Date(2024, 1, 15, 10, 0).toISOString(),
+              end: new Date(2024, 1, 15, 11, 0).toISOString(),
+              description: 'Show luxury apartment to potential client',
+              status: 'Pending',
+              propertyId: '1',
+              isGoogleCalendarSync: true
+            },
+            {
+              title: 'Client Call',
+              type: 'Call',
+              start: new Date(2024, 1, 15, 14, 0).toISOString(),
+              end: new Date(2024, 1, 15, 14, 30).toISOString(),
+              description: 'Follow up on property inquiry',
+              status: 'Pending',
+              customerId: '1',
+              isGoogleCalendarSync: false
+            }
+          ];
 
-        mockEvents.forEach(event => eventStorage.add(event));
-        setEvents(mockEvents.map(event => ({
-          ...event,
-          id: Math.random().toString(36).substring(2, 9)
-        })));
-      } else {
-        setEvents(storedEvents);
+          for (const event of mockEvents) {
+            await eventStorage.add(event);
+          }
+
+          setEvents(mockEvents.map(event => ({
+            ...event,
+            id: Math.random().toString(36).substring(2, 9)
+          })));
+        }
+      } catch (error) {
+        console.error('Error loading events:', error);
+        setEvents([]); // Fallback to an empty array in case of error
       }
     };
 
@@ -68,29 +76,39 @@ function CalendarPage() {
     setShowEventModal(true);
   };
 
-  const handleEventSubmit = (eventData: Omit<CalendarEvent, 'id'>) => {
-    if (selectedEvent) {
-      // Update existing event
-      const updatedEvent = eventStorage.update(selectedEvent.id, {
-        ...eventData,
-        id: selectedEvent.id
-      });
-      setEvents(prev => prev.map(e => e.id === selectedEvent.id ? updatedEvent : e));
-    } else {
-      // Add new event
-      const newEvent = eventStorage.add(eventData);
-      setEvents(prev => [...prev, newEvent]);
-    }
-    setShowEventModal(false);
-    setSelectedEvent(null);
-  };
-
-  const handleEventDelete = (eventId: string) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      eventStorage.delete(eventId);
-      setEvents(prev => prev.filter(e => e.id !== eventId));
+  const handleEventSubmit = async (eventData: Omit<CalendarEvent, 'id'>) => {
+    try {
+      if (selectedEvent) {
+        // Update existing event
+        const updatedEvent = await eventStorage.update(selectedEvent.id, {
+          ...eventData,
+          id: selectedEvent.id
+        });
+        setEvents(prev => prev.map(e => e.id === selectedEvent.id ? updatedEvent : e));
+      } else {
+        // Add new event
+        const newEvent = await eventStorage.add(eventData);
+        setEvents(prev => [...prev, newEvent]);
+      }
       setShowEventModal(false);
       setSelectedEvent(null);
+    } catch (error) {
+      console.error('Error saving event:', error);
+      alert('Failed to save the event. Please try again.');
+    }
+  };
+
+  const handleEventDelete = async (eventId: string) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      try {
+        await eventStorage.delete(eventId);
+        setEvents(prev => prev.filter(e => e.id !== eventId));
+        setShowEventModal(false);
+        setSelectedEvent(null);
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Failed to delete the event. Please try again.');
+      }
     }
   };
 

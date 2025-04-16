@@ -136,26 +136,58 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
   const updateCustomer = async (customer: Customer) => {
     if (!token) return;
 
+    // Validate that we have a valid customer ID before making the API call
+    if (!customer || !customer.id) {
+      console.error("Cannot update customer: Invalid or missing customer ID");
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to update customer: Invalid ID' });
+      throw new Error('Invalid customer ID');
+    }
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const updatedCustomer = await customerApi.updateCustomer(customer.id, customer, token);
+
+      // Check if we need to transform the ID for MongoDB
+      // MongoDB might store the ID as _id internally, but your frontend uses id
+      const customerForApi = {
+        ...customer,
+        // If the backend expects _id instead of id, uncomment the next line
+        // _id: customer.id,
+      };
+
+      console.log("Sending update to API:", customerForApi);
+      const updatedCustomer = await customerApi.updateCustomer(customer.id, customerForApi, token);
+      console.log("API response after update:", updatedCustomer);
+
       dispatch({ type: 'UPDATE_CUSTOMER', payload: updatedCustomer });
     } catch (error) {
       console.error("Error updating customer:", error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to update customer in database' });
+      throw error;
     }
   };
 
   const deleteCustomer = async (id: string) => {
     if (!token) return;
 
+    // Validate that we have a valid customer ID before making the API call
+    if (!id) {
+      console.error("Cannot delete customer: Invalid or missing customer ID");
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete customer: Invalid ID' });
+      throw new Error('Invalid customer ID');
+    }
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+
+      // Check if the ID is in the correct format for MongoDB
+      console.log("Attempting to delete customer with ID:", id);
+
       await customerApi.deleteCustomer(id, token);
       dispatch({ type: 'DELETE_CUSTOMER', payload: id });
     } catch (error) {
       console.error("Error deleting customer:", error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to delete customer from database' });
+      throw error; // Re-throw the error so the component can handle it
     }
   };
 

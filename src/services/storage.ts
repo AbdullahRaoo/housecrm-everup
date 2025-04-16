@@ -17,19 +17,45 @@ export interface StorageService<T> {
   clear: () => Promise<void>;
 }
 
+// Map StorageKeys to actual API endpoints
+const apiEndpointMap: Record<string, string> = {
+  crm_customers: "customers",
+  crm_properties: "properties",
+  crm_events: "calendar",
+  crm_visits: "visits",
+  crm_documents: "documents",
+};
+
 export function createStorageService<T extends { id: string }>(
   key: string
 ): StorageService<T> {
-  const apiUrl = `/api/${key}`;
+  // Map the storage key to the correct API endpoint
+  const endpoint = apiEndpointMap[key] || key;
+  const apiUrl = `/api/${endpoint}`;
+
+  console.log(
+    `Creating storage service for key ${key}, using API endpoint: ${apiUrl}`
+  );
 
   const getAll = async (): Promise<T[]> => {
-    const response = await axios.get(apiUrl);
-    return response.data;
+    try {
+      const response = await axios.get(apiUrl);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching data from ${apiUrl}:`, error);
+      // Return an empty array on error to prevent app crashes
+      return [];
+    }
   };
 
   const getById = async (id: string): Promise<T | undefined> => {
-    const response = await axios.get(`${apiUrl}/${id}`);
-    return response.data;
+    try {
+      const response = await axios.get(`${apiUrl}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching data from ${apiUrl}/${id}:`, error);
+      return undefined;
+    }
   };
 
   const add = async (item: Omit<T, "id">): Promise<T> => {
