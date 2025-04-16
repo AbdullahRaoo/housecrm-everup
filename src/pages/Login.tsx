@@ -1,8 +1,8 @@
+import { SHA256 } from 'crypto-js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SHA256 } from 'crypto-js';
-import { useAuth } from '../hooks/useAuth';
 import logo from '../assets/logo.png';
+import { useAuth } from '../hooks/useAuth';
 
 function Login() {
   const navigate = useNavigate();
@@ -24,9 +24,14 @@ function Login() {
     if (credentials.email === VALID_EMAIL &&
       SHA256(credentials.password).toString() === VALID_PASSWORD_HASH) {
       const authData = {
-        email: credentials.email,
         token: SHA256(credentials.email + new Date().getTime()).toString(),
-        passwordHash: VALID_PASSWORD_HASH
+        user: {
+          id: '1',
+          name: 'Admin User',
+          email: credentials.email,
+          isAdmin: true,
+          role: 'admin'
+        }
       };
 
       login(authData);
@@ -131,6 +136,12 @@ function Login() {
               </span>
               Sign in
             </button>
+          </div>
+
+          <div className="text-center text-sm mt-4 text-gray-600">
+            <p>Demo credentials:</p>
+            <p><strong>Email:</strong> admin@gmail.com</p>
+            <p><strong>Password:</strong> admin123</p>
           </div>
         </form>
       </div>

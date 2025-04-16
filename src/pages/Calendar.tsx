@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { Calendar } from '../components/Calendar';
 import { EventForm } from '../components/EventForm';
+import { useAuth } from '../hooks/useAuth';
+import { calendarApi } from '../services/api'; // Import API service
 import { createStorageService, StorageKeys } from '../services/storage';
 import { CalendarEvent, EventType } from '../types/calendar';
 
@@ -10,6 +12,8 @@ function CalendarPage() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [filterType, setFilterType] = useState<EventType | 'All'>('All');
+  const [isExporting, setIsExporting] = useState(false);
+  const { user } = useAuth();
 
   const eventStorage = createStorageService<CalendarEvent>(StorageKeys.EVENTS);
 
@@ -90,6 +94,45 @@ function CalendarPage() {
     }
   };
 
+  // Function to handle export
+  const handleExport = async (format: 'excel' | 'csv') => {
+    if (!user?.isAdmin) {
+      alert('You need admin access to export calendar data.');
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+
+      // In a production app, you would get the token from your auth system
+      const token = 'admin-token'; // Mock admin token
+
+      // Get the blob using our API service
+      let blob: Blob;
+      if (format === 'excel') {
+        blob = await calendarApi.exportExcel(token);
+      } else {
+        blob = await calendarApi.exportCsv(token);
+      }
+
+      // Create a download link for the blob
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `calendar_events.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setIsExporting(false);
+    } catch (error) {
+      console.error(`Error exporting as ${format}:`, error);
+      alert(`Failed to export calendar as ${format}. Please try again.`);
+      setIsExporting(false);
+    }
+  };
+
   const filteredEvents = events.filter(event =>
     filterType === 'All' || event.type === filterType
   );
@@ -99,6 +142,48 @@ function CalendarPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Calendar</h1>
         <div className="flex gap-3">
+          {/* Export buttons - only visible to admins */}
+          {user?.isAdmin && (
+            <div className="flex gap-2 mr-4">
+              <button
+                onClick={() => handleExport('excel')}
+                disabled={isExporting}
+                className={`${isExporting ? 'bg-green-400' : 'bg-green-600'} text-white px-4 py-2 rounded-lg
+                  hover:bg-green-700 transition-colors duration-200
+                  font-medium shadow-sm flex items-center gap-1`}
+              >
+                {isExporting ? (
+                  <span className="animate-pulse">Exporting...</span>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export Excel
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => handleExport('csv')}
+                disabled={isExporting}
+                className={`${isExporting ? 'bg-blue-400' : 'bg-blue-600'} text-white px-4 py-2 rounded-lg
+                  hover:bg-blue-700 transition-colors duration-200
+                  font-medium shadow-sm flex items-center gap-1`}
+              >
+                {isExporting ? (
+                  <span className="animate-pulse">Exporting...</span>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value as EventType | 'All')}

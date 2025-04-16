@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1",
+    "title": "Property Viewing",
+    "type": "Visit",
+    "start": "2025-04-15T05:00:00.000Z",
+    "end": "2025-04-15T06:00:00.000Z",
+    "description": "Show luxury apartment to potential client",
+    "propertyId": "101",
+    "customerId": "201",
+    "status": "Pending",
+    "deadline": "",
+    "isGoogleCalendarSync": true
+  },
+  {
+    "id": "2",
+    "title": "Client Call",
+    "type": "Call",
+    "start": "2025-04-16T09:00:00.000Z",
+    "end": "2025-04-16T09:30:00.000Z",
+    "description": "Follow up on property inquiry",
+    "propertyId": "102",
+    "customerId": "202",
+    "status": "Completed",
+    "deadline": "",
+    "isGoogleCalendarSync": false
+  }
+]

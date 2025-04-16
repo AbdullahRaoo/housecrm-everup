@@ -1,25 +1,152 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { mediaApi } from '../services/api';
 
-interface PropertyGalleryProps {
-  images: string[];
-  title: string;
+interface CloudinaryImage {
+  url: string;
+  public_id: string;
 }
 
-export function PropertyGallery({ images, title }: PropertyGalleryProps) {
+interface PropertyGalleryProps {
+  images: CloudinaryImage[] | string[];
+  title: string;
+  editable?: boolean;
+  onImagesChange?: (images: CloudinaryImage[]) => void;
+}
+
+export function PropertyGallery({
+  images,
+  title,
+  editable = false,
+  onImagesChange
+}: PropertyGalleryProps) {
   const [activeImage, setActiveImage] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useAuth();
+
+  // Convert old string array format to CloudinaryImage format if needed
+  const normalizedImages: CloudinaryImage[] = images.map((img) => {
+    if (typeof img === 'string') {
+      return {
+        url: img,
+        public_id: img.split('/').pop() || img
+      };
+    }
+    return img as CloudinaryImage;
+  });
+
+  // Reset active image when images change
+  useEffect(() => {
+    if (normalizedImages.length > 0 && activeImage >= normalizedImages.length) {
+      setActiveImage(0);
+    }
+  }, [normalizedImages, activeImage]);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !token) return;
+
+    const files = Array.from(e.target.files);
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      // Simulate progress for UX purposes
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) return 90;
+          return prev + 5;
+        });
+      }, 200);
+
+      // Upload images to Cloudinary
+      const uploadedImages = await mediaApi.uploadImages(files, token);
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      // Update images list with new uploads
+      const updatedImages = [...normalizedImages, ...uploadedImages];
+
+      // Notify parent component of changes
+      if (onImagesChange) {
+        onImagesChange(updatedImages);
+      }
+
+      // Set the active image to the first new upload
+      setActiveImage(normalizedImages.length);
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload images. Please try again.');
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+      // Clear the input to allow uploading the same file again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveImage = async (index: number) => {
+    if (!token) return;
+
+    const imageToRemove = normalizedImages[index];
+
+    // Ask for confirmation
+    if (!confirm('Are you sure you want to remove this image?')) {
+      return;
+    }
+
+    try {
+      // Only attempt to delete if we have a public_id
+      if (imageToRemove.public_id && imageToRemove.public_id.includes('/')) {
+        await mediaApi.deleteImage(imageToRemove.public_id, token);
+      }
+
+      // Update the images array
+      const updatedImages = [...normalizedImages];
+      updatedImages.splice(index, 1);
+
+      // Notify parent component of changes
+      if (onImagesChange) {
+        onImagesChange(updatedImages);
+      }
+
+      // Update active image if needed
+      if (activeImage >= updatedImages.length) {
+        setActiveImage(updatedImages.length - 1 >= 0 ? updatedImages.length - 1 : 0);
+      }
+    } catch (error) {
+      console.error('Error removing image:', error);
+      alert('Failed to remove image. Please try again.');
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 border border-gray-100">
       <div className="relative group">
-        <img
-          src={images[activeImage]}
-          alt={title}
-          className="w-full h-96 object-cover rounded-lg shadow-sm"
-        />
-        {images.length > 1 && (
+        {normalizedImages.length > 0 ? (
+          <img
+            src={normalizedImages[activeImage].url}
+            alt={title}
+            className="w-full h-96 object-cover rounded-lg shadow-sm"
+          />
+        ) : (
+          <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+            <p className="text-gray-400">No images available</p>
+          </div>
+        )}
+
+        {normalizedImages.length > 1 && (
           <>
             <button
-              onClick={() => setActiveImage((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+              onClick={() => setActiveImage((prev) => (prev === 0 ? normalizedImages.length - 1 : prev - 1))}
               className="absolute left-4 top-1/2 transform -translate-y-1/2
                 bg-black/50 text-white p-3 rounded-full
                 opacity-0 group-hover:opacity-100 transition-opacity duration-200
@@ -31,7 +158,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
               </svg>
             </button>
             <button
-              onClick={() => setActiveImage((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+              onClick={() => setActiveImage((prev) => (prev === normalizedImages.length - 1 ? 0 : prev + 1))}
               className="absolute right-4 top-1/2 transform -translate-y-1/2
                 bg-black/50 text-white p-3 rounded-full
                 opacity-0 group-hover:opacity-100 transition-opacity duration-200
@@ -44,9 +171,36 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
             </button>
           </>
         )}
+
+        {editable && normalizedImages.length > 0 && (
+          <button
+            onClick={() => handleRemoveImage(activeImage)}
+            className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full
+              opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              hover:bg-red-600"
+            aria-label="Remove image"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+
+        {isUploading && (
+          <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center">
+            <div className="w-3/4 bg-gray-200 rounded-full h-2.5 mb-2">
+              <div
+                className="bg-[#e56e43] h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+            <p className="text-white">Uploading... {uploadProgress}%</p>
+          </div>
+        )}
       </div>
+
       <div className="grid grid-cols-5 gap-2 mt-4">
-        {images.map((img, index) => (
+        {normalizedImages.map((img, index) => (
           <div
             key={index}
             className={`relative rounded-lg overflow-hidden cursor-pointer group
@@ -57,7 +211,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
             onClick={() => setActiveImage(index)}
           >
             <img
-              src={img}
+              src={img.url}
               alt={`${title} ${index + 1}`}
               className="w-full h-20 object-cover transition-transform duration-200
                 group-hover:scale-110"
@@ -67,6 +221,38 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
             />
           </div>
         ))}
+
+        {editable && (
+          <div
+            className="flex items-center justify-center h-20 rounded-lg border-2 border-dashed border-gray-300
+              cursor-pointer hover:border-[#e56e43] transition-colors duration-200"
+            onClick={handleUploadClick}
+          >
+            <div className="text-center">
+              <svg
+                className="w-8 h-8 mx-auto text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

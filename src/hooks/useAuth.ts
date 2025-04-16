@@ -1,10 +1,20 @@
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useContext } from "react";
+import { AuthContext, User } from "../context/AuthContext";
 
-export const useAuth = () => {
+interface UseAuthReturn {
+  isAuthenticated: boolean;
+  user: User | null;
+  login: (data: any) => void;
+  logout: () => void;
+}
+
+export function useAuth(): UseAuthReturn {
   const context = useContext(AuthContext);
+
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
+
   return context;
-};
+}

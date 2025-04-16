@@ -1,8 +1,7 @@
 1- api endpoints to export cliniet properties clanders in excel or csv (only admin)
-2- create a module for login adding profile deleting profile (user page for admin)
-3- change to next user firebase
-4- log of complete crm everything that happens should be in that log
-5- clanders will have option of avaliabe clinets ... so when admin adds a task related to customer it shows for that customer seperately
-6- I want to add an "Upcoming tasks" inside customer section, where only customer related tasks are visible. So each customer has its own little table in its profile with related activities
-7- I need to add a section "Opportunities" where user can create a budget or "proposals" for its client, with the option to create income scenarios.
-8- I need to add a section "Sheets" where user can create some table to compare monthly income or annual income, see some table like "opportunities created", opportunities accepted, opportunities lost, ratio between lost and created or accepted and created.
+2- create a module for login adding profile and deleting profile (user page for admin)
+3- log of complete crm everything that happens should be in that log
+4- clanders will have option of avaliabe clinets ... so when admin adds a task related to customer it shows for that customer seperately
+5- I want to add an "Upcoming tasks" inside customer section, where only customer related tasks are visible. So each customer has its own little table in its profile with related activities
+6- I need to add a section "Opportunities" where user can create a budget or "proposals" for its client, with the option to create income scenarios.
+7- I need to add a section "Sheets" where user can create some table to compare monthly income or annual income, see some table like "opportunities created", opportunities accepted, opportunities lost, ratio between lost and created or accepted and created.
