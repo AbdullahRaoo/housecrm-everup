@@ -1,8 +1,8 @@
-import { SHA256 } from 'crypto-js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../hooks/useAuth';
+import { authApi } from '../services/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -12,32 +12,25 @@ function Login() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const VALID_EMAIL = 'admin@gmail.com';
-  const VALID_PASSWORD = 'admin123';
-  const VALID_PASSWORD_HASH = SHA256(VALID_PASSWORD).toString();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
-    if (credentials.email === VALID_EMAIL &&
-      SHA256(credentials.password).toString() === VALID_PASSWORD_HASH) {
-      const authData = {
-        token: SHA256(credentials.email + new Date().getTime()).toString(),
-        user: {
-          id: '1',
-          name: 'Admin User',
-          email: credentials.email,
-          isAdmin: true,
-          role: 'admin'
-        }
-      };
+    try {
+      // Use the authApi to authenticate against the database
+      const authData = await authApi.login(credentials);
 
+      // Login successful - pass the authentication data to our context
       login(authData);
       navigate('/');
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,10 +111,12 @@ function Login() {
           <div>
             <button
               type="submit"
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent
                 text-sm font-medium rounded-md text-white bg-[#e56e43] hover:bg-[#e56e43]/90
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e56e43]
-                transition-colors duration-200 shadow-md hover:shadow-lg"
+                transition-colors duration-200 shadow-md hover:shadow-lg
+                disabled:bg-[#e56e43]/60 disabled:cursor-not-allowed"
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <svg
@@ -134,13 +129,13 @@ function Login() {
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
 
           <div className="text-center text-sm mt-4 text-gray-600">
             <p>Demo credentials:</p>
-            <p><strong>Email:</strong> admin@gmail.com</p>
+            <p><strong>Email:</strong> admin@example.com</p>
             <p><strong>Password:</strong> admin123</p>
           </div>
         </form>

@@ -8,10 +8,12 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node --experimental-modules server/index.js",
+    "server": "nodemon --experimental-modules server/index.js",
+    "server:prod": "node --experimental-modules server/index.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "seed": "node --experimental-modules server/scripts/seed.js",
-    "setup": "npm run seed && npm run dev:all"
+    "setup": "npm run seed && npm run dev:all",
+    "start": "npm run dev:all"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
@@ -48,6 +50,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "nodemon": "^3.1.9",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.3",
     "typescript": "~5.6.2",

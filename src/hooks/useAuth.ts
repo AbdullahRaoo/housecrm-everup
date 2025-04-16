@@ -7,6 +7,7 @@ interface UseAuthReturn {
   user: User | null;
   login: (data: any) => void;
   logout: () => void;
+  token: string | null;
 }
 
 export function useAuth(): UseAuthReturn {
