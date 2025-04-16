@@ -1,7 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext, useContext, useReducer, ReactNode, useCallback, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+
+import { createContext, ReactNode, useCallback, useContext, useEffect, useReducer } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { propertyApi } from '../services/api';
 import { Property } from '../types/property';
-import { createStorageService, StorageKeys } from '../services/storage';
 
 interface PropertyState {
   properties: Property[];
@@ -80,7 +82,7 @@ const propertyReducer = (state: PropertyState, action: PropertyAction): Property
 };
 
 export function PropertyProvider({ children }: { children: ReactNode }) {
-  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
+  const { token } = useAuth();
   const [state, dispatch] = useReducer(propertyReducer, {
     properties: [],
     loading: false,
@@ -88,166 +90,90 @@ export function PropertyProvider({ children }: { children: ReactNode }) {
     selectedProperty: null,
   });
 
-  // Initialize with data from local storage
+  // Initialize with data from database
   useEffect(() => {
     const initializeProperties = async () => {
+      if (!token) return;
+
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
-        const savedProperties = propertyStorage.getAll();
-        if (savedProperties.length === 0) {
-          // If no properties in storage, use mock data
-          const mockProperties: Property[] = [
-            {
-              id: '1',
-              title: 'Luxury Villa with Pool',
-              propertyType: 'Villa',
-              type: 'Sale',
-              price: 750000,
-              status: 'Available',
-              location: {
-                address: '123 Luxury Lane, Beverly Hills, CA 90210',
-                coordinates: { lat: 34.0736, lng: -118.4004 },
-                area: 'Beverly Hills'
-              },
-              features: {
-                bedrooms: 5,
-                bathrooms: 4,
-                area: 4500,
-                amenities: ['Pool', 'Garden', 'Security', 'Garage']
-              },
-              media: {
-                images: [
-                  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
-                  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c',
-                  'https://images.unsplash.com/photo-1600607687644-4e4140d76a6f'
-                ],
-                videos: [],
-              },
-              documents: [],
-              description: 'Luxurious villa featuring modern amenities and stunning views.',
-              statistics: {
-                views: 245,
-                inquiries: 12,
-                visits: 8
-              },
-              owner: {
-                id: 'owner1',
-                name: 'Jane Smith',
-                email: 'jane@example.com',
-                phone: '(555) 123-4567'
-              },
-              visits: [],
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            },
-            {
-              id: '2',
-              title: 'Modern City Apartment',
-              propertyType: 'Apartment',
-              type: 'Rent',
-              price: 2500,
-              status: 'Available',
-              location: {
-                address: '456 Urban Ave, Los Angeles, CA 90012',
-                coordinates: { lat: 34.0522, lng: -118.2437 },
-                area: 'Downtown LA'
-              },
-              features: {
-                bedrooms: 2,
-                bathrooms: 2,
-                area: 1200,
-                amenities: ['Air Conditioning', 'Gym', 'Parking', 'Security']
-              },
-              media: {
-                images: [
-                  'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00',
-                  'https://images.unsplash.com/photo-1545324418-cc1a3fa10c01'
-                ],
-                videos: []
-              },
-              documents: [],
-              description: 'Modern apartment in the heart of downtown with amazing city views.',
-              statistics: {
-                views: 180,
-                inquiries: 8,
-                visits: 4
-              },
-              owner: {
-                id: 'owner2',
-                name: 'John Doe',
-                email: 'john@example.com',
-                phone: '(555) 987-6543'
-              },
-              visits: [],
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            }
-          ];
-          // Save mock data to storage
-          mockProperties.forEach(property => propertyStorage.add(property));
-          dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: mockProperties });
-        } else {
-          dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: savedProperties });
-        }
+        const propertiesFromDB = await propertyApi.getProperties(token);
+        dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: propertiesFromDB });
       } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize properties' });
+        console.error("Error fetching properties:", error);
+        dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize properties from database' });
       }
     };
 
     initializeProperties();
-  }, []);
+  }, [token]);
 
   const fetchProperties = useCallback(async () => {
+    if (!token) return;
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const properties = propertyStorage.getAll();
+      const properties = await propertyApi.getProperties(token);
       dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: properties });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch properties' });
+      console.error("Error fetching properties:", error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch properties from database' });
     }
-  }, []);
+  }, [token]);
 
   const addProperty = async (property: Omit<Property, 'id'>) => {
+    if (!token) return;
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const newProperty = propertyStorage.add(property);
+      const newProperty = await propertyApi.addProperty(property, token);
       dispatch({ type: 'ADD_PROPERTY', payload: newProperty });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to add property' });
+      console.error("Error adding property:", error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to add property to database' });
     }
   };
 
   const updateProperty = async (property: Property) => {
+    if (!token) return;
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const updatedProperty = propertyStorage.update(property.id, property);
+      const updatedProperty = await propertyApi.updateProperty(property.id, property, token);
       dispatch({ type: 'UPDATE_PROPERTY', payload: updatedProperty });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to update property' });
+      console.error("Error updating property:", error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to update property in database' });
     }
   };
 
   const deleteProperty = async (id: string) => {
+    if (!token) return;
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      propertyStorage.delete(id);
+      await propertyApi.deleteProperty(id, token);
       dispatch({ type: 'DELETE_PROPERTY', payload: id });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete property' });
+      console.error("Error deleting property:", error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete property from database' });
     }
   };
 
   const getProperty = async (id: string) => {
+    if (!token) return;
+
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const property = propertyStorage.getById(id);
+      const property = await propertyApi.getProperty(id, token);
       if (property) {
         dispatch({ type: 'SET_SELECTED_PROPERTY', payload: property });
       } else {
-        dispatch({ type: 'SET_ERROR', payload: 'Property not found' });
+        dispatch({ type: 'SET_ERROR', payload: 'Property not found in database' });
       }
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch property' });
+      console.error("Error fetching property:", error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch property from database' });
     }
   };
 

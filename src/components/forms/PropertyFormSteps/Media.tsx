@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { Property } from '../../../types/property';
 
@@ -15,15 +15,17 @@ export function Media({ setValue, watch, errors }: MediaProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize with existing images when editing
+  // Watch for images value changes
+  const currentImages = watch('media.images');
+
+  // Initialize with existing images when editing - fixed to avoid state updates during render
   useEffect(() => {
-    const existingImages = watch('media.images');
-    if (!isInitialized && existingImages?.length > 0) {
-      setPreviews(existingImages);
-      setBase64Images(existingImages);
+    if (!isInitialized && currentImages?.length > 0) {
+      setPreviews(currentImages);
+      setBase64Images(currentImages);
       setIsInitialized(true);
     }
-  }, [watch, isInitialized]);
+  }, [currentImages, isInitialized]);
 
   const processFiles = useCallback(async (files: FileList) => {
     // Validate file types and sizes

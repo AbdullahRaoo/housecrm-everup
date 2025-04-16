@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../hooks/useAuth';
-import { authApi } from '../services/api';
 
 function Login() {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const [credentials, setCredentials] = useState({
     email: '',
@@ -20,12 +17,9 @@ function Login() {
     setIsLoading(true);
 
     try {
-      // Use the authApi to authenticate against the database
-      const authData = await authApi.login(credentials);
-
-      // Login successful - pass the authentication data to our context
-      login(authData);
-      navigate('/');
+      // Call the login function from AuthContext directly with credentials
+      await login(credentials);
+      // No need to call navigate here, it's handled in the AuthContext
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password. Please try again.');

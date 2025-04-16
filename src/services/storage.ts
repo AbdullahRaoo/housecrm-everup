@@ -1,70 +1,55 @@
+import axios from "axios";
+
 export const StorageKeys = {
   CUSTOMERS: "crm_customers",
   PROPERTIES: "crm_properties",
   VISITS: "crm_visits",
   DOCUMENTS: "crm_documents",
-  EVENTS: "crm_events" 
+  EVENTS: "crm_events",
 } as const;
 
 export interface StorageService<T> {
-  getAll: () => T[];
-  getById: (id: string) => T | undefined;
-  add: (item: Omit<T, "id">) => T;
-  update: (id: string, item: T) => T;
-  delete: (id: string) => void;
-  clear: () => void;
+  getAll: () => Promise<T[]>;
+  getById: (id: string) => Promise<T | undefined>;
+  add: (item: Omit<T, "id">) => Promise<T>;
+  update: (id: string, item: T) => Promise<T>;
+  delete: (id: string) => Promise<void>;
+  clear: () => Promise<void>;
 }
 
 export function createStorageService<T extends { id: string }>(
   key: string
 ): StorageService<T> {
-  const getAll = (): T[] => {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+  const apiUrl = `/api/${key}`;
+
+  const getAll = async (): Promise<T[]> => {
+    const response = await axios.get(apiUrl);
+    return response.data;
   };
 
-  const getById = (id: string): T | undefined => {
-    const items = getAll();
-    return items.find((item) => item.id === id);
+  const getById = async (id: string): Promise<T | undefined> => {
+    const response = await axios.get(`${apiUrl}/${id}`);
+    return response.data;
   };
 
-  const add = (item: Omit<T, "id">): T => {
-    const items = getAll();
-    const newItem = {
-      ...item,
-      id: Math.random().toString(36).substring(2, 9),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as unknown as T;
-
-    items.push(newItem);
-    localStorage.setItem(key, JSON.stringify(items));
-    return newItem;
+  const add = async (item: Omit<T, "id">): Promise<T> => {
+    const response = await axios.post(apiUrl, item);
+    return response.data;
   };
 
-  const update = (id: string, item: T): T => {
-    const items = getAll();
-    const index = items.findIndex((i) => i.id === id);
-    if (index === -1) throw new Error("Item not found");
-
-    const updatedItem = {
-      ...item,
-      updatedAt: new Date().toISOString(),
-    };
-
-    items[index] = updatedItem;
-    localStorage.setItem(key, JSON.stringify(items));
-    return updatedItem;
+  const update = async (id: string, item: T): Promise<T> => {
+    const response = await axios.put(`${apiUrl}/${id}`, item);
+    return response.data;
   };
 
-  const delete_ = (id: string): void => {
-    const items = getAll();
-    const filteredItems = items.filter((item) => item.id !== id);
-    localStorage.setItem(key, JSON.stringify(filteredItems));
+  const delete_ = async (id: string): Promise<void> => {
+    await axios.delete(`${apiUrl}/${id}`);
   };
 
-  const clear = (): void => {
-    localStorage.removeItem(key);
+  const clear = async (): Promise<void> => {
+    console.warn(
+      "Clear operation is not supported for database-backed storage."
+    );
   };
 
   return {
