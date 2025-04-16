@@ -5,7 +5,10 @@ interface PropertyStatisticsProps {
 }
 
 export function PropertyStatistics({ property }: PropertyStatisticsProps) {
-  const visitsByStatus = property.visits.reduce((acc, visit) => {
+  // Add safety check to ensure visits exists and is an array
+  const visits = Array.isArray(property.visits) ? property.visits : [];
+
+  const visitsByStatus = visits.reduce((acc, visit) => {
     acc[visit.status] = (acc[visit.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -20,15 +23,15 @@ export function PropertyStatistics({ property }: PropertyStatisticsProps) {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Total Views</span>
-              <span className="font-medium text-[#e56e43]">{property.statistics.views}</span>
+              <span className="font-medium text-[#e56e43]">{property.statistics?.views || 0}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Total Inquiries</span>
-              <span className="font-medium text-[#e56e43]">{property.statistics.inquiries}</span>
+              <span className="font-medium text-[#e56e43]">{property.statistics?.inquiries || 0}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Total Visits</span>
-              <span className="font-medium text-[#e56e43]">{property.statistics.visits}</span>
+              <span className="font-medium text-[#e56e43]">{property.statistics?.visits || 0}</span>
             </div>
           </div>
         </div>
@@ -54,25 +57,30 @@ export function PropertyStatistics({ property }: PropertyStatisticsProps) {
 
       <div className="mt-6">
         <h4 className="text-sm font-medium text-gray-800 mb-4">Recent Activity</h4>
-        <div className="space-y-4">
-          {property.visits.slice(0, 5).map(visit => (
-            <div key={visit.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div>
-                <p className="font-medium text-gray-800">{visit.clientName}</p>
-                <p className="text-sm text-gray-500">{new Date(visit.date).toLocaleDateString()}</p>
+        {visits.length > 0 ? (
+          <div className="space-y-4">
+            {visits.slice(0, 5).map(visit => (
+              <div key={visit.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div>
+                  <p className="font-medium text-gray-800">{visit.clientName}</p>
+                  <p className="text-sm text-gray-500">{new Date(visit.date).toLocaleDateString()}</p>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-sm ${visit.status === 'Completed'
+                    ? 'bg-[#e56e43]/10 text-[#e56e43]'
+                    : visit.status === 'Cancelled'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-[#e56e43]/10 text-[#e56e43]'
+                  }`}>
+                  {visit.status}
+                </span>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm ${
-                visit.status === 'Completed'
-                  ? 'bg-[#e56e43]/10 text-[#e56e43]'
-                  : visit.status === 'Cancelled'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-[#e56e43]/10 text-[#e56e43]'
-              }`}>
-                {visit.status}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-gray-500">
+            No visits recorded yet
+          </div>
+        )}
       </div>
     </div>
   );
