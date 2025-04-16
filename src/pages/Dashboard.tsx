@@ -210,32 +210,42 @@ function Dashboard() {
           <Link to="/properties" className="text-[#e56e43] hover:text-[#e56e43]/80">View all</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestProperties.map(property => (
-            <Link
-              key={property.id}
-              to={`/properties/${property.id}`}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all"
-            >
-              <img
-                src={property.media.images[0]}
-                alt={property.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h5 className="font-semibold text-gray-800">{property.title}</h5>
-                <p className="text-gray-600 text-sm mt-1">{property.location.address}</p>
-                <div className="mt-2 flex justify-between items-center">
-                  <span className="text-[#e56e43] font-bold">${property.price.toLocaleString()}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${property.status === 'Available'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                    }`}>
-                    {property.status}
-                  </span>
+          {latestProperties.map(property => {
+            // Handle image source correctly - it might be a CloudinaryImage object or a string
+            const imageSource = property.media?.images?.[0];
+            const imageUrl = typeof imageSource === 'string' ? imageSource : imageSource?.url || '';
+
+            // Ensure we have a valid property ID
+            const propertyId = property.id || property._id;
+
+            return (
+              <Link
+                key={propertyId}
+                to={`/properties/${propertyId}`}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all"
+                data-discover="true"
+              >
+                <img
+                  src={imageUrl}
+                  alt={property.title || 'Property image'}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h5 className="font-semibold text-gray-800">{property.title}</h5>
+                  <p className="text-gray-600 text-sm mt-1">{property.location?.address || 'Address not available'}</p>
+                  <div className="mt-2 flex justify-between items-center">
+                    <span className="text-[#e56e43] font-bold">${(property.price || 0).toLocaleString()}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${property.status === 'Available'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                      }`}>
+                      {property.status || 'Status unknown'}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
