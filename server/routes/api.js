@@ -633,30 +633,154 @@ router.get("/properties/:id", authenticateToken, async (req, res) => {
 // Create new property
 router.post("/properties", authenticateToken, async (req, res) => {
   try {
-    const newProperty = new Property(req.body);
+    console.log("Received property data:", JSON.stringify(req.body, null, 2));
+
+    // Prepare the property data with necessary transformations
+    const propertyData = {
+      ...req.body,
+      // Handle the purpose field (default to Sale if needed)
+      purpose: req.body.purpose || req.body.type || "Sale",
+
+      // If type is "Sale" or "Rent", use it for purpose and set propertyType for type
+      propertyType: req.body.propertyType || "Apartment",
+
+      // Transform images array to photos array if needed
+      media: {
+        ...req.body.media,
+        photos:
+          req.body.media?.images?.map((img) =>
+            typeof img === "string" ? img : img.url
+          ) ||
+          req.body.media?.photos ||
+          [],
+      },
+
+      // Ensure owner is properly formatted
+      owner: req.body.owner || {},
+
+      // Handle numeric fields - convert string values to numbers
+      price:
+        typeof req.body.price === "string"
+          ? parseFloat(req.body.price)
+          : req.body.price,
+    };
+
+    if (propertyData.features) {
+      // Convert numeric string values in features to actual numbers
+      if (typeof propertyData.features.bedrooms === "string") {
+        propertyData.features.bedrooms = parseInt(
+          propertyData.features.bedrooms,
+          10
+        );
+      }
+      if (typeof propertyData.features.bathrooms === "string") {
+        propertyData.features.bathrooms = parseInt(
+          propertyData.features.bathrooms,
+          10
+        );
+      }
+      if (typeof propertyData.features.area === "string") {
+        propertyData.features.area = parseFloat(propertyData.features.area);
+      }
+    }
+
+    // Ensure required fields
+    if (!propertyData.title) {
+      return res.status(400).json({ error: "Property title is required" });
+    }
+
+    if (!propertyData.description) {
+      return res
+        .status(400)
+        .json({ error: "Property description is required" });
+    }
+
+    if (!propertyData.price || isNaN(propertyData.price)) {
+      return res
+        .status(400)
+        .json({ error: "Valid property price is required" });
+    }
+
+    if (!propertyData.location?.address) {
+      return res.status(400).json({ error: "Property address is required" });
+    }
+
+    const newProperty = new Property(propertyData);
     const savedProperty = await newProperty.save();
     res.status(201).json(savedProperty);
   } catch (error) {
     console.error("Error creating property:", error);
-    res.status(500).json({ error: "Failed to create property" });
+
+    // Detailed error handling
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.keys(error.errors).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+
+      return res.status(400).json({
+        error: "Validation failed",
+        details: validationErrors,
+      });
+    }
+
+    res
+      .status(500)
+      .json({ error: "Failed to create property", details: error.message });
   }
 });
 
 // Update property
 router.put("/properties/:id", authenticateToken, async (req, res) => {
   try {
+    console.log("Updating property data:", JSON.stringify(req.body, null, 2));
+
+    // Prepare the property data with proper media handling
+    const propertyData = {
+      ...req.body,
+      // Transform images array to photos array if needed
+      media: {
+        ...req.body.media,
+        photos:
+          req.body.media?.images?.map((img) =>
+            typeof img === "string" ? img : img.url
+          ) ||
+          req.body.media?.photos ||
+          [],
+      },
+      updatedAt: new Date(),
+    };
+
     const updatedProperty = await Property.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true }
+      propertyData,
+      { new: true, runValidators: true }
     );
+
     if (!updatedProperty) {
       return res.status(404).json({ error: "Property not found" });
     }
+
     res.json(updatedProperty);
   } catch (error) {
     console.error("Error updating property:", error);
-    res.status(500).json({ error: "Failed to update property" });
+
+    // Detailed error handling
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.keys(error.errors).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+
+      return res.status(400).json({
+        error: "Validation failed",
+        details: validationErrors,
+      });
+    }
+
+    res
+      .status(500)
+      .json({ error: "Failed to update property", details: error.message });
   }
 });
 

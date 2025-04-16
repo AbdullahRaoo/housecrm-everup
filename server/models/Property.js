@@ -14,12 +14,17 @@ const propertySchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
+      enum: ["Apartment", "House", "Commercial", "Land", "Sale", "Rent"],
+    },
+    propertyType: {
+      type: String,
       enum: ["Apartment", "House", "Commercial", "Land"],
+      required: true,
     },
     purpose: {
       type: String,
-      required: true,
       enum: ["Sale", "Rent"],
+      default: "Sale", // Set a default to avoid validation errors
     },
     price: {
       type: Number,
@@ -38,6 +43,7 @@ const propertySchema = new mongoose.Schema(
         lat: Number,
         lng: Number,
       },
+      area: String,
     },
     features: {
       bedrooms: Number,
@@ -48,12 +54,13 @@ const propertySchema = new mongoose.Schema(
       hasGarden: Boolean,
       hasPool: Boolean,
       isFurnished: Boolean,
-      otherAmenities: [String],
+      amenities: [String],
     },
     media: {
       photos: [String], // URLs to images
       videos: [String],
       virtualTour: String,
+      images: [Object], // For frontend compatibility
     },
     status: {
       type: String,
@@ -61,11 +68,11 @@ const propertySchema = new mongoose.Schema(
       default: "Available",
     },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: mongoose.Schema.Types.Mixed, // Allow object or ObjectId
+      default: {},
     },
     agent: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.Mixed, // Allow object or ObjectId
       ref: "User",
     },
     statistics: {

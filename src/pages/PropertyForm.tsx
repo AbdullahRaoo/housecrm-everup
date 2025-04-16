@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Property } from '../types/property';
-import { useProperty } from '../context/PropertyContext';
-import { createStorageService, StorageKeys } from '../services/storage';
 import { BasicDetails } from '../components/forms/PropertyFormSteps/BasicDetails';
 import { Features } from '../components/forms/PropertyFormSteps/Features';
 import { Location } from '../components/forms/PropertyFormSteps/Location';
 import { Media } from '../components/forms/PropertyFormSteps/Media';
+import { useProperty } from '../context/PropertyContext';
+import { useAuth } from '../hooks/useAuth';
+import { Property } from '../types/property';
 
 function PropertyForm() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { addProperty, updateProperty } = useProperty();
+  const { addProperty, updateProperty, fetchProperties } = useProperty();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [, setIsLoading] = useState(true);
-  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
+  const [isLoading, setIsLoading] = useState(true);
+  const { token } = useAuth();
   const [initialized, setInitialized] = useState(false);
 
   const {
@@ -66,30 +66,47 @@ function PropertyForm() {
     }
   });
 
-  // Load existing property data
   useEffect(() => {
-    if (!id || initialized) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const property = propertyStorage.getById(id);
-      if (!property) {
-        navigate('/properties');
+    const loadProperty = async () => {
+      if (!id || !token || initialized) {
+        setIsLoading(false);
         return;
       }
 
-      reset(property);
-      setInitialized(true);
-    } catch (error) {
-      console.error('Error loading property:', error);
-      navigate('/properties');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id, propertyStorage, navigate, reset, initialized]);
+      try {
+        const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
+        if (!response.ok) {
+          throw new Error('Property not found');
+        }
+
+        const property = await response.json();
+
+        // Make sure images are properly formatted
+        if (property.media && property.media.photos) {
+          // Convert to the format expected by the Media component
+          property.media.images = property.media.photos.map((url: string) => ({
+            url,
+            public_id: url.split('/').pop() || url
+          }));
+        }
+
+        reset(property);
+        setInitialized(true);
+      } catch (error) {
+        console.error('Error loading property:', error);
+        navigate('/properties');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProperty();
+  }, [id, token, navigate, reset, initialized]);
 
   const mediaImages = watch('media.images');
 
@@ -107,17 +124,21 @@ function PropertyForm() {
     try {
       setIsSubmitting(true);
 
+      // Format the property data for the API
       const propertyData = {
         ...data,
         media: {
           ...data.media,
-          images: mediaImages || []
+          // Format correctly for the server - it expects photos not images
+          photos: Array.isArray(mediaImages)
+            ? mediaImages.map(img => typeof img === 'string' ? img : img.url)
+            : []
         },
         updatedAt: new Date().toISOString()
       };
 
       if (id) {
-        await updateProperty(propertyData as Property);
+        await updateProperty({ ...propertyData, id } as Property);
         alert('Property updated successfully!');
       } else {
         await addProperty({
@@ -127,6 +148,8 @@ function PropertyForm() {
         alert('Property created successfully!');
       }
 
+      // Refresh properties list to include the new/updated property
+      await fetchProperties();
       navigate('/properties');
     } catch (error) {
       console.error('Failed to save property:', error);
@@ -135,6 +158,7 @@ function PropertyForm() {
       setIsSubmitting(false);
     }
   };
+
   const validateStep = () => {
     switch (step) {
       case 1:
@@ -248,6 +272,14 @@ function PropertyForm() {
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-6 py-8 flex justify-center items-center">
+        <div className="w-12 h-12 border-4 border-t-[#e56e43] border-r-[#e56e43]/30 border-b-[#e56e43]/30 border-l-[#e56e43]/30 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-6 py-8">

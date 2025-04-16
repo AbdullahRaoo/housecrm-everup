@@ -25,10 +25,9 @@ const PropertyContext = createContext<{
   state: PropertyState;
   dispatch: React.Dispatch<PropertyAction>;
   fetchProperties: () => Promise<void>;
-  addProperty: (property: Omit<Property, 'id'>) => Promise<void>;
-  updateProperty: (property: Property) => Promise<void>;
+  addProperty: (property: Omit<Property, 'id'>) => Promise<Property | void>;
+  updateProperty: (property: Property) => Promise<Property | void>;
   deleteProperty: (id: string) => Promise<void>;
-  getProperty: (id: string) => Promise<void>;
 } | undefined>(undefined);
 
 const propertyReducer = (state: PropertyState, action: PropertyAction): PropertyState => {
@@ -90,24 +89,6 @@ export function PropertyProvider({ children }: { children: ReactNode }) {
     selectedProperty: null,
   });
 
-  // Initialize with data from database
-  useEffect(() => {
-    const initializeProperties = async () => {
-      if (!token) return;
-
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        const propertiesFromDB = await propertyApi.getProperties(token);
-        dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: propertiesFromDB });
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize properties from database' });
-      }
-    };
-
-    initializeProperties();
-  }, [token]);
-
   const fetchProperties = useCallback(async () => {
     if (!token) return;
 
@@ -117,38 +98,51 @@ export function PropertyProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'FETCH_PROPERTIES_SUCCESS', payload: properties });
     } catch (error) {
       console.error("Error fetching properties:", error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch properties from database' });
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch properties' });
     }
   }, [token]);
 
-  const addProperty = async (property: Omit<Property, 'id'>) => {
-    if (!token) return;
+  const addProperty = useCallback(async (property: Omit<Property, 'id'>) => {
+    if (!token) {
+      dispatch({ type: 'SET_ERROR', payload: 'Authentication required' });
+      return;
+    }
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const newProperty = await propertyApi.addProperty(property, token);
       dispatch({ type: 'ADD_PROPERTY', payload: newProperty });
+      return newProperty;
     } catch (error) {
       console.error("Error adding property:", error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to add property to database' });
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to add property' });
+      throw error;
     }
-  };
+  }, [token]);
 
-  const updateProperty = async (property: Property) => {
-    if (!token) return;
+  const updateProperty = useCallback(async (property: Property) => {
+    if (!token) {
+      dispatch({ type: 'SET_ERROR', payload: 'Authentication required' });
+      return;
+    }
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const updatedProperty = await propertyApi.updateProperty(property.id, property, token);
       dispatch({ type: 'UPDATE_PROPERTY', payload: updatedProperty });
+      return updatedProperty;
     } catch (error) {
       console.error("Error updating property:", error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to update property in database' });
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to update property' });
+      throw error;
     }
-  };
+  }, [token]);
 
-  const deleteProperty = async (id: string) => {
-    if (!token) return;
+  const deleteProperty = useCallback(async (id: string) => {
+    if (!token) {
+      dispatch({ type: 'SET_ERROR', payload: 'Authentication required' });
+      return;
+    }
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
@@ -156,26 +150,14 @@ export function PropertyProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'DELETE_PROPERTY', payload: id });
     } catch (error) {
       console.error("Error deleting property:", error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete property from database' });
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete property' });
+      throw error;
     }
-  };
+  }, [token]);
 
-  const getProperty = async (id: string) => {
-    if (!token) return;
-
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const property = await propertyApi.getProperty(id, token);
-      if (property) {
-        dispatch({ type: 'SET_SELECTED_PROPERTY', payload: property });
-      } else {
-        dispatch({ type: 'SET_ERROR', payload: 'Property not found in database' });
-      }
-    } catch (error) {
-      console.error("Error fetching property:", error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch property from database' });
-    }
-  };
+  useEffect(() => {
+    fetchProperties();
+  }, [fetchProperties]);
 
   return (
     <PropertyContext.Provider
@@ -185,8 +167,7 @@ export function PropertyProvider({ children }: { children: ReactNode }) {
         fetchProperties,
         addProperty,
         updateProperty,
-        deleteProperty,
-        getProperty
+        deleteProperty
       }}
     >
       {children}

@@ -37,13 +37,13 @@ function Properties() {
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
         await deleteProperty(id);
-        const updatedProperties = properties.filter(p => p.id !== id);
-        setFilteredProperties(updatedProperties);
       } catch (error) {
         console.error('Failed to delete property:', error);
+        alert('Failed to delete property. Please try again.');
       }
     }
   };
@@ -98,7 +98,7 @@ function Properties() {
           <div
             key={property.id}
             className="group relative bg-white rounded-lg shadow-md overflow-hidden
-          hover:shadow-lg transition-all duration-200"
+              hover:shadow-lg transition-all duration-200"
           >
             <div className="absolute top-4 right-4 space-x-2 opacity-0 group-hover:opacity-100
                 transition-opacity duration-200 z-10 flex">
@@ -136,6 +136,11 @@ function Properties() {
                   alt={property.title}
                   className="w-full h-48 object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/60">
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <span className="text-2xl font-bold">${property.price.toLocaleString()}</span>
+                  </div>
+                </div>
               </div>
 
               <div className="p-4">
@@ -203,43 +208,41 @@ function Properties() {
             </Link>
           </div>
         ))}
-      </div>
 
-      {filteredProperties.length === 0 && !loading && (
-        <div className="text-center py-12">
-          {properties.length === 0 ? (
-            <>
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No properties</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by creating a new property.</p>
-              <div className="mt-6">
-                <Link
-                  to="/properties/new"
-                  className="inline-flex items-center px-6 py-2.5 bg-[#e56e43] text-white rounded-lg
-                    hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium shadow-sm"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                  Add Property
-                </Link>
-              </div>
-            </>
-          ) : (
-            <>
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No matching properties</h3>
-              <p className="mt-1 text-sm text-gray-500">Try adjusting your search filters</p>
-            </>
-          )}
-        </div>
-      )}
+        {properties.length === 0 && (
+          <div className="col-span-3 text-center py-12">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No properties</h3>
+            <p className="mt-1 text-sm text-gray-500">Get started by creating a new property.</p>
+            <div className="mt-6">
+              <Link
+                to="/properties/new"
+                className="inline-flex items-center px-6 py-2.5 bg-[#e56e43] text-white rounded-lg
+                  hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium shadow-sm"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Property
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {filteredProperties.length === 0 && properties.length > 0 && !loading && (
+          <div className="col-span-3 text-center py-12">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No properties found</h3>
+            <p className="mt-1 text-sm text-gray-500">Try adjusting your search filters</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

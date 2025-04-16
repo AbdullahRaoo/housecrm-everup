@@ -1,13 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
-import { Property } from '../types/property';
-import { createStorageService, StorageKeys } from '../services/storage';
-import { PropertyMap } from '../components/PropertyMap';
-import { PropertyGallery } from '../components/PropertyGallery';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { DocumentManager } from '../components/DocumentManager';
-import { VisitScheduler } from '../components/VisitScheduler';
+import { PropertyGallery } from '../components/PropertyGallery';
+import { PropertyMap } from '../components/PropertyMap';
 import { PropertyStatistics } from '../components/PropertyStatistics';
+import { VisitScheduler } from '../components/VisitScheduler';
+import { useProperty } from '../context/PropertyContext';
+import { useAuth } from '../hooks/useAuth';
+import { Property } from '../types/property';
 
 type TabType = 'details' | 'features' | 'location' | 'documents';
 
@@ -22,6 +22,11 @@ interface Visit {
   notes?: string;
 }
 
+interface CloudinaryImage {
+  url: string;
+  public_id: string;
+}
+
 function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -30,35 +35,38 @@ function PropertyDetail() {
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
+  const { deleteProperty } = useProperty();
 
-  // Create storage service outside useEffect to avoid recreation
-  const propertyStorage = createStorageService<Property>(StorageKeys.PROPERTIES);
-
-  const fetchProperty = useCallback(() => {
-    if (!id) {
-      setError('Property ID is missing');
+  const fetchProperty = useCallback(async () => {
+    if (!id || !token) {
+      setError('Property ID or authentication is missing');
       setLoading(false);
       return;
     }
 
     try {
-      const foundProperty = propertyStorage.getById(id);
+      const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-      if (foundProperty) {
-        const updatedProperty = {
-          ...foundProperty,
-          statistics: {
-            ...foundProperty.statistics,
-            views: foundProperty.statistics.views + 1
-          }
-        };
-
-        propertyStorage.update(id, updatedProperty);
-        setProperty(updatedProperty);
-      } else {
-        setError('Property not found');
-        navigate('/properties');
+      if (!response.ok) {
+        throw new Error('Property not found');
       }
+
+      const data = await response.json();
+
+      // Normalize media images to CloudinaryImage format
+      if (data.media && data.media.photos) {
+        data.media.images = data.media.photos.map((url: string) => ({
+          url,
+          public_id: url.split('/').pop() || url
+        }));
+      }
+
+      setProperty(data);
     } catch (error) {
       setError('Error fetching property');
       console.error('Error fetching property:', error);
@@ -66,40 +74,92 @@ function PropertyDetail() {
     } finally {
       setLoading(false);
     }
-  }, [id, navigate]);
+  }, [id, token, navigate]);
 
   useEffect(() => {
     fetchProperty();
   }, [fetchProperty]);
 
+  const handleDelete = async () => {
+    if (!id || !property) return;
+
+    if (window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+      try {
+        // Use the deleteProperty function from context
+        await deleteProperty(id);
+        alert('Property deleted successfully!');
+        navigate('/properties');
+      } catch (error) {
+        console.error('Failed to delete property:', error);
+        alert('Failed to delete property. Please try again.');
+      }
+    }
+  };
+
+  const handleUpdateImages = useCallback((images: CloudinaryImage[]) => {
+    if (!property || !token || !id) return;
+
+    // Update the property with new images
+    setProperty(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        media: {
+          ...prev.media,
+          images,
+          photos: images.map(img => img.url)
+        }
+      };
+    });
+
+    // You could also save the updated images to the server here
+  }, [property, token, id]);
+
   const handleScheduleVisit = useCallback(async (visitData: Omit<Visit, 'id' | 'propertyId' | 'status'>) => {
-    if (!property || !id) return;
+    if (!property || !id || !token) return;
 
     try {
       const newVisit = {
         ...visitData,
-        id: crypto.randomUUID(),
-        clientId: crypto.randomUUID(),
+        propertyId: id,
         status: 'Scheduled' as const
       };
 
-      const updatedProperty = {
-        ...property,
-        visits: [...property.visits, newVisit],
-        statistics: {
-          ...property.statistics,
-          visits: property.statistics.visits + 1
-        }
-      };
+      const response = await fetch(`http://localhost:5001/api/visits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newVisit)
+      });
 
-      propertyStorage.update(id, updatedProperty);
-      setProperty(updatedProperty);
+      if (!response.ok) {
+        throw new Error('Failed to schedule visit');
+      }
+
+      const updatedVisit = await response.json();
+
+      // Update local property state with new visit
+      setProperty(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          visits: [...prev.visits, updatedVisit],
+          statistics: {
+            ...prev.statistics,
+            visits: prev.statistics.visits + 1
+          }
+        };
+      });
+
       setShowVisitModal(false);
+      alert('Visit scheduled successfully!');
     } catch (error) {
       console.error('Failed to schedule visit:', error);
       alert('Failed to schedule visit. Please try again.');
     }
-  }, [property, id]);
+  }, [property, id, token]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
@@ -176,7 +236,7 @@ function PropertyDetail() {
             <div>
               <h3 className="font-semibold text-gray-800 mb-4">Amenities</h3>
               <div className="grid grid-cols-2 gap-3">
-                {property.features.amenities.map((amenity) => (
+                {property.features.amenities?.map((amenity) => (
                   <div key={amenity} className="flex items-center">
                     <svg
                       className="w-4 h-4 text-[#e56e43] mr-2"
@@ -213,9 +273,9 @@ function PropertyDetail() {
             )}
           </div>
         );
-        
+
       case 'documents':
-        return <DocumentManager />;
+        return <DocumentManager propertyId={property.id} />;
 
       default:
         return null;
@@ -242,12 +302,23 @@ function PropertyDetail() {
           >
             Schedule Visit
           </button>
+          <button
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+          >
+            Delete Property
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2">
-          <PropertyGallery images={property.media.images} title={property.title} />
+          <PropertyGallery
+            images={property.media.images || []}
+            title={property.title}
+            editable={true}
+            onImagesChange={handleUpdateImages}
+          />
 
           <div className="bg-white rounded-lg shadow-md mt-6">
             <div className="flex border-b">
@@ -256,8 +327,8 @@ function PropertyDetail() {
                   key={tab}
                   onClick={() => handleTabChange(tab)}
                   className={`px-6 py-3 transition-colors duration-200 ${activeTab === tab
-                      ? 'border-b-2 border-[#e56e43] text-[#e56e43] font-medium'
-                      : 'text-gray-600 hover:text-gray-800'
+                    ? 'border-b-2 border-[#e56e43] text-[#e56e43] font-medium'
+                    : 'text-gray-600 hover:text-gray-800'
                     }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -275,10 +346,10 @@ function PropertyDetail() {
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Status</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${property.status === 'Available'
-                    ? 'bg-[#e56e43]/10 text-[#e56e43]'
-                    : property.status === 'Sold'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                  ? 'bg-[#e56e43]/10 text-[#e56e43]'
+                  : property.status === 'Sold'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800'
                   }`}>
                   {property.status}
                 </span>
@@ -301,15 +372,15 @@ function PropertyDetail() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Name</span>
-                <span className="font-medium text-gray-800">{property.owner.name}</span>
+                <span className="font-medium text-gray-800">{property.owner?.name || 'Not specified'}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Email</span>
-                <span className="font-medium text-gray-800">{property.owner.email}</span>
+                <span className="font-medium text-gray-800">{property.owner?.email || 'Not specified'}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Phone</span>
-                <span className="font-medium text-gray-800">{property.owner.phone}</span>
+                <span className="font-medium text-gray-800">{property.owner?.phone || 'Not specified'}</span>
               </div>
             </div>
           </div>

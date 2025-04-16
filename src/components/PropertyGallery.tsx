@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { mediaApi } from '../services/api';
 
@@ -23,19 +23,35 @@ export function PropertyGallery({
   const [activeImage, setActiveImage] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { token } = useAuth();
 
   // Convert old string array format to CloudinaryImage format if needed
-  const normalizedImages: CloudinaryImage[] = images.map((img) => {
-    if (typeof img === 'string') {
-      return {
-        url: img,
-        public_id: img.split('/').pop() || img
-      };
-    }
-    return img as CloudinaryImage;
-  });
+  const normalizeImages = useCallback((imageArray: CloudinaryImage[] | string[]) => {
+    return imageArray.map((img) => {
+      if (typeof img === 'string') {
+        // Extract public_id from URL
+        const urlParts = img.split('/');
+        const fileName = urlParts.pop() || '';
+        const folder = urlParts[urlParts.length - 1] || '';
+
+        return {
+          url: img,
+          public_id: folder && fileName ? `${folder}/${fileName.split('.')[0]}` : fileName
+        };
+      }
+      return img as CloudinaryImage;
+    });
+  }, []);
+
+  const [normalizedImages, setNormalizedImages] = useState<CloudinaryImage[]>([]);
+
+  // Initialize and update normalized images
+  useEffect(() => {
+    const normalized = normalizeImages(images);
+    setNormalizedImages(normalized);
+  }, [images, normalizeImages]);
 
   // Reset active image when images change
   useEffect(() => {
@@ -72,6 +88,7 @@ export function PropertyGallery({
 
       // Update images list with new uploads
       const updatedImages = [...normalizedImages, ...uploadedImages];
+      setNormalizedImages(updatedImages);
 
       // Notify parent component of changes
       if (onImagesChange) {
@@ -94,7 +111,7 @@ export function PropertyGallery({
   };
 
   const handleRemoveImage = async (index: number) => {
-    if (!token) return;
+    if (!token || isDeleting) return;
 
     const imageToRemove = normalizedImages[index];
 
@@ -104,14 +121,29 @@ export function PropertyGallery({
     }
 
     try {
+      setIsDeleting(true);
+
+      // Extract the proper public_id if needed
+      let publicId = imageToRemove.public_id;
+      if (imageToRemove.public_id && !imageToRemove.public_id.includes('/')) {
+        // Try to extract from URL if the public_id doesn't contain a folder path
+        const urlParts = imageToRemove.url.split('/');
+        const fileName = urlParts.pop() || '';
+        const folder = urlParts[urlParts.length - 1];
+        if (folder && fileName) {
+          publicId = `${folder}/${fileName.split('.')[0]}`;
+        }
+      }
+
       // Only attempt to delete if we have a public_id
-      if (imageToRemove.public_id && imageToRemove.public_id.includes('/')) {
-        await mediaApi.deleteImage(imageToRemove.public_id, token);
+      if (publicId) {
+        await mediaApi.deleteImage(publicId, token);
       }
 
       // Update the images array
       const updatedImages = [...normalizedImages];
       updatedImages.splice(index, 1);
+      setNormalizedImages(updatedImages);
 
       // Notify parent component of changes
       if (onImagesChange) {
@@ -125,6 +157,8 @@ export function PropertyGallery({
     } catch (error) {
       console.error('Error removing image:', error);
       alert('Failed to remove image. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -175,14 +209,19 @@ export function PropertyGallery({
         {editable && normalizedImages.length > 0 && (
           <button
             onClick={() => handleRemoveImage(activeImage)}
+            disabled={isDeleting || isUploading}
             className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full
               opacity-0 group-hover:opacity-100 transition-opacity duration-200
-              hover:bg-red-600"
+              hover:bg-red-600 disabled:bg-gray-400"
             aria-label="Remove image"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            {isDeleting ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            )}
           </button>
         )}
 
@@ -224,24 +263,29 @@ export function PropertyGallery({
 
         {editable && (
           <div
-            className="flex items-center justify-center h-20 rounded-lg border-2 border-dashed border-gray-300
-              cursor-pointer hover:border-[#e56e43] transition-colors duration-200"
-            onClick={handleUploadClick}
+            className={`flex items-center justify-center h-20 rounded-lg border-2 border-dashed border-gray-300
+              cursor-pointer hover:border-[#e56e43] transition-colors duration-200
+              ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={isUploading ? undefined : handleUploadClick}
           >
             <div className="text-center">
-              <svg
-                className="w-8 h-8 mx-auto text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+              {isUploading ? (
+                <div className="w-6 h-6 border-2 border-t-[#e56e43] border-r-[#e56e43]/30 border-b-[#e56e43]/30 border-l-[#e56e43]/30 rounded-full animate-spin mx-auto"></div>
+              ) : (
+                <svg
+                  className="w-8 h-8 mx-auto text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              )}
             </div>
             <input
               ref={fileInputRef}
@@ -250,6 +294,7 @@ export function PropertyGallery({
               accept="image/*"
               className="hidden"
               onChange={handleFileChange}
+              disabled={isUploading}
             />
           </div>
         )}
