@@ -17,6 +17,28 @@ function Properties() {
     setFilteredProperties(properties);
   }, [properties]);
 
+  // Helper function to get the first image URL from property media
+  const getPropertyImageUrl = (property: Property): string => {
+    if (!property.media) return 'https://via.placeholder.com/400x300';
+
+    if (property.media.images && property.media.images.length > 0) {
+      // Handle both string and object formats
+      const firstImage = property.media.images[0];
+      if (typeof firstImage === 'string') {
+        return firstImage;
+      } else if (firstImage && typeof firstImage === 'object' && 'url' in firstImage) {
+        return firstImage.url;
+      }
+    }
+
+    // Fallback to photos array if available
+    if (property.media.photos && property.media.photos.length > 0) {
+      return property.media.photos[0];
+    }
+
+    return 'https://via.placeholder.com/400x300';
+  };
+
   const handleSearch = (filters: PropertyFilters) => {
     const filtered = properties.filter(property => {
       const matchesQuery = property.title.toLowerCase().includes(filters.query.toLowerCase()) ||
@@ -96,7 +118,7 @@ function Properties() {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProperties.map((property) => (
           <div
-            key={property.id}
+            key={property._id || property.id}
             className="group relative bg-white rounded-lg shadow-md overflow-hidden
               hover:shadow-lg transition-all duration-200"
           >
@@ -125,14 +147,12 @@ function Properties() {
               </button>
             </div>
             <Link
-              to={`/properties/${property.id}`}
+              to={`/properties/${property._id || property.id}`}
               className="block"
             >
               <div className="relative">
                 <img
-                  src={(property.media && property.media.images && property.media.images.length > 0)
-                    ? property.media.images[0]
-                    : 'https://via.placeholder.com/400x300'}
+                  src={getPropertyImageUrl(property)}
                   alt={property.title}
                   className="w-full h-48 object-cover"
                 />
@@ -157,13 +177,6 @@ function Properties() {
                     }`}>
                     {property.status}
                   </span>
-                </div>
-
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-2xl font-bold text-gray-800">
-                    ${property.price.toLocaleString()}
-                  </span>
-                  <span className="text-sm text-[#e56e43] font-medium">{property.type}</span>
                 </div>
 
                 <div className="mt-4 flex items-center justify-between text-gray-600 text-sm">

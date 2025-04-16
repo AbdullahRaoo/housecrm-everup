@@ -1,7 +1,15 @@
 export interface Property {
   id: string;
+  _id?: string; // Adding support for MongoDB's _id format
   title: string;
-  propertyType: "Apartment" | "House" | "Villa" | "Office" | "Commercial" | "Land" | "Industrial";
+  propertyType:
+    | "Apartment"
+    | "House"
+    | "Villa"
+    | "Office"
+    | "Commercial"
+    | "Land"
+    | "Industrial";
   type: "Sale" | "Rent";
   price: number;
   status: "Available" | "Sold" | "Reserved";
@@ -20,7 +28,8 @@ export interface Property {
     amenities: string[];
   };
   media: {
-    images: string[];
+    images: string[] | CloudinaryImage[];
+    photos?: string[]; // Adding support for the photos field used in the API response
     videos: string[];
     virtualTour?: string;
   };
@@ -53,4 +62,10 @@ export interface Property {
   }[];
   createdAt: string;
   updatedAt: string;
+}
+
+// Define the CloudinaryImage interface at the type level for reuse
+export interface CloudinaryImage {
+  url: string;
+  public_id: string;
 }

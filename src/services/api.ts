@@ -288,50 +288,95 @@ export const customerApi = {
 export const propertyApi = {
   // Get all properties
   getProperties: async (token: string): Promise<any[]> => {
-    const response = await fetch(`${API_URL}/properties`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_URL}/properties`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch properties: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Properties fetch error response:", errorText);
+        throw new Error(`Failed to fetch properties: ${response.status}`);
+      }
+
+      const properties = await response.json();
+
+      // Ensure each property has an id (use _id as fallback)
+      return properties.map((property: any) => ({
+        ...property,
+        id: property.id || property._id,
+      }));
+    } catch (error) {
+      console.error("Error in getProperties:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Get a single property
   getProperty: async (id: string, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/properties/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (!id) {
+        throw new Error("Property ID is required");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch property: ${response.status}`);
+      console.log(`Fetching property with ID: ${id}`);
+
+      const response = await fetch(`${API_URL}/properties/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Property fetch error response:", errorText);
+        throw new Error(`Failed to fetch property: ${response.status}`);
+      }
+
+      const property = await response.json();
+
+      // Ensure property has an id (use _id as fallback)
+      return {
+        ...property,
+        id: property.id || property._id,
+      };
+    } catch (error) {
+      console.error("Error in getProperty:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Add a new property
   addProperty: async (propertyData: any, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/properties`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(propertyData),
-    });
+    try {
+      const response = await fetch(`${API_URL}/properties`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(propertyData),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to add property: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Property add error response:", errorText);
+        throw new Error(`Failed to add property: ${response.status}`);
+      }
+
+      const property = await response.json();
+
+      // Ensure property has an id (use _id as fallback)
+      return {
+        ...property,
+        id: property.id || property._id,
+      };
+    } catch (error) {
+      console.error("Error in addProperty:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Update an existing property
@@ -340,33 +385,73 @@ export const propertyApi = {
     propertyData: any,
     token: string
   ): Promise<any> => {
-    const response = await fetch(`${API_URL}/properties/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(propertyData),
-    });
+    try {
+      if (!id) {
+        throw new Error("Property ID is required for updating");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to update property: ${response.status}`);
+      console.log(`Updating property with ID: ${id}`);
+
+      // Clean up any _id fields that might cause problems with MongoDB
+      const cleanData = { ...propertyData };
+      if (cleanData._id) {
+        delete cleanData._id;
+      }
+
+      const response = await fetch(`${API_URL}/properties/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cleanData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Property update error response:", errorText);
+        throw new Error(`Failed to update property: ${response.status}`);
+      }
+
+      const property = await response.json();
+
+      // Ensure property has an id (use _id as fallback)
+      return {
+        ...property,
+        id: property.id || property._id,
+      };
+    } catch (error) {
+      console.error("Error in updateProperty:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Delete a property
   deleteProperty: async (id: string, token: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/properties/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (!id) {
+        throw new Error("Property ID is required for deletion");
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete property: ${response.status}`);
+      console.log(`Deleting property with ID: ${id}`);
+
+      const response = await fetch(`${API_URL}/properties/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Property deletion error response:", errorText);
+        throw new Error(`Failed to delete property: ${response.status}`);
+      }
+
+      console.log(`Successfully deleted property with ID: ${id}`);
+    } catch (error) {
+      console.error("Error in deleteProperty:", error);
+      throw error;
     }
   },
 };

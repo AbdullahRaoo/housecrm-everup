@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DocumentManager } from '../components/DocumentManager';
@@ -7,7 +8,7 @@ import { PropertyStatistics } from '../components/PropertyStatistics';
 import { VisitScheduler } from '../components/VisitScheduler';
 import { useProperty } from '../context/PropertyContext';
 import { useAuth } from '../hooks/useAuth';
-import { Property } from '../types/property';
+import { CloudinaryImage, Property } from '../types/property';
 
 type TabType = 'details' | 'features' | 'location' | 'documents';
 
@@ -22,13 +23,8 @@ interface Visit {
   notes?: string;
 }
 
-interface CloudinaryImage {
-  url: string;
-  public_id: string;
-}
-
 function PropertyDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [property, setProperty] = useState<Property | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('details');
@@ -40,12 +36,14 @@ function PropertyDetail() {
 
   const fetchProperty = useCallback(async () => {
     if (!id || !token) {
+      console.error('Missing property ID or auth token:', { id, hasToken: !!token });
       setError('Property ID or authentication is missing');
       setLoading(false);
       return;
     }
 
     try {
+      console.log(`Fetching property with ID: ${id}`);
       const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -53,28 +51,49 @@ function PropertyDetail() {
       });
 
       if (!response.ok) {
-        throw new Error('Property not found');
+        throw new Error(`Property not found (Status: ${response.status})`);
       }
 
       const data = await response.json();
 
-      // Normalize media images to CloudinaryImage format
-      if (data.media && data.media.photos) {
-        data.media.images = data.media.photos.map((url: string) => ({
-          url,
-          public_id: url.split('/').pop() || url
-        }));
+      // Add client-side id if needed
+      if (data._id && !data.id) {
+        data.id = data._id;
       }
 
-      setProperty(data);
-    } catch (error) {
-      setError('Error fetching property');
+      // Normalize media images to CloudinaryImage format and ensure it matches Property type
+      if (data.media) {
+        // Ensure images array exists
+        if (!data.media.images) {
+          data.media.images = [];
+        }
+
+        // Convert photos to CloudinaryImage objects if not already
+        if (data.media.photos && data.media.photos.length > 0) {
+          // Only convert if images array is empty
+          if (data.media.images.length === 0) {
+            data.media.images = data.media.photos.map((url: string) => ({
+              url,
+              public_id: url.split('/').pop() || url
+            }));
+          }
+        }
+
+        // Ensure videos array exists
+        if (!data.media.videos) {
+          data.media.videos = [];
+        }
+      }
+
+      // TypeScript cast to tell TypeScript this object conforms to Property type
+      setProperty(data as Property);
+    } catch (error: any) {
       console.error('Error fetching property:', error);
-      navigate('/properties');
+      setError(`Error fetching property: ${error.message}`);
     } finally {
       setLoading(false);
     }
-  }, [id, token, navigate]);
+  }, [id, token]);
 
   useEffect(() => {
     fetchProperty();
@@ -85,6 +104,7 @@ function PropertyDetail() {
 
     if (window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
       try {
+        console.log(`Deleting property with ID: ${id}`);
         // Use the deleteProperty function from context
         await deleteProperty(id);
         alert('Property deleted successfully!');
@@ -102,14 +122,18 @@ function PropertyDetail() {
     // Update the property with new images
     setProperty(prev => {
       if (!prev) return null;
-      return {
+
+      // Create a new property object with updated media
+      const updatedProperty: Property = {
         ...prev,
         media: {
           ...prev.media,
-          images,
+          images: images as any, // Type assertion to avoid TypeScript errors
           photos: images.map(img => img.url)
         }
       };
+
+      return updatedProperty;
     });
 
     // You could also save the updated images to the server here
