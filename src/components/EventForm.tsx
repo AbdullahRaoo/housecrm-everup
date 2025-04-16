@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarEvent, EventType } from '../types/calendar';
 
 interface EventFormProps {
@@ -8,21 +8,128 @@ interface EventFormProps {
 }
 
 export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
+  // Format a date string or Date object to the format required by datetime-local input
+  const formatDateForInput = (dateStr?: string | Date): string => {
+    if (!dateStr) return '';
+
+    const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+
+    // Check if it's a valid date
+    if (isNaN(date.getTime())) return '';
+
+    // Format to YYYY-MM-DDThh:mm
+    return date.toISOString().slice(0, 16);
+  };
+
+  // Generate default end time (1 hour after start time)
+  const getDefaultEndTime = (): Date => {
+    const defaultEnd = new Date();
+    defaultEnd.setHours(defaultEnd.getHours() + 1);
+    return defaultEnd;
+  };
+
   const [formData, setFormData] = useState<Omit<CalendarEvent, 'id'>>({
     title: event?.title || '',
     type: event?.type || 'Task',
-    start: event?.start || '',
-    end: event?.end || '',
+    start: event?.start || new Date().toISOString(),
+    end: event?.end || getDefaultEndTime().toISOString(),
     description: event?.description || '',
-    propertyId: event?.propertyId || '',
-    customerId: event?.customerId || '',
+    propertyId: event?.propertyId || null,
+    customerId: event?.customerId || null,
     status: event?.status || 'Pending',
     deadline: event?.deadline || '',
     isGoogleCalendarSync: event?.isGoogleCalendarSync || false
   });
 
+  // Format the dates for display in the form inputs
+  const [startDateInput, setStartDateInput] = useState(formatDateForInput(event?.start || new Date()));
+  const [endDateInput, setEndDateInput] = useState(formatDateForInput(event?.end || getDefaultEndTime()));
+
+  // Update the form when the selected event changes
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title || '',
+        type: event.type || 'Task',
+        start: event.start || new Date().toISOString(),
+        end: event.end || getDefaultEndTime().toISOString(),
+        description: event.description || '',
+        propertyId: event.propertyId || null,
+        customerId: event.customerId || null,
+        status: event.status || 'Pending',
+        deadline: event.deadline || '',
+        isGoogleCalendarSync: event.isGoogleCalendarSync || false
+      });
+
+      setStartDateInput(formatDateForInput(event.start));
+      setEndDateInput(formatDateForInput(event.end));
+    } else {
+      // New event - set default values
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(end.getHours() + 1);
+
+      setFormData({
+        title: '',
+        type: 'Task',
+        start: now.toISOString(),
+        end: end.toISOString(),
+        description: '',
+        propertyId: null,
+        customerId: null,
+        status: 'Pending',
+        deadline: '',
+        isGoogleCalendarSync: false
+      });
+
+      setStartDateInput(formatDateForInput(now));
+      setEndDateInput(formatDateForInput(end));
+    }
+  }, [event]);
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateValue = e.target.value;
+    setStartDateInput(dateValue);
+
+    if (dateValue) {
+      // Convert local datetime-local value to ISO string
+      const date = new Date(dateValue);
+      setFormData(prev => ({ ...prev, start: date.toISOString() }));
+
+      // If end date is before start date, update end date
+      const endDate = new Date(formData.end);
+      if (endDate < date) {
+        const newEndDate = new Date(date);
+        newEndDate.setHours(date.getHours() + 1);
+        setEndDateInput(formatDateForInput(newEndDate));
+        setFormData(prev => ({ ...prev, end: newEndDate.toISOString() }));
+      }
+    }
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateValue = e.target.value;
+    setEndDateInput(dateValue);
+
+    if (dateValue) {
+      // Convert local datetime-local value to ISO string
+      const date = new Date(dateValue);
+      setFormData(prev => ({ ...prev, end: date.toISOString() }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate that end date is after start date
+    const startDate = new Date(formData.start);
+    const endDate = new Date(formData.end);
+
+    if (endDate <= startDate) {
+      alert('End time must be after start time');
+      return;
+    }
+
     onSubmit(formData);
   };
 
@@ -32,82 +139,92 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   placeholder-gray-400 shadow-sm`;
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-      <h2 className="text-xl font-semibold text-[#e56e43] mb-4">
-        {event ? 'Edit Event' : 'Add Event'}
-      </h2>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Title</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          className={inputClasses}
+          required
+          placeholder="Event title"
+        />
+      </div>
 
-      <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
+        <select
+          value={formData.type}
+          onChange={e => setFormData(prev => ({ ...prev, type: e.target.value as EventType }))}
+          className={`${inputClasses} appearance-none cursor-pointer`}
+        >
+          <option value="Visit">Visit</option>
+          <option value="Call">Call</option>
+          <option value="Email">Email</option>
+          <option value="Task">Task</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Title</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Start</label>
           <input
-            type="text"
-            value={formData.title}
-            onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            type="datetime-local"
+            value={startDateInput}
+            onChange={handleStartDateChange}
             className={inputClasses}
             required
           />
         </div>
-
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
-          <select
-            value={formData.type}
-            onChange={e => setFormData(prev => ({ ...prev, type: e.target.value as EventType }))}
-            className={`${inputClasses} appearance-none cursor-pointer`}
-          >
-            <option value="Visit">Visit</option>
-            <option value="Call">Call</option>
-            <option value="Email">Email</option>
-            <option value="Task">Task</option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Start</label>
-            <input
-              type="datetime-local"
-              value={formData.start}
-              onChange={e => setFormData(prev => ({ ...prev, start: e.target.value }))}
-              className={inputClasses}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">End</label>
-            <input
-              type="datetime-local"
-              value={formData.end}
-              onChange={e => setFormData(prev => ({ ...prev, end: e.target.value }))}
-              className={inputClasses}
-              required
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Description</label>
-          <textarea
-            value={formData.description}
-            onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            className={`${inputClasses} resize-none`}
-            rows={3}
-          />
-        </div>
-
-        <div className="flex items-center">
+          <label className="block text-sm font-semibold text-gray-800 mb-2">End</label>
           <input
-            type="checkbox"
-            checked={formData.isGoogleCalendarSync}
-            onChange={e => setFormData(prev => ({ ...prev, isGoogleCalendarSync: e.target.checked }))}
-            className="w-4 h-4 rounded border-gray-300 text-[#e56e43]
-            focus:ring-[#e56e43] focus:ring-offset-0"
+            type="datetime-local"
+            value={endDateInput}
+            onChange={handleEndDateChange}
+            className={inputClasses}
+            required
           />
-          <label className="ml-2 text-sm text-gray-700">
-            Sync with Google Calendar
-          </label>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
+        <select
+          value={formData.status}
+          onChange={e => setFormData(prev => ({ ...prev, status: e.target.value }))}
+          className={`${inputClasses} appearance-none cursor-pointer`}
+        >
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Description</label>
+        <textarea
+          value={formData.description || ''}
+          onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          className={`${inputClasses} resize-none`}
+          rows={3}
+          placeholder="Add description or notes"
+        />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          checked={formData.isGoogleCalendarSync}
+          onChange={e => setFormData(prev => ({ ...prev, isGoogleCalendarSync: e.target.checked }))}
+          className="w-4 h-4 rounded border-gray-300 text-[#e56e43]
+          focus:ring-[#e56e43] focus:ring-offset-0"
+          id="googleSync"
+        />
+        <label htmlFor="googleSync" className="ml-2 text-sm text-gray-700 select-none">
+          Sync with Google Calendar
+        </label>
       </div>
 
       <div className="mt-6 flex justify-end gap-2">

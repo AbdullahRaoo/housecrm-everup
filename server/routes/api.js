@@ -230,7 +230,19 @@ router.get("/calendar", authenticateToken, async (req, res) => {
 // POST /api/calendar - Create a new calendar event
 router.post("/calendar", authenticateToken, async (req, res) => {
   try {
-    const newEvent = new Event(req.body);
+    // Process the request body to handle empty values for ObjectId fields
+    const eventData = { ...req.body };
+
+    // Convert empty strings to null for ObjectId fields
+    if (eventData.propertyId === "") {
+      eventData.propertyId = null;
+    }
+
+    if (eventData.customerId === "") {
+      eventData.customerId = null;
+    }
+
+    const newEvent = new Event(eventData);
     const savedEvent = await newEvent.save();
     res.status(201).json(savedEvent);
   } catch (error) {
@@ -256,9 +268,21 @@ router.get("/calendar/:id", authenticateToken, async (req, res) => {
 // PUT /api/calendar/:id - Update a specific calendar event
 router.put("/calendar/:id", authenticateToken, async (req, res) => {
   try {
+    // Process the request body to handle empty values for ObjectId fields
+    const eventData = { ...req.body };
+
+    // Convert empty strings to null for ObjectId fields
+    if (eventData.propertyId === "") {
+      eventData.propertyId = null;
+    }
+
+    if (eventData.customerId === "") {
+      eventData.customerId = null;
+    }
+
     const updatedEvent = await Event.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      eventData,
       { new: true }
     );
     if (!updatedEvent) {

@@ -4,7 +4,6 @@ import { Calendar } from '../components/Calendar';
 import { EventForm } from '../components/EventForm';
 import { useAuth } from '../hooks/useAuth';
 import { calendarApi } from '../services/api'; // Import API service
-import { createStorageService, StorageKeys } from '../services/storage';
 import { CalendarEvent, EventType } from '../types/calendar';
 
 function CalendarPage() {
@@ -13,60 +12,39 @@ function CalendarPage() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [filterType, setFilterType] = useState<EventType | 'All'>('All');
   const [isExporting, setIsExporting] = useState(false);
-  const { user } = useAuth();
-
-  const eventStorage = createStorageService<CalendarEvent>(StorageKeys.EVENTS);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const storedEvents = await eventStorage.getAll();
-        if (Array.isArray(storedEvents) && storedEvents.length > 0) {
-          setEvents(storedEvents);
-        } else {
-          // Add some mock events if none exist
-          const mockEvents: Omit<CalendarEvent, 'id'>[] = [
-            {
-              title: 'Property Viewing',
-              type: 'Visit',
-              start: new Date(2024, 1, 15, 10, 0).toISOString(),
-              end: new Date(2024, 1, 15, 11, 0).toISOString(),
-              description: 'Show luxury apartment to potential client',
-              status: 'Pending',
-              propertyId: '1',
-              isGoogleCalendarSync: true
-            },
-            {
-              title: 'Client Call',
-              type: 'Call',
-              start: new Date(2024, 1, 15, 14, 0).toISOString(),
-              end: new Date(2024, 1, 15, 14, 30).toISOString(),
-              description: 'Follow up on property inquiry',
-              status: 'Pending',
-              customerId: '1',
-              isGoogleCalendarSync: false
-            }
-          ];
-
-          for (const event of mockEvents) {
-            await eventStorage.add(event);
-          }
-
-          setEvents(mockEvents.map(event => ({
-            ...event,
-            id: Math.random().toString(36).substring(2, 9)
-          })));
-        }
-      } catch (error) {
-        console.error('Error loading events:', error);
-        setEvents([]); // Fallback to an empty array in case of error
-      }
-    };
-
     loadEvents();
-  }, []);
+  }, [token]);
 
-  const handleAddEvent = () => {
+  // Load events from API
+  const loadEvents = async () => {
+    if (!token) return;
+
+    try {
+      setIsLoading(true);
+      const fetchedEvents = await calendarApi.getEvents(token);
+      // Transform MongoDB _id to id if needed
+      const formattedEvents = fetchedEvents.map(event => ({
+        ...event,
+        id: event.id || event._id
+      }));
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddEvent = (date?: Date) => {
+    const defaultDate = date || new Date();
+    const endDate = new Date(defaultDate);
+    endDate.setHours(endDate.getHours() + 1);
+
+    // Create an empty event with default values
     setSelectedEvent(null);
     setShowEventModal(true);
   };
@@ -77,18 +55,24 @@ function CalendarPage() {
   };
 
   const handleEventSubmit = async (eventData: Omit<CalendarEvent, 'id'>) => {
+    if (!token) {
+      alert('You must be logged in to save events');
+      return;
+    }
+
     try {
       if (selectedEvent) {
         // Update existing event
-        const updatedEvent = await eventStorage.update(selectedEvent.id, {
-          ...eventData,
-          id: selectedEvent.id
-        });
-        setEvents(prev => prev.map(e => e.id === selectedEvent.id ? updatedEvent : e));
+        const updatedEvent = await calendarApi.updateEvent(
+          selectedEvent.id,
+          eventData,
+          token
+        );
+        setEvents(prev => prev.map(e => e.id === selectedEvent.id ? { ...updatedEvent, id: updatedEvent.id || updatedEvent._id } : e));
       } else {
         // Add new event
-        const newEvent = await eventStorage.add(eventData);
-        setEvents(prev => [...prev, newEvent]);
+        const newEvent = await calendarApi.addEvent(eventData, token);
+        setEvents(prev => [...prev, { ...newEvent, id: newEvent.id || newEvent._id }]);
       }
       setShowEventModal(false);
       setSelectedEvent(null);
@@ -99,9 +83,14 @@ function CalendarPage() {
   };
 
   const handleEventDelete = async (eventId: string) => {
+    if (!token) {
+      alert('You must be logged in to delete events');
+      return;
+    }
+
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
-        await eventStorage.delete(eventId);
+        await calendarApi.deleteEvent(eventId, token);
         setEvents(prev => prev.filter(e => e.id !== eventId));
         setShowEventModal(false);
         setSelectedEvent(null);
@@ -122,8 +111,9 @@ function CalendarPage() {
     try {
       setIsExporting(true);
 
-      // In a production app, you would get the token from your auth system
-      const token = 'admin-token'; // Mock admin token
+      if (!token) {
+        throw new Error('Authentication token required');
+      }
 
       // Get the blob using our API service
       let blob: Blob;
@@ -217,7 +207,7 @@ function CalendarPage() {
             <option value="Task">Tasks</option>
           </select>
           <button
-            onClick={handleAddEvent}
+            onClick={() => handleAddEvent()}
             className="bg-[#e56e43] text-white px-6 py-2 rounded-lg
               hover:bg-[#e56e43]/90 transition-colors duration-200
               font-medium shadow-sm flex items-center gap-2"
@@ -230,11 +220,17 @@ function CalendarPage() {
         </div>
       </div>
 
-      <Calendar
-        events={filteredEvents}
-        onEventClick={handleEventClick}
-        onAddEvent={handleAddEvent}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="w-12 h-12 border-4 border-t-[#e56e43] border-r-[#e56e43]/30 border-b-[#e56e43]/30 border-l-[#e56e43]/30 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <Calendar
+          events={filteredEvents}
+          onEventClick={handleEventClick}
+          onAddEvent={handleAddEvent}
+        />
+      )}
 
       {showEventModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

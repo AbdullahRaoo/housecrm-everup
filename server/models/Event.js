@@ -27,10 +27,12 @@ const eventSchema = new mongoose.Schema(
     propertyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Property",
+      default: null,
     },
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
+      default: null,
     },
     status: {
       type: String,
