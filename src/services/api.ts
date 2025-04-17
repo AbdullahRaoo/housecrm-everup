@@ -646,6 +646,11 @@ export const opportunityApi = {
   // Get single opportunity
   getOpportunity: async (id: string, token: string): Promise<any> => {
     try {
+      // Validate the ID before sending to server
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        throw new Error("Invalid opportunity ID format");
+      }
+
       const response = await fetch(`${API_URL}/opportunities/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -653,7 +658,23 @@ export const opportunityApi = {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch opportunity: ${response.status}`);
+        const errorText = await response.text();
+        let errorMessage = `HTTP error: ${response.status}`;
+
+        try {
+          // Try to parse error as JSON
+          const errorData = JSON.parse(errorText);
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          // If parsing fails, use the raw text
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       return response.json();

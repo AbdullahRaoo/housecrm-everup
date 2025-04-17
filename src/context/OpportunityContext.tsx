@@ -190,22 +190,22 @@ export function OpportunityProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const getOpportunity = async (id: string) => {
+  const getOpportunity = useCallback(async (id: string) => {
     if (!token) return;
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const opportunity = await opportunityApi.getOpportunity(id, token);
-      if (opportunity) {
-        dispatch({ type: 'SET_SELECTED_OPPORTUNITY', payload: opportunity });
-      } else {
-        dispatch({ type: 'SET_ERROR', payload: 'Opportunity not found in database' });
-      }
+      dispatch({ type: 'SET_SELECTED_OPPORTUNITY', payload: opportunity });
+      return opportunity;
     } catch (error) {
       console.error("Error fetching opportunity:", error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch opportunity from database' });
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [token]);
 
   return (
     <OpportunityContext.Provider

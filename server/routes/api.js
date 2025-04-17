@@ -1084,17 +1084,28 @@ router.get(
 // Get single opportunity by ID
 router.get("/opportunities/:id", authenticateToken, async (req, res) => {
   try {
+    // Validate the ID format to prevent invalid ObjectId errors
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ error: "Invalid opportunity ID format" });
+    }
+
+    // Use lean() for better performance when you don't need a full Mongoose document
     const opportunity = await Opportunity.findById(req.params.id)
+      .lean()
       .populate("customerId", "name email phone")
       .populate("propertyId", "title price location.address media");
 
     if (!opportunity) {
       return res.status(404).json({ error: "Opportunity not found" });
     }
+
+    // Return a successful response
     res.json(opportunity);
   } catch (error) {
     console.error("Error fetching opportunity:", error);
-    res.status(500).json({ error: "Failed to fetch opportunity" });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch opportunity", message: error.message });
   }
 });
 

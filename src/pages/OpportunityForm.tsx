@@ -19,6 +19,7 @@ function OpportunityForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<Opportunity>({
     title: '',
@@ -51,34 +52,35 @@ function OpportunityForm() {
     }
   }, [token, fetchCustomers, fetchProperties]);
 
+  // Load opportunity data in edit mode
   useEffect(() => {
     const loadOpportunity = async () => {
       if (id && token) {
         try {
-          await getOpportunity(id);
+          setIsLoading(true);
+          const opportunity = await getOpportunity(id);
+          if (opportunity) {
+            setFormData({
+              ...opportunity,
+              id: opportunity.id || opportunity._id, // Ensure the ID is set
+              validUntil: opportunity.validUntil ?
+                new Date(opportunity.validUntil).toISOString().split('T')[0] :
+                new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split('T')[0]
+            });
+          }
         } catch (error) {
           console.error('Failed to load opportunity:', error);
-          setError('Failed to load opportunity. Please try again.');
+          setError(error instanceof Error ? error.message : 'Failed to load opportunity data');
+        } finally {
+          setIsLoading(false);
         }
       }
     };
 
-    loadOpportunity();
-  }, [id, token, getOpportunity]);
-
-  useEffect(() => {
-    if (selectedOpportunity && isEditing) {
-      // Format date for HTML date input
-      const formattedValidUntil = selectedOpportunity.validUntil
-        ? new Date(selectedOpportunity.validUntil).toISOString().split('T')[0]
-        : '';
-
-      setFormData({
-        ...selectedOpportunity,
-        validUntil: formattedValidUntil,
-      });
+    if (isEditing) {
+      loadOpportunity();
     }
-  }, [selectedOpportunity, isEditing]);
+  }, [id, isEditing, token]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -15,7 +15,7 @@ interface FilterState {
 
 function Opportunities() {
   const { token } = useAuth();
-  const { state: { opportunities, loading, error }, fetchOpportunities } = useOpportunity();
+  const { state: { opportunities, loading, error }, fetchOpportunities, deleteOpportunity } = useOpportunity();
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     status: 'all',
@@ -65,6 +65,26 @@ function Opportunities() {
       sortBy: field,
       sortDirection: prev.sortBy === field && prev.sortDirection === 'asc' ? 'desc' : 'asc'
     }));
+  };
+
+  // Handle deleting an opportunity
+  const handleDeleteOpportunity = async (id: string) => {
+    if (!token) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this opportunity?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteOpportunity(id);
+      console.log("Opportunity deleted successfully.");
+      fetchOpportunities(); // Refresh the list after deletion
+    } catch (error) {
+      console.error("Failed to delete opportunity:", error);
+      alert("Failed to delete opportunity. Please try again.");
+    }
   };
 
   // Filter opportunities based on search and status
@@ -376,11 +396,7 @@ function Opportunities() {
                         Edit
                       </Link>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedOpportunities([opportunity._id || opportunity.id || '']);
-                          setShowDeleteModal(true);
-                        }}
+                        onClick={() => handleDeleteOpportunity(opportunity._id || opportunity.id || '')}
                         className="text-red-600 hover:text-red-900"
                       >
                         Delete
