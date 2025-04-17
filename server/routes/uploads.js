@@ -25,29 +25,33 @@ router.post("/image", uploadMemory.single("image"), async (req, res) => {
       return res.status(400).json({ error: "No image file provided" });
     }
 
+    console.log("Processing single file upload:", req.file.originalname);
+
     // Convert buffer to data URL for Cloudinary upload
     const fileStr = `data:${
       req.file.mimetype
     };base64,${req.file.buffer.toString("base64")}`;
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with retry and fallback
     const result = await uploadToCloudinary(fileStr, {
       folder: "real-estate-crm/properties",
     });
 
     if (!result.success) {
+      console.error("Image upload failed:", result.error);
       return res
         .status(500)
-        .json({ error: "Failed to upload image to Cloudinary" });
+        .json({ error: `Failed to upload image: ${result.error}` });
     }
 
     res.status(201).json({
       url: result.url,
       public_id: result.public_id,
+      isLocalFallback: result.isLocalFallback || false,
     });
   } catch (error) {
     console.error("Upload error:", error);
-    res.status(500).json({ error: "Image upload failed" });
+    res.status(500).json({ error: `Image upload failed: ${error.message}` });
   }
 });
 
@@ -58,35 +62,61 @@ router.post("/images", uploadMemory.array("images", 10), async (req, res) => {
       return res.status(400).json({ error: "No image files provided" });
     }
 
-    const uploadPromises = req.files.map((file) => {
-      // Convert buffer to data URL for Cloudinary upload
-      const fileStr = `data:${file.mimetype};base64,${file.buffer.toString(
-        "base64"
-      )}`;
-      return uploadToCloudinary(fileStr, {
-        folder: "real-estate-crm/properties",
-      });
-    });
+    console.log(`Processing ${req.files.length} files for upload`);
 
-    const results = await Promise.all(uploadPromises);
-    const failedUploads = results.filter((result) => !result.success);
+    // Process files one at a time to better handle failures
+    const uploadResults = [];
+    const failedUploads = [];
 
-    if (failedUploads.length > 0) {
+    for (const file of req.files) {
+      try {
+        // Convert buffer to data URL for Cloudinary upload
+        const fileStr = `data:${file.mimetype};base64,${file.buffer.toString(
+          "base64"
+        )}`;
+
+        // Upload to Cloudinary with retry and fallback
+        const result = await uploadToCloudinary(fileStr, {
+          folder: "real-estate-crm/properties",
+        });
+
+        if (result.success) {
+          uploadResults.push({
+            url: result.url,
+            public_id: result.public_id,
+            isLocalFallback: result.isLocalFallback || false,
+          });
+        } else {
+          failedUploads.push({
+            filename: file.originalname,
+            error: result.error,
+          });
+        }
+      } catch (fileError) {
+        failedUploads.push({
+          filename: file.originalname,
+          error: fileError.message,
+        });
+      }
+    }
+
+    console.log(
+      `Successfully processed ${uploadResults.length} of ${req.files.length} images`
+    );
+
+    // If all uploads failed, return an error
+    if (uploadResults.length === 0 && failedUploads.length > 0) {
       return res.status(500).json({
-        error: "Some images failed to upload",
-        failedCount: failedUploads.length,
+        error: "All image uploads failed",
+        failedUploads,
       });
     }
 
-    const uploadedImages = results.map((result) => ({
-      url: result.url,
-      public_id: result.public_id,
-    }));
-
-    res.status(201).json(uploadedImages);
+    // Otherwise return what succeeded, even if some failed
+    res.status(201).json(uploadResults);
   } catch (error) {
     console.error("Multiple upload error:", error);
-    res.status(500).json({ error: "Image uploads failed" });
+    res.status(500).json({ error: `Image uploads failed: ${error.message}` });
   }
 });
 
@@ -99,13 +129,13 @@ router.delete("/image/:publicId", async (req, res) => {
     if (!result.success) {
       return res
         .status(500)
-        .json({ error: "Failed to delete image from Cloudinary" });
+        .json({ error: `Failed to delete image: ${result.error}` });
     }
 
     res.json({ message: "Image deleted successfully" });
   } catch (error) {
     console.error("Delete image error:", error);
-    res.status(500).json({ error: "Image deletion failed" });
+    res.status(500).json({ error: `Image deletion failed: ${error.message}` });
   }
 });
 

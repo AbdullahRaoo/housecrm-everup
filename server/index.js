@@ -21,10 +21,14 @@ const PORT = process.env.PORT || 5001;
 // Connect to MongoDB
 connectDB();
 
-// Create uploads directory if it doesn't exist
+// Create required directories
 const uploadsDir = join(__dirname, "../uploads");
+const imagesDir = join(__dirname, "../uploads/images");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir, { recursive: true });
 }
 
 // Enhanced CORS configuration with all possible development origins
@@ -53,6 +57,10 @@ app.use(express.static(join(__dirname, "../dist")));
 
 // Serve uploaded files
 app.use("/uploads", express.static(join(__dirname, "../uploads")));
+app.use(
+  "/uploads/images",
+  express.static(join(__dirname, "../uploads/images"))
+);
 
 // API Routes
 app.use("/api", apiRoutes);
