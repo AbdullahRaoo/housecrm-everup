@@ -284,6 +284,21 @@ router.post("/calendar", authenticateToken, async (req, res) => {
 
     const newEvent = new Event(eventData);
     const savedEvent = await newEvent.save();
+
+    // Log event creation
+    await logManualActivity(req, {
+      action: "CREATE",
+      entityType: "EVENT",
+      entityId: savedEvent._id,
+      description: `Created new calendar event: ${savedEvent.title}`,
+      details: {
+        event: savedEvent.title,
+        type: savedEvent.type,
+        start: new Date(savedEvent.start).toLocaleString(),
+        end: new Date(savedEvent.end).toLocaleString(),
+      },
+    });
+
     res.status(201).json(savedEvent);
   } catch (error) {
     console.error("Error creating calendar event:", error);
@@ -348,6 +363,22 @@ router.put("/calendar/:id", authenticateToken, async (req, res) => {
     if (!updatedEvent) {
       return res.status(404).json({ error: "Event not found" });
     }
+
+    // Log event update
+    await logManualActivity(req, {
+      action: "UPDATE",
+      entityType: "EVENT",
+      entityId: updatedEvent._id,
+      description: `Updated calendar event: ${updatedEvent.title}`,
+      details: {
+        event: updatedEvent.title,
+        type: updatedEvent.type,
+        status: updatedEvent.status,
+        start: new Date(updatedEvent.start).toLocaleString(),
+        end: new Date(updatedEvent.end).toLocaleString(),
+      },
+    });
+
     res.json(updatedEvent);
   } catch (error) {
     console.error("Error updating calendar event:", error);
@@ -362,6 +393,21 @@ router.delete("/calendar/:id", authenticateToken, async (req, res) => {
     if (!deletedEvent) {
       return res.status(404).json({ error: "Event not found" });
     }
+
+    // Log event deletion
+    await logManualActivity(req, {
+      action: "DELETE",
+      entityType: "EVENT",
+      entityId: deletedEvent._id,
+      description: `Deleted calendar event: ${deletedEvent.title}`,
+      details: {
+        event: deletedEvent.title,
+        type: deletedEvent.type,
+        start: new Date(deletedEvent.start).toLocaleString(),
+        end: new Date(deletedEvent.end).toLocaleString(),
+      },
+    });
+
     res.json({ message: "Event deleted successfully" });
   } catch (error) {
     console.error("Error deleting calendar event:", error);
@@ -754,6 +800,16 @@ router.post("/customers", authenticateToken, async (req, res) => {
 
     const newCustomer = new Customer(req.body);
     const savedCustomer = await newCustomer.save();
+
+    // Log customer creation
+    await logManualActivity(req, {
+      action: "CREATE",
+      entityType: "CUSTOMER",
+      entityId: savedCustomer._id,
+      description: `Created new customer: ${savedCustomer.name}`,
+      details: { customer: savedCustomer.name, email: savedCustomer.email },
+    });
+
     res.status(201).json(savedCustomer);
   } catch (error) {
     console.error("Error creating customer:", error);
@@ -785,6 +841,16 @@ router.put("/customers/:id", authenticateToken, async (req, res) => {
     if (!updatedCustomer) {
       return res.status(404).json({ error: "Customer not found" });
     }
+
+    // Log customer update
+    await logManualActivity(req, {
+      action: "UPDATE",
+      entityType: "CUSTOMER",
+      entityId: updatedCustomer._id,
+      description: `Updated customer information: ${updatedCustomer.name}`,
+      details: { customer: updatedCustomer.name, email: updatedCustomer.email },
+    });
+
     res.json(updatedCustomer);
   } catch (error) {
     console.error("Error updating customer:", error);
@@ -799,6 +865,16 @@ router.delete("/customers/:id", authenticateToken, async (req, res) => {
     if (!deletedCustomer) {
       return res.status(404).json({ error: "Customer not found" });
     }
+
+    // Log customer deletion
+    await logManualActivity(req, {
+      action: "DELETE",
+      entityType: "CUSTOMER",
+      entityId: deletedCustomer._id,
+      description: `Deleted customer: ${deletedCustomer.name}`,
+      details: { customer: deletedCustomer.name, email: deletedCustomer.email },
+    });
+
     res.json({ message: "Customer deleted successfully" });
   } catch (error) {
     console.error("Error deleting customer:", error);
@@ -910,6 +986,20 @@ router.post("/properties", authenticateToken, async (req, res) => {
 
     const newProperty = new Property(propertyData);
     const savedProperty = await newProperty.save();
+
+    // Log property creation
+    await logManualActivity(req, {
+      action: "CREATE",
+      entityType: "PROPERTY",
+      entityId: savedProperty._id,
+      description: `Created new property: ${savedProperty.title}`,
+      details: {
+        property: savedProperty.title,
+        price: savedProperty.price,
+        address: savedProperty.location?.address,
+      },
+    });
+
     res.status(201).json(savedProperty);
   } catch (error) {
     console.error("Error creating property:", error);
@@ -964,6 +1054,19 @@ router.put("/properties/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Property not found" });
     }
 
+    // Log property update
+    await logManualActivity(req, {
+      action: "UPDATE",
+      entityType: "PROPERTY",
+      entityId: updatedProperty._id,
+      description: `Updated property: ${updatedProperty.title}`,
+      details: {
+        property: updatedProperty.title,
+        price: updatedProperty.price,
+        address: updatedProperty.location?.address,
+      },
+    });
+
     res.json(updatedProperty);
   } catch (error) {
     console.error("Error updating property:", error);
@@ -994,6 +1097,20 @@ router.delete("/properties/:id", authenticateToken, async (req, res) => {
     if (!deletedProperty) {
       return res.status(404).json({ error: "Property not found" });
     }
+
+    // Log property deletion
+    await logManualActivity(req, {
+      action: "DELETE",
+      entityType: "PROPERTY",
+      entityId: deletedProperty._id,
+      description: `Deleted property: ${deletedProperty.title}`,
+      details: {
+        property: deletedProperty.title,
+        price: deletedProperty.price,
+        address: deletedProperty.location?.address,
+      },
+    });
+
     res.json({ message: "Property deleted successfully" });
   } catch (error) {
     console.error("Error deleting property:", error);
@@ -1288,6 +1405,23 @@ router.post("/opportunities", authenticateToken, async (req, res) => {
       .populate("customerId", "name email")
       .populate("propertyId", "title price location.address");
 
+    // Log opportunity creation
+    await logManualActivity(req, {
+      action: "CREATE",
+      entityType: "OPPORTUNITY",
+      entityId: savedOpportunity._id,
+      description: `Created new opportunity: ${savedOpportunity.title}`,
+      details: {
+        opportunity: savedOpportunity.title,
+        customer: populatedOpportunity.customerId
+          ? populatedOpportunity.customerId.name
+          : "Unknown",
+        property: populatedOpportunity.propertyId
+          ? populatedOpportunity.propertyId.title
+          : "Not selected",
+      },
+    });
+
     res.status(201).json(populatedOpportunity);
   } catch (error) {
     console.error("Error creating opportunity:", error);
@@ -1329,6 +1463,24 @@ router.put("/opportunities/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Opportunity not found" });
     }
 
+    // Log opportunity update
+    await logManualActivity(req, {
+      action: "UPDATE",
+      entityType: "OPPORTUNITY",
+      entityId: updatedOpportunity._id,
+      description: `Updated opportunity: ${updatedOpportunity.title}`,
+      details: {
+        opportunity: updatedOpportunity.title,
+        status: updatedOpportunity.status,
+        customer: updatedOpportunity.customerId
+          ? updatedOpportunity.customerId.name
+          : "Unknown",
+        property: updatedOpportunity.propertyId
+          ? updatedOpportunity.propertyId.title
+          : "Not selected",
+      },
+    });
+
     res.json(updatedOpportunity);
   } catch (error) {
     console.error("Error updating opportunity:", error);
@@ -1359,6 +1511,19 @@ router.delete("/opportunities/:id", authenticateToken, async (req, res) => {
     if (!deletedOpportunity) {
       return res.status(404).json({ error: "Opportunity not found" });
     }
+
+    // Log opportunity deletion
+    await logManualActivity(req, {
+      action: "DELETE",
+      entityType: "OPPORTUNITY",
+      entityId: deletedOpportunity._id,
+      description: `Deleted opportunity: ${deletedOpportunity.title}`,
+      details: {
+        opportunity: deletedOpportunity.title,
+        status: deletedOpportunity.status,
+      },
+    });
+
     res.json({ message: "Opportunity deleted successfully" });
   } catch (error) {
     console.error("Error deleting opportunity:", error);
