@@ -361,8 +361,11 @@ function Opportunities() {
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200">
                     {opportunity.customerId ? (
-                      <Link to={`/customers/${typeof opportunity.customerId === 'object' ? opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
-                        {opportunity.customerId.name || opportunity.customer?.name || 'Unknown customer'}
+                      <Link to={`/customers/${typeof opportunity.customerId === 'object' && opportunity.customerId ?
+                        opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`}
+                        className="text-gray-900 whitespace-no-wrap">
+                        {typeof opportunity.customerId === 'object' && opportunity.customerId && 'name' in opportunity.customerId ?
+                          opportunity.customerId.name : opportunity.customer?.name || 'Unknown customer'}
                       </Link>
                     ) : (
                       <span className="text-gray-500">No customer assigned</span>
