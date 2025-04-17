@@ -17,6 +17,7 @@ import OpportunityForm from './pages/OpportunityForm';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import PropertyForm from './pages/PropertyForm';
+import Sheets from './pages/Sheets';
 import Users from './pages/Users';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                               <Route path="/opportunities/new" element={<OpportunityForm />} />
                               <Route path="/opportunities/:id" element={<OpportunityDetail />} />
                               <Route path="/opportunities/edit/:id" element={<OpportunityForm />} />
+                              <Route path="/sheets" element={<Sheets />} />
                               <Route path="/users" element={<Users />} />
                             </Routes>
                           </main>
