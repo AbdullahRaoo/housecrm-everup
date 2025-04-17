@@ -1,6 +1,6 @@
 export interface Customer {
-  [x: string]: string;
   id: string;
+  _id?: string; // Add MongoDB _id support
   name: string;
   email: string;
   phone?: string;

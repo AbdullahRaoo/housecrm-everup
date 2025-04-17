@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { CalendarEvent, EventType } from '../types/calendar';
+import { Customer } from '../types/customer';
 
 interface EventFormProps {
   event?: CalendarEvent | null;
   onSubmit: (event: Omit<CalendarEvent, 'id'>) => void;
   onCancel: () => void;
+  customers?: Customer[];
 }
 
-export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
+export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFormProps) {
   // Format a date string or Date object to the format required by datetime-local input
   const formatDateForInput = (dateStr?: string | Date): string => {
     if (!dateStr) return '';
@@ -21,12 +23,44 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     return date.toISOString().slice(0, 16);
   };
 
+  // Format a date string or Date object to the format required by date input
+  const formatDateOnlyForInput = (dateStr?: string | Date): string => {
+    if (!dateStr) return '';
+
+    const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+
+    // Check if it's a valid date
+    if (isNaN(date.getTime())) return '';
+
+    // Format to YYYY-MM-DD
+    return date.toISOString().slice(0, 10);
+  };
+
   // Generate default end time (1 hour after start time)
   const getDefaultEndTime = (): Date => {
     const defaultEnd = new Date();
     defaultEnd.setHours(defaultEnd.getHours() + 1);
     return defaultEnd;
   };
+
+  // Generate default deadline (3 days from now)
+  const getDefaultDeadline = (): Date => {
+    const defaultDeadline = new Date();
+    defaultDeadline.setDate(defaultDeadline.getDate() + 3);
+    return defaultDeadline;
+  };
+
+  // Log the customers prop to verify it's properly populated
+  useEffect(() => {
+    console.log('Customers data:', customers);
+  }, [customers]);
+
+  // Debug customer data on component mount
+  useEffect(() => {
+    if (customers && customers.length > 0) {
+      console.log('Available customers in EventForm:', customers);
+    }
+  }, [customers]);
 
   const [formData, setFormData] = useState<Omit<CalendarEvent, 'id'>>({
     title: event?.title || '',
@@ -37,13 +71,14 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     propertyId: event?.propertyId || null,
     customerId: event?.customerId || null,
     status: event?.status || 'Pending',
-    deadline: event?.deadline || '',
+    deadline: event?.deadline || getDefaultDeadline().toISOString(),
     isGoogleCalendarSync: event?.isGoogleCalendarSync || false
   });
 
   // Format the dates for display in the form inputs
   const [startDateInput, setStartDateInput] = useState(formatDateForInput(event?.start || new Date()));
   const [endDateInput, setEndDateInput] = useState(formatDateForInput(event?.end || getDefaultEndTime()));
+  const [deadlineInput, setDeadlineInput] = useState(formatDateOnlyForInput(event?.deadline || getDefaultDeadline()));
 
   // Update the form when the selected event changes
   useEffect(() => {
@@ -57,17 +92,19 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
         propertyId: event.propertyId || null,
         customerId: event.customerId || null,
         status: event.status || 'Pending',
-        deadline: event.deadline || '',
+        deadline: event.deadline || getDefaultDeadline().toISOString(),
         isGoogleCalendarSync: event.isGoogleCalendarSync || false
       });
 
       setStartDateInput(formatDateForInput(event.start));
       setEndDateInput(formatDateForInput(event.end));
+      setDeadlineInput(formatDateOnlyForInput(event.deadline || getDefaultDeadline()));
     } else {
       // New event - set default values
       const now = new Date();
       const end = new Date(now);
       end.setHours(end.getHours() + 1);
+      const deadline = getDefaultDeadline();
 
       setFormData({
         title: '',
@@ -78,14 +115,20 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
         propertyId: null,
         customerId: null,
         status: 'Pending',
-        deadline: '',
+        deadline: deadline.toISOString(),
         isGoogleCalendarSync: false
       });
 
       setStartDateInput(formatDateForInput(now));
       setEndDateInput(formatDateForInput(end));
+      setDeadlineInput(formatDateOnlyForInput(deadline));
     }
   }, [event]);
+
+  // Debug the formData state changes
+  useEffect(() => {
+    console.log('Current formData:', formData);
+  }, [formData]);
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateValue = e.target.value;
@@ -118,6 +161,37 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     }
   };
 
+  const handleDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateValue = e.target.value;
+    setDeadlineInput(dateValue);
+
+    if (dateValue) {
+      // Convert local date value to ISO string
+      const date = new Date(dateValue);
+      setFormData(prev => ({ ...prev, deadline: date.toISOString() }));
+    }
+  };
+
+  const handleCustomerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    console.log('Customer selected:', value);
+
+    // If value is empty, set to null
+    if (value === '') {
+      setFormData(prev => ({
+        ...prev,
+        customerId: null
+      }));
+      return;
+    }
+
+    // Otherwise, set the customer ID directly
+    setFormData(prev => ({
+      ...prev,
+      customerId: value
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -130,6 +204,8 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       return;
     }
 
+    // Log the form data before submitting
+    console.log('Submitting form data:', formData);
     onSubmit(formData);
   };
 
@@ -148,21 +224,55 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
           className={inputClasses}
           required
-          placeholder="Event title"
+          placeholder="Task title"
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
+          <select
+            value={formData.type}
+            onChange={e => setFormData(prev => ({ ...prev, type: e.target.value as EventType }))}
+            className={`${inputClasses} appearance-none cursor-pointer`}
+          >
+            <option key="visit-type" value="Visit">Visit</option>
+            <option key="call-type" value="Call">Call</option>
+            <option key="email-type" value="Email">Email</option>
+            <option key="task-type" value="Task">Task</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
+          <select
+            value={formData.status}
+            onChange={e => setFormData(prev => ({ ...prev, status: e.target.value as "Pending" | "Completed" | "Cancelled" }))}
+            className={`${inputClasses} appearance-none cursor-pointer`}
+          >
+            <option key="pending-status" value="Pending">Pending</option>
+            <option key="completed-status" value="Completed">Completed</option>
+            <option key="cancelled-status" value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Customer</label>
         <select
-          value={formData.type}
-          onChange={e => setFormData(prev => ({ ...prev, type: e.target.value as EventType }))}
+          value={formData.customerId || ''}
+          onChange={handleCustomerChange}
           className={`${inputClasses} appearance-none cursor-pointer`}
         >
-          <option value="Visit">Visit</option>
-          <option value="Call">Call</option>
-          <option value="Email">Email</option>
-          <option value="Task">Task</option>
+          <option key="unassigned-customer" value="">Unassigned</option>
+          {customers.map((customer, index) => (
+            <option
+              key={`customer-index-${index}`}
+              value={customer.id || ''}
+            >
+              {customer.name || 'Unnamed Customer'}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -190,16 +300,13 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
-        <select
-          value={formData.status}
-          onChange={e => setFormData(prev => ({ ...prev, status: e.target.value }))}
-          className={`${inputClasses} appearance-none cursor-pointer`}
-        >
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Deadline</label>
+        <input
+          type="date"
+          value={deadlineInput}
+          onChange={handleDeadlineChange}
+          className={inputClasses}
+        />
       </div>
 
       <div>
@@ -208,7 +315,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           value={formData.description || ''}
           onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
           className={`${inputClasses} resize-none`}
-          rows={3}
+          rows={2}
           placeholder="Add description or notes"
         />
       </div>
@@ -241,7 +348,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
           hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
         >
-          {event ? 'Update' : 'Add'} Event
+          {event?.id ? 'Update' : 'Add'} Task
         </button>
       </div>
     </form>

@@ -240,6 +240,26 @@ router.post("/calendar", authenticateToken, async (req, res) => {
 
     if (eventData.customerId === "") {
       eventData.customerId = null;
+    } else if (eventData.customerId) {
+      // Check if customerId is a valid ObjectId
+      const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(eventData.customerId);
+      if (!isValidObjectId) {
+        // If not valid ObjectId, try to find customer by name
+        try {
+          const customer = await Customer.findOne({
+            name: eventData.customerId,
+          });
+          if (customer) {
+            eventData.customerId = customer._id;
+          } else {
+            // If no customer found with that name, set to null
+            eventData.customerId = null;
+          }
+        } catch (err) {
+          console.error("Error finding customer by name:", err);
+          eventData.customerId = null;
+        }
+      }
     }
 
     const newEvent = new Event(eventData);
@@ -278,6 +298,26 @@ router.put("/calendar/:id", authenticateToken, async (req, res) => {
 
     if (eventData.customerId === "") {
       eventData.customerId = null;
+    } else if (eventData.customerId) {
+      // Check if customerId is a valid ObjectId
+      const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(eventData.customerId);
+      if (!isValidObjectId) {
+        // If not valid ObjectId, try to find customer by name
+        try {
+          const customer = await Customer.findOne({
+            name: eventData.customerId,
+          });
+          if (customer) {
+            eventData.customerId = customer._id;
+          } else {
+            // If no customer found with that name, set to null
+            eventData.customerId = null;
+          }
+        } catch (err) {
+          console.error("Error finding customer by name:", err);
+          eventData.customerId = null;
+        }
+      }
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(
