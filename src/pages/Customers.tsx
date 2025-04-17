@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCustomer } from '../context/CustomerContext';
 import { useAuth } from '../hooks/useAuth';
+import { CalendarEvent } from '../types/calendar';
 import { Customer } from '../types/customer';
 
 interface FilterState {
@@ -29,12 +30,87 @@ function Customers() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [customerToEdit, setCustomerToEdit] = useState<Customer | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
+  const [customerTasks, setCustomerTasks] = useState<Record<string, CalendarEvent[]>>({});
+  const [customerProperties, setCustomerProperties] = useState<Record<string, any[]>>({});
 
   useEffect(() => {
     if (token) {
       fetchCustomers();
     }
   }, [token, fetchCustomers]);
+
+  useEffect(() => {
+    if (expandedCustomerId && token) {
+      fetchCustomerTasks(expandedCustomerId);
+      fetchCustomerProperties(expandedCustomerId);
+    }
+  }, [expandedCustomerId, token]);
+
+  const fetchCustomerTasks = async (customerId: string) => {
+    try {
+      const response = await fetch('/api/calendar', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
+
+      const allTasks = await response.json();
+      const customerSpecificTasks = allTasks.filter(
+        (task: CalendarEvent) => task.customerId === customerId
+      );
+
+      setCustomerTasks(prev => ({
+        ...prev,
+        [customerId]: customerSpecificTasks
+      }));
+    } catch (error) {
+      console.error('Error fetching customer tasks:', error);
+    }
+  };
+
+  const fetchCustomerProperties = async (customerId: string) => {
+    try {
+      const customer = customers.find(c => c.id === customerId || c._id === customerId);
+      if (!customer) return;
+
+      const propertyIds = customer.propertiesViewed || [];
+
+      if (propertyIds.length === 0) {
+        setCustomerProperties(prev => ({
+          ...prev,
+          [customerId]: []
+        }));
+        return;
+      }
+
+      const response = await fetch('/api/properties', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+
+      const allProperties = await response.json();
+      const customerProperties = allProperties.filter(
+        (property: any) => propertyIds.includes(property.id || property._id)
+      );
+
+      setCustomerProperties(prev => ({
+        ...prev,
+        [customerId]: customerProperties
+      }));
+    } catch (error) {
+      console.error('Error fetching customer properties:', error);
+    }
+  };
+
+  const toggleCustomerExpand = (customerId: string) => {
+    setExpandedCustomerId(prev => prev === customerId ? null : customerId);
+  };
 
   const filteredCustomers = (customers || [])
     .filter(customer => {
@@ -151,6 +227,159 @@ function Customers() {
     } catch (error) {
       alert('Failed to delete customers');
     }
+  };
+
+  const renderCustomerDetails = (customerId: string) => {
+    const tasks = customerTasks[customerId] || [];
+    const properties = customerProperties[customerId] || [];
+
+    return (
+      <tr>
+        <td colSpan={7} className="px-5 py-5 bg-gray-50 border-b border-gray-200">
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Tasks Assigned ({tasks.length})</h4>
+                {tasks.length === 0 ? (
+                  <p className="text-gray-500 italic">No tasks assigned to this customer</p>
+                ) : (
+                  <div className="space-y-3">
+                    {tasks.map((task) => (
+                      <div key={task.id} className="border-b pb-2">
+                        <div className="flex justify-between">
+                          <p className="font-medium text-gray-700">{task.title}</p>
+                          <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                              task.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                            }`}>
+                            {task.status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          {task.type} · {new Date(task.start).toLocaleDateString()}
+                        </p>
+                        {task.description && (
+                          <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Property Interests ({properties.length})</h4>
+                {properties.length === 0 ? (
+                  <p className="text-gray-500 italic">No property interests recorded</p>
+                ) : (
+                  <div className="space-y-3">
+                    {properties.map((property) => (
+                      <div key={property.id || property._id} className="flex items-center border-b pb-2">
+                        <div className="w-16 h-16 flex-shrink-0">
+                          <img
+                            src={property.media?.photos?.[0] || 'https://via.placeholder.com/150'}
+                            alt={property.title}
+                            className="w-full h-full object-cover rounded"
+                          />
+                        </div>
+                        <div className="ml-3 flex-grow">
+                          <p className="font-medium text-gray-700">{property.title}</p>
+                          <p className="text-sm text-gray-500">
+                            {property.location?.address}
+                          </p>
+                          <p className="text-sm font-semibold text-[#e56e43]">
+                            ${property.price?.toLocaleString()}
+                          </p>
+                        </div>
+                        <Link
+                          to={`/properties/${property.id || property._id}`}
+                          className="text-blue-600 hover:text-blue-800 ml-2"
+                        >
+                          View
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow md:col-span-2">
+                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Customer Preferences & Notes</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1">Budget Range</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.min
+                        ? `$${customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.min.toLocaleString()} -
+                           $${customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.max.toLocaleString()}`
+                        : 'No budget specified'
+                      }
+                    </p>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Preferred Locations</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.location?.length
+                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.location?.join(', ')
+                        : 'No locations specified'
+                      }
+                    </p>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Property Type Preferences</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.propertyType?.length
+                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.propertyType?.join(', ')
+                        : 'No property types specified'
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1">Notes</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.notes || 'No notes available'}
+                    </p>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Last Interaction</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.lastInteraction
+                        ? new Date(customers.find(c => c.id === customerId || c._id === customerId)?.lastInteraction!).toLocaleString()
+                        : 'No recent interaction recorded'
+                      }
+                    </p>
+                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Required Features</h5>
+                    <p className="text-gray-800">
+                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.features?.length
+                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.features?.join(', ')
+                        : 'No specific features required'
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow md:col-span-2">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-lg text-gray-700">Quick Actions</h4>
+                  <div className="space-x-2">
+                    <Link
+                      to={`/calendar?customerId=${customerId}`}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Schedule Task
+                    </Link>
+                    <button
+                      onClick={() => handleEditCustomer(customers.find(c => c.id === customerId || c._id === customerId)!)}
+                      className="inline-flex items-center px-4 py-2 border border-[#e56e43] shadow-sm text-sm font-medium rounded-md text-[#e56e43] bg-white hover:bg-[#e56e43]/10 focus:outline-none"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Edit Profile
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    );
   };
 
   if (loading) {
@@ -344,67 +573,93 @@ function Customers() {
               </tr>
             ) : (
               paginatedCustomers.map((customer) => (
-                <tr key={customer._id || customer.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <input
-                      type="checkbox"
-                      checked={selectedCustomers.includes(customer._id || customer.id)}
-                      onChange={() => handleSelectCustomer(customer._id || customer.id)}
-                      className="rounded border-gray-300"
-                    />
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 w-10 h-10">
-                        <img
-                          className="w-full h-full rounded-full"
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
-                          alt={customer.name}
-                        />
+                <React.Fragment key={customer._id || customer.id}>
+                  <tr
+                    className={`hover:bg-gray-50 cursor-pointer ${expandedCustomerId === (customer._id || customer.id) ? 'bg-gray-50' : ''}`}
+                    onClick={() => toggleCustomerExpand(customer._id || customer.id)}
+                  >
+                    <td className="px-5 py-5 border-b border-gray-200" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedCustomers.includes(customer._id || customer.id)}
+                        onChange={() => handleSelectCustomer(customer._id || customer.id)}
+                        className="rounded border-gray-300"
+                      />
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-10 h-10">
+                          <img
+                            className="w-full h-full rounded-full"
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(customer.name)}`}
+                            alt={customer.name}
+                          />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-gray-900 whitespace-no-wrap font-medium">{customer.name}</p>
+                        </div>
                       </div>
-                      <div className="ml-3">
-                        <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                        {customer.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <p className="text-gray-900 whitespace-no-wrap">
+                        {new Date(customer.joinedDate).toLocaleDateString()}
+                      </p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditCustomer(customer);
+                          }}
+                          className="text-[#e56e43] hover:text-blue-900"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCustomers([customer._id || customer.id]);
+                            setShowDeleteModal(true);
+                          }}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCustomerExpand(customer._id || customer.id);
+                          }}
+                          className="text-gray-600 hover:text-gray-900 flex items-center"
+                        >
+                          <span className="mr-1">Details</span>
+                          <svg
+                            className={`w-4 h-4 transform transition-transform ${expandedCustomerId === (customer._id || customer.id) ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">{customer.email}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">{customer.phone}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {customer.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {new Date(customer.joinedDate).toLocaleDateString()}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditCustomer(customer)}
-                        className="text-[#e56e43] hover:text-blue-900"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedCustomers([customer._id || customer.id]);
-                          setShowDeleteModal(true);
-                        }}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                  {expandedCustomerId === (customer._id || customer.id) && renderCustomerDetails(customer._id || customer.id)}
+                </React.Fragment>
               ))
             )}
           </tbody>
@@ -432,9 +687,8 @@ function Customers() {
               <button
                 key={page}
                 onClick={() => setFilters(prev => ({ ...prev, page }))}
-                className={`px-4 py-2 border rounded-lg ${
-                  filters.page === page ? 'bg-[#e56e43] text-white' : 'hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 border rounded-lg ${filters.page === page ? 'bg-[#e56e43] text-white' : 'hover:bg-gray-50'
+                  }`}
               >
                 {page}
               </button>
