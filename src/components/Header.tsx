@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 function Header() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -18,6 +19,11 @@ function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Generate initials for the avatar if no user data is available
+
+  // Generate name for avatar URL
+  const avatarName = user?.name ? encodeURIComponent(user.name) : 'User';
+
   return (
     <header className="flex items-center justify-end px-6 py-4 bg-white border-b border-gray-100">
       <div className="flex items-center relative" ref={dropdownRef}>
@@ -25,11 +31,11 @@ function Header() {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center text-gray-700 hover:text-[#e56e43] transition-colors duration-200"
         >
-          <span className="mx-2 font-medium">John Doe</span>
+          <span className="mx-2 font-medium">{user?.name || 'User'}</span>
           <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#e56e43]">
             <img
               className="w-full h-full object-cover"
-              src="https://ui-avatars.com/api/?name=John+Doe&background=e56e43&color=fff"
+              src={`https://ui-avatars.com/api/?name=${avatarName}&background=e56e43&color=fff`}
               alt="Profile"
             />
           </div>
@@ -40,8 +46,12 @@ function Header() {
           <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg
             border border-gray-100 py-1 z-50">
             <div className="px-4 py-2 border-b border-gray-100">
+              <p className="text-sm font-medium text-gray-800">Profile</p>
               <p className="text-sm text-gray-600">Signed in as</p>
-              <p className="text-sm font-medium text-gray-800">admin@example.com</p>
+              <p className="text-sm font-medium text-gray-800">{user?.email || 'No email'}</p>
+              {user?.role && (
+                <p className="text-xs text-gray-500 mt-1">{user.role}</p>
+              )}
             </div>
 
             <button
