@@ -29,7 +29,7 @@ function Dashboard() {
       tasks: 0
     }
   });
-  const [taskProgress, setTaskProgress] = useState<TaskProgress[]>([]);
+  const [, setTaskProgress] = useState<TaskProgress[]>([]);
   const [propertyPerformance, setPropertyPerformance] = useState<PropertyPerformance[]>([]);
   const [timeRange, setTimeRange] = useState('7');
 
@@ -174,32 +174,6 @@ function Dashboard() {
               <Line type="monotone" dataKey="inquiries" stroke="#3B82F6" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Tasks Progress */}
-      <div className="mt-8">
-        <h4 className="text-xl font-semibold text-gray-800 mb-6">Tasks Progress</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {taskProgress.map((task) => (
-            <div key={task.type} className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h5 className="font-medium text-gray-700">{task.type}</h5>
-                <span className="text-sm font-medium" style={{ color: task.color }}>
-                  {task.completed}/{task.total}
-                </span>
-              </div>
-              <div className="h-2 bg-gray-100 rounded-full">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{
-                    width: `${(task.completed / task.total) * 100}%`,
-                    backgroundColor: task.color
-                  }}
-                />
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
