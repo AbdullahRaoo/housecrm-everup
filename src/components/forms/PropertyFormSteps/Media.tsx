@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { useAuth } from '../../../hooks/useAuth';
@@ -15,8 +14,9 @@ interface MediaProps {
 
 export function Media({ setValue, watch, errors }: MediaProps) {
   const [previews, setPreviews] = useState<string[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [cloudinaryImages, setCloudinaryImages] = useState<CloudinaryImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { token } = useAuth();
   const isInitialRender = useRef(true);
@@ -41,12 +41,13 @@ export function Media({ setValue, watch, errors }: MediaProps) {
       };
 
       // Process all images at once
-      const normalizedImages: CloudinaryImage[] = Array.isArray(currentImages)
+      const normalizedImages = Array.isArray(currentImages)
         ? currentImages.map(normalizeImage)
         : [];
 
       // Set previews and images states
       setPreviews(normalizedImages.map(img => img.url));
+      setCloudinaryImages(normalizedImages);
 
       // Use setTimeout to ensure setValue happens after render is complete
       setTimeout(() => {
@@ -82,9 +83,14 @@ export function Media({ setValue, watch, errors }: MediaProps) {
       const uploadedImages = await mediaApi.uploadImages(validFiles, token);
 
       // Update the images state with the new CloudinaryImages
-      setTimeout(() => {
-        setValue('media.images', uploadedImages as any, { shouldValidate: true });
-      }, 0);
+      setCloudinaryImages(prev => {
+        const updated = [...prev, ...uploadedImages];
+        setTimeout(() => {
+          // Use type assertion to ensure TypeScript understands this is safe
+          setValue('media.images', updated as any, { shouldValidate: true });
+        }, 0);
+        return updated;
+      });
 
       // Update previews with the new URLs
       setPreviews(prev => [...prev, ...uploadedImages.map(img => img.url)]);
@@ -117,13 +123,15 @@ export function Media({ setValue, watch, errors }: MediaProps) {
     setPreviews(prev => prev.filter((_, i) => i !== index));
 
     // Remove from images and update form
-    const currentImages = watch('media.images') || [];
-    // Create a new array without the item at the specified index
-    const updatedImages = [...currentImages];
-    updatedImages.splice(index, 1);
-    // Set the new value
-    setValue('media.images', updatedImages as CloudinaryImage[], { shouldValidate: true });
-  }, [setValue, watch]);
+    setCloudinaryImages(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      setTimeout(() => {
+        // Use type assertion to ensure TypeScript understands this is safe
+        setValue('media.images', updated as any, { shouldValidate: true });
+      }, 0);
+      return updated;
+    });
+  }, [setValue]);
 
   return (
     <div className="space-y-6">

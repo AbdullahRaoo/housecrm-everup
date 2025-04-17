@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCustomer } from '../context/CustomerContext';
@@ -13,14 +12,14 @@ function OpportunityForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { token } = useAuth();
-  const { addOpportunity, updateOpportunity, getOpportunity } = useOpportunity();
+  const { addOpportunity, updateOpportunity, getOpportunity, state: { selectedOpportunity } } = useOpportunity();
   const { state: { customers }, fetchCustomers } = useCustomer();
   const { state: { properties }, fetchProperties } = useProperty();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState<number | null>(null);
-  const [, setIsLoading] = useState(false); // Used for future loading indicators
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<Opportunity>({
     title: '',
@@ -59,28 +58,11 @@ function OpportunityForm() {
       if (id && token) {
         try {
           setIsLoading(true);
-
-          // Call getOpportunity without checking its return value directly
-          await getOpportunity(id);
-
-          // Since we can't check the return value directly (it's void),
-          // we can use the opportunity from the context which should be updated by getOpportunity
-          // or access it through another means if available
-
-          // Instead of:
-          // const opportunityData = await getOpportunity(id);
-          // if (opportunityData) { ... }
-
-          // We'll simply get the current opportunity data from wherever it's stored after the call
-          // For now, just handle any possible data structure using type assertions
-          // You may need to adjust this depending on how your context/state is structured
-          const opportunity = {} as any; // Get opportunity data from context or state as needed
-
+          const opportunity = await getOpportunity(id);
           if (opportunity) {
             setFormData({
-              ...formData,
               ...opportunity,
-              id: opportunity.id || opportunity._id || id, // Ensure the ID is set
+              id: opportunity.id || opportunity._id, // Ensure the ID is set
               validUntil: opportunity.validUntil ?
                 new Date(opportunity.validUntil).toISOString().split('T')[0] :
                 new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split('T')[0]
@@ -98,7 +80,7 @@ function OpportunityForm() {
     if (isEditing) {
       loadOpportunity();
     }
-  }, [id, isEditing, token, getOpportunity, formData]);
+  }, [id, isEditing, token]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -264,12 +246,8 @@ function OpportunityForm() {
         throw new Error('Budget amount must be greater than 0');
       }
 
-      if (isEditing && id) {
-        const opportunityToUpdate = {
-          ...formData,
-          id: id
-        };
-        await updateOpportunity(opportunityToUpdate);
+      if (isEditing) {
+        await updateOpportunity(formData);
         console.log('Opportunity updated successfully');
       } else {
         await addOpportunity(formData);

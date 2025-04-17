@@ -1,4 +1,3 @@
-/* eslint-disable no-empty-pattern */
 import { useRef, useState } from "react";
 
 interface Document {
@@ -10,14 +9,7 @@ interface Document {
   url: string;
 }
 
-interface DocumentManagerProps {
-  // Will be used in future implementation
-  propertyId?: string;
-}
-
-export function DocumentManager(
-  { }: DocumentManagerProps
-) {
+export function DocumentManager() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,46 +50,40 @@ export function DocumentManager(
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        {documents.length > 0 ? (
-          documents.map((doc) => (
-            <div
-              key={doc.id}
-              className="flex items-center justify-between p-4 border-b last:border-b-0"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="text-gray-500">
-                  {/* Add document icon based on type */}
-                  📄
-                </div>
-                <div>
-                  <h4 className="font-medium">{doc.name}</h4>
-                  <p className="text-sm text-gray-500">
-                    {new Date(doc.uploadedAt).toLocaleDateString()}
-                  </p>
-                </div>
+        {documents.map((doc) => (
+          <div
+            key={doc.id}
+            className="flex items-center justify-between p-4 border-b last:border-b-0"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="text-gray-500">
+                {/* Add document icon based on type */}
+                📄
               </div>
-              <div className="flex space-x-2">
-                <a
-                  href={doc.url}
-                  download={doc.name}
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  Download
-                </a>
-                <button
-                  onClick={() => setDocuments(docs => docs.filter(d => d.id !== doc.id))}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
+              <div>
+                <h4 className="font-medium">{doc.name}</h4>
+                <p className="text-sm text-gray-500">
+                  {new Date(doc.uploadedAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="p-6 text-center text-gray-500">
-            No documents uploaded yet.
+            <div className="flex space-x-2">
+              <a
+                href={doc.url}
+                download={doc.name}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                Download
+              </a>
+              <button
+                onClick={() => setDocuments(docs => docs.filter(d => d.id !== doc.id))}
+                className="text-red-500 hover:text-red-700"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
