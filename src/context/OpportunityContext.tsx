@@ -196,8 +196,15 @@ export function OpportunityProvider({ children }: { children: ReactNode }) {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const opportunity = await opportunityApi.getOpportunity(id, token);
-      dispatch({ type: 'SET_SELECTED_OPPORTUNITY', payload: opportunity });
-      return opportunity;
+
+      // Ensure the opportunity has the id property
+      const opportunityWithId = {
+        ...opportunity,
+        id: opportunity.id || opportunity._id
+      };
+
+      dispatch({ type: 'SET_SELECTED_OPPORTUNITY', payload: opportunityWithId });
+      return opportunityWithId;
     } catch (error) {
       console.error("Error fetching opportunity:", error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch opportunity from database' });

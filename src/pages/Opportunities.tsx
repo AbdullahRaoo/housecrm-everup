@@ -69,8 +69,8 @@ function Opportunities() {
 
   // Handle deleting an opportunity
   const handleDeleteOpportunity = async (id: string) => {
-    if (!token) {
-      console.error("User is not authenticated.");
+    if (!token || !id) {
+      console.error("User is not authenticated or invalid opportunity ID.");
       return;
     }
 
@@ -360,9 +360,13 @@ function Opportunities() {
                     </Link>
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200">
-                    <Link to={`/customers/${opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
-                      {opportunity.customer?.name || 'Unknown customer'}
-                    </Link>
+                    {opportunity.customerId ? (
+                      <Link to={`/customers/${typeof opportunity.customerId === 'object' ? opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
+                        {opportunity.customerId.name || opportunity.customer?.name || 'Unknown customer'}
+                      </Link>
+                    ) : (
+                      <span className="text-gray-500">No customer assigned</span>
+                    )}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">

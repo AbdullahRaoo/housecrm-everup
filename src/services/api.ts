@@ -717,17 +717,44 @@ export const opportunityApi = {
     token: string
   ): Promise<any> => {
     try {
+      // Validate ID format before sending to server
+      if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+        throw new Error("Invalid opportunity ID format");
+      }
+
+      // Make a clean copy of the opportunity object for the API
+      const cleanOpportunity = { ...opportunity };
+
+      // Remove redundant ID fields that could cause issues with MongoDB
+      if (cleanOpportunity._id) delete cleanOpportunity._id;
+
       const response = await fetch(`${API_URL}/opportunities/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(opportunity),
+        body: JSON.stringify(cleanOpportunity),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to update opportunity: ${response.status}`);
+        const errorText = await response.text();
+        let errorMessage = `Failed to update opportunity: ${response.status}`;
+
+        try {
+          // Try to parse error as JSON
+          const errorData = JSON.parse(errorText);
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          // If parsing fails, use the raw text
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       return response.json();
