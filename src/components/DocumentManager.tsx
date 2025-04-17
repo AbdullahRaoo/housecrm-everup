@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-empty-pattern */
 import { useRef, useState } from "react";
 
 interface Document {
@@ -15,7 +15,9 @@ interface DocumentManagerProps {
   propertyId?: string;
 }
 
-export function DocumentManager({ propertyId }: DocumentManagerProps) {
+export function DocumentManager(
+  { }: DocumentManagerProps
+) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

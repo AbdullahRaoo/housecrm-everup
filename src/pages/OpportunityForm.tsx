@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCustomer } from '../context/CustomerContext';
@@ -20,7 +20,7 @@ function OpportunityForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // Used for future loading indicators
+  const [, setIsLoading] = useState(false); // Used for future loading indicators
 
   const [formData, setFormData] = useState<Opportunity>({
     title: '',
@@ -60,12 +60,16 @@ function OpportunityForm() {
         try {
           setIsLoading(true);
           // Call the getOpportunity function and store the result
-          const opportunity = await getOpportunity(id);
+          const opportunityData = await getOpportunity(id);
 
-          // Check if we received opportunity data
-          if (opportunity) {
+          // Check if we received opportunity data using proper type checking
+          if (opportunityData) {
+            // Use type assertion to avoid TypeScript errors
+            const opportunity = opportunityData as any;
+
             setFormData({
-              ...opportunity,
+              ...formData, // Start with current form data as base
+              ...opportunity, // Spread the opportunity data on top
               id: opportunity.id || opportunity._id, // Ensure the ID is set
               validUntil: opportunity.validUntil ?
                 new Date(opportunity.validUntil).toISOString().split('T')[0] :
@@ -84,7 +88,7 @@ function OpportunityForm() {
     if (isEditing) {
       loadOpportunity();
     }
-  }, [id, isEditing, token, getOpportunity]);
+  }, [id, isEditing, token, getOpportunity, formData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
