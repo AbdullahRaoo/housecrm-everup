@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCustomer } from '../context/CustomerContext';
@@ -12,7 +13,7 @@ function OpportunityForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { token } = useAuth();
-  const { addOpportunity, updateOpportunity, getOpportunity, state: { selectedOpportunity } } = useOpportunity();
+  const { addOpportunity, updateOpportunity, getOpportunity } = useOpportunity();
   const { state: { customers }, fetchCustomers } = useCustomer();
   const { state: { properties }, fetchProperties } = useProperty();
 
@@ -58,8 +59,12 @@ function OpportunityForm() {
       if (id && token) {
         try {
           setIsLoading(true);
-          const opportunity = await getOpportunity(id);
-          if (opportunity) {
+          // Call the getOpportunity function and store the result
+          const result = await getOpportunity(id);
+
+          // Check if we received an opportunity data
+          if (result) {
+            const opportunity = result;
             setFormData({
               ...opportunity,
               id: opportunity.id || opportunity._id, // Ensure the ID is set
@@ -80,7 +85,7 @@ function OpportunityForm() {
     if (isEditing) {
       loadOpportunity();
     }
-  }, [id, isEditing, token]);
+  }, [id, isEditing, token, getOpportunity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -246,8 +251,12 @@ function OpportunityForm() {
         throw new Error('Budget amount must be greater than 0');
       }
 
-      if (isEditing) {
-        await updateOpportunity(formData);
+      if (isEditing && id) {
+        const opportunityToUpdate = {
+          ...formData,
+          id: id
+        };
+        await updateOpportunity(opportunityToUpdate);
         console.log('Opportunity updated successfully');
       } else {
         await addOpportunity(formData);

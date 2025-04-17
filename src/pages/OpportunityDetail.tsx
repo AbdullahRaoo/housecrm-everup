@@ -364,11 +364,7 @@ function OpportunityDetail() {
             <div className="p-6">
               <button
                 onClick={() => {
-                  const newStatus = opportunity.status === 'Draft' ? 'Proposed' :
-                    opportunity.status === 'Proposed' ? 'Accepted' : 'Proposed';
-
-                  // Here you would update the status
-                  // For now it just redirects to edit page
+                  // Redirect to edit page where status can be updated
                   navigate(`/opportunities/edit/${id}`);
                 }}
                 className="block w-full px-4 py-2 bg-[#e56e43] hover:bg-[#e56e43]/90 text-white rounded-lg text-center mb-3"

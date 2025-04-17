@@ -41,7 +41,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
       };
 
       // Process all images at once
-      const normalizedImages = Array.isArray(currentImages)
+      const normalizedImages: CloudinaryImage[] = Array.isArray(currentImages)
         ? currentImages.map(normalizeImage)
         : [];
 
@@ -122,7 +122,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
     const updatedImages = [...currentImages];
     updatedImages.splice(index, 1);
     // Set the new value
-    setValue('media.images', updatedImages, { shouldValidate: true });
+    setValue('media.images', updatedImages as CloudinaryImage[], { shouldValidate: true });
   }, [setValue, watch]);
 
   return (

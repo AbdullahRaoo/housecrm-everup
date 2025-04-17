@@ -91,7 +91,8 @@ function Opportunities() {
   const filteredOpportunities = (opportunities || [])
     .filter(opportunity => {
       // Filter by search term
-      const matchesSearch = opportunity.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+      const matchesSearch =
+        (opportunity.title?.toLowerCase() || '').includes(filters.search.toLowerCase()) ||
         (opportunity.description && opportunity.description.toLowerCase().includes(filters.search.toLowerCase())) ||
         (opportunity.customer?.name && opportunity.customer.name.toLowerCase().includes(filters.search.toLowerCase()));
 
@@ -344,74 +345,79 @@ function Opportunities() {
                 </td>
               </tr>
             ) : (
-              paginatedOpportunities.map((opportunity) => (
-                <tr key={opportunity._id || opportunity.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <input
-                      type="checkbox"
-                      checked={selectedOpportunities.includes(opportunity._id || opportunity.id || '')}
-                      onChange={() => handleSelectOpportunity(opportunity._id || opportunity.id || '')}
-                      className="rounded border-gray-300"
-                    />
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <Link to={`/opportunities/${opportunity._id || opportunity.id}`} className="text-blue-600 hover:text-blue-900">
-                      {opportunity.title}
-                    </Link>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    {opportunity.customerId ? (
-                      <Link to={`/customers/${typeof opportunity.customerId === 'object' && opportunity.customerId ?
-                        opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`}
-                        className="text-gray-900 whitespace-no-wrap">
-                        {typeof opportunity.customerId === 'object' && opportunity.customerId && 'name' in opportunity.customerId ?
-                          opportunity.customerId.name : opportunity.customer?.name || 'Unknown customer'}
+              paginatedOpportunities.map((opportunity) => {
+                // Safely extract the ID to prevent TypeScript errors
+                const opportunityId = opportunity._id || opportunity.id || '';
+
+                return (
+                  <tr key={opportunityId} className="hover:bg-gray-50">
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <input
+                        type="checkbox"
+                        checked={selectedOpportunities.includes(opportunityId)}
+                        onChange={() => handleSelectOpportunity(opportunityId)}
+                        className="rounded border-gray-300"
+                      />
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <Link to={`/opportunities/${opportunityId}`} className="text-blue-600 hover:text-blue-900">
+                        {opportunity.title}
                       </Link>
-                    ) : (
-                      <span className="text-gray-500">No customer assigned</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {formatCurrency(opportunity.budget.amount, opportunity.budget.currency)}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      {opportunity.customerId ? (
+                        <Link to={`/customers/${typeof opportunity.customerId === 'object' && opportunity.customerId ?
+                          opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`}
+                          className="text-gray-900 whitespace-no-wrap">
+                          {typeof opportunity.customerId === 'object' && opportunity.customerId && 'name' in opportunity.customerId ?
+                            opportunity.customerId.name : opportunity.customer?.name || 'Unknown customer'}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-500">No customer assigned</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <p className="text-gray-900 whitespace-no-wrap">
+                        {formatCurrency(opportunity.budget.amount, opportunity.budget.currency)}
+                      </p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                         ${opportunity.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
-                          opportunity.status === 'Proposed' ? 'bg-blue-100 text-blue-800' :
-                            opportunity.status === 'Accepted' ? 'bg-green-100 text-green-800' :
-                              opportunity.status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                                'bg-yellow-100 text-yellow-800'}`
-                      }
-                    >
-                      {opportunity.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {new Date(opportunity.createdAt || '').toLocaleDateString()}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to={`/opportunities/edit/${opportunity._id || opportunity.id}`}
-                        className="text-blue-600 hover:text-blue-900"
+                            opportunity.status === 'Proposed' ? 'bg-blue-100 text-blue-800' :
+                              opportunity.status === 'Accepted' ? 'bg-green-100 text-green-800' :
+                                opportunity.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                                  'bg-yellow-100 text-yellow-800'}`
+                        }
                       >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteOpportunity(opportunity._id || opportunity.id || '')}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {opportunity.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <p className="text-gray-900 whitespace-no-wrap">
+                        {new Date(opportunity.createdAt || '').toLocaleDateString()}
+                      </p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/opportunities/edit/${opportunity._id || opportunity.id}`}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteOpportunity(opportunity._id || opportunity.id || '')}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })
             )}
           </tbody>
         </table>
