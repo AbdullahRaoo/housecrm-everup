@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env.local
-.env
+# .env
 tasks.txt
 image.jpeg
