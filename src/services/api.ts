@@ -592,3 +592,202 @@ export const mediaApi = {
     return response.json();
   },
 };
+
+// Opportunity API
+export const opportunityApi = {
+  // Get all opportunities
+  getOpportunities: async (token: string): Promise<any[]> => {
+    try {
+      const response = await fetch(`${API_URL}/opportunities`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch opportunities: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getOpportunities:", error);
+      throw error;
+    }
+  },
+
+  // Get opportunities by customer ID
+  getCustomerOpportunities: async (
+    customerId: string,
+    token: string
+  ): Promise<any[]> => {
+    try {
+      const response = await fetch(
+        `${API_URL}/opportunities/customer/${customerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch customer opportunities: ${response.status}`
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getCustomerOpportunities:", error);
+      throw error;
+    }
+  },
+
+  // Get single opportunity
+  getOpportunity: async (id: string, token: string): Promise<any> => {
+    try {
+      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch opportunity: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in getOpportunity:", error);
+      throw error;
+    }
+  },
+
+  // Create new opportunity
+  addOpportunity: async (opportunity: any, token: string): Promise<any> => {
+    try {
+      const response = await fetch(`${API_URL}/opportunities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(opportunity),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `Failed to create opportunity: ${response.status}`
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in addOpportunity:", error);
+      throw error;
+    }
+  },
+
+  // Update opportunity
+  updateOpportunity: async (
+    id: string,
+    opportunity: any,
+    token: string
+  ): Promise<any> => {
+    try {
+      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(opportunity),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update opportunity: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in updateOpportunity:", error);
+      throw error;
+    }
+  },
+
+  // Delete opportunity
+  deleteOpportunity: async (id: string, token: string): Promise<void> => {
+    try {
+      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete opportunity: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error in deleteOpportunity:", error);
+      throw error;
+    }
+  },
+
+  // Add income scenario to opportunity
+  addScenario: async (
+    opportunityId: string,
+    scenario: any,
+    token: string
+  ): Promise<any> => {
+    try {
+      const response = await fetch(
+        `${API_URL}/opportunities/${opportunityId}/scenarios`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(scenario),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to add scenario: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error in addScenario:", error);
+      throw error;
+    }
+  },
+
+  // Delete income scenario
+  deleteScenario: async (
+    opportunityId: string,
+    scenarioId: string,
+    token: string
+  ): Promise<void> => {
+    try {
+      const response = await fetch(
+        `${API_URL}/opportunities/${opportunityId}/scenarios/${scenarioId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete scenario: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error in deleteScenario:", error);
+      throw error;
+    }
+  },
+};

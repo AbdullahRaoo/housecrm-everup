@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import xlsx from "xlsx";
 import Customer from "../models/Customer.js";
 import Event from "../models/Event.js";
+import Opportunity from "../models/Opportunity.js";
 import Property from "../models/Property.js";
 import User from "../models/User.js";
 
@@ -1045,5 +1046,247 @@ router.delete("/users/:id", authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ error: "Failed to delete user" });
   }
 });
+
+// OPPORTUNITIES ROUTES
+
+// Get all opportunities
+router.get("/opportunities", authenticateToken, async (req, res) => {
+  try {
+    const opportunities = await Opportunity.find()
+      .populate("customerId", "name email")
+      .populate("propertyId", "title price location.address");
+    res.json(opportunities);
+  } catch (error) {
+    console.error("Error fetching opportunities:", error);
+    res.status(500).json({ error: "Failed to fetch opportunities" });
+  }
+});
+
+// Get opportunities by customer ID
+router.get(
+  "/opportunities/customer/:customerId",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const opportunities = await Opportunity.find({
+        customerId: req.params.customerId,
+      })
+        .populate("customerId", "name email")
+        .populate("propertyId", "title price location.address");
+      res.json(opportunities);
+    } catch (error) {
+      console.error("Error fetching customer opportunities:", error);
+      res.status(500).json({ error: "Failed to fetch customer opportunities" });
+    }
+  }
+);
+
+// Get single opportunity by ID
+router.get("/opportunities/:id", authenticateToken, async (req, res) => {
+  try {
+    const opportunity = await Opportunity.findById(req.params.id)
+      .populate("customerId", "name email phone")
+      .populate("propertyId", "title price location.address media");
+
+    if (!opportunity) {
+      return res.status(404).json({ error: "Opportunity not found" });
+    }
+    res.json(opportunity);
+  } catch (error) {
+    console.error("Error fetching opportunity:", error);
+    res.status(500).json({ error: "Failed to fetch opportunity" });
+  }
+});
+
+// Create new opportunity
+router.post("/opportunities", authenticateToken, async (req, res) => {
+  try {
+    // Add the creating user's ID
+    const opportunityData = {
+      ...req.body,
+      createdBy: req.user.id,
+    };
+
+    // Validate required fields
+    if (!opportunityData.title) {
+      return res.status(400).json({
+        error: "Opportunity title is required",
+        field: "title",
+      });
+    }
+
+    if (!opportunityData.customerId) {
+      return res.status(400).json({
+        error: "Customer is required",
+        field: "customerId",
+      });
+    }
+
+    if (!opportunityData.budget || !opportunityData.budget.amount) {
+      return res.status(400).json({
+        error: "Budget amount is required",
+        field: "budget.amount",
+      });
+    }
+
+    const newOpportunity = new Opportunity(opportunityData);
+    const savedOpportunity = await newOpportunity.save();
+
+    // Return populated data
+    const populatedOpportunity = await Opportunity.findById(
+      savedOpportunity._id
+    )
+      .populate("customerId", "name email")
+      .populate("propertyId", "title price location.address");
+
+    res.status(201).json(populatedOpportunity);
+  } catch (error) {
+    console.error("Error creating opportunity:", error);
+
+    // Handle validation errors from Mongoose
+    if (error.name === "ValidationError") {
+      const errors = {};
+      for (const field in error.errors) {
+        errors[field] = error.errors[field].message;
+      }
+      return res.status(400).json({
+        error: "Validation failed",
+        details: errors,
+      });
+    }
+
+    res.status(500).json({ error: "Failed to create opportunity" });
+  }
+});
+
+// Update opportunity
+router.put("/opportunities/:id", authenticateToken, async (req, res) => {
+  try {
+    // Update timestamps
+    const opportunityData = {
+      ...req.body,
+      updatedAt: new Date(),
+    };
+
+    const updatedOpportunity = await Opportunity.findByIdAndUpdate(
+      req.params.id,
+      opportunityData,
+      { new: true, runValidators: true }
+    )
+      .populate("customerId", "name email")
+      .populate("propertyId", "title price location.address");
+
+    if (!updatedOpportunity) {
+      return res.status(404).json({ error: "Opportunity not found" });
+    }
+
+    res.json(updatedOpportunity);
+  } catch (error) {
+    console.error("Error updating opportunity:", error);
+
+    // Handle validation errors
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.keys(error.errors).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+
+      return res.status(400).json({
+        error: "Validation failed",
+        details: validationErrors,
+      });
+    }
+
+    res.status(500).json({ error: "Failed to update opportunity" });
+  }
+});
+
+// Delete opportunity
+router.delete("/opportunities/:id", authenticateToken, async (req, res) => {
+  try {
+    const deletedOpportunity = await Opportunity.findByIdAndDelete(
+      req.params.id
+    );
+    if (!deletedOpportunity) {
+      return res.status(404).json({ error: "Opportunity not found" });
+    }
+    res.json({ message: "Opportunity deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting opportunity:", error);
+    res.status(500).json({ error: "Failed to delete opportunity" });
+  }
+});
+
+// Add an income scenario to an opportunity
+router.post(
+  "/opportunities/:id/scenarios",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const scenarioData = req.body;
+
+      // Validate required fields for scenario
+      if (!scenarioData.name) {
+        return res.status(400).json({
+          error: "Scenario name is required",
+          field: "name",
+        });
+      }
+
+      if (!scenarioData.income) {
+        return res.status(400).json({
+          error: "Income amount is required",
+          field: "income",
+        });
+      }
+
+      // Calculate ROI if income and expenses are provided
+      if (scenarioData.income && scenarioData.expenses) {
+        const netIncome = scenarioData.income - scenarioData.expenses;
+        scenarioData.roi = (netIncome / scenarioData.income) * 100;
+      }
+
+      const opportunity = await Opportunity.findById(id);
+      if (!opportunity) {
+        return res.status(404).json({ error: "Opportunity not found" });
+      }
+
+      opportunity.incomeScenarios.push(scenarioData);
+      await opportunity.save();
+
+      res.status(201).json(opportunity);
+    } catch (error) {
+      console.error("Error adding scenario:", error);
+      res.status(500).json({ error: "Failed to add scenario" });
+    }
+  }
+);
+
+// Remove an income scenario from an opportunity
+router.delete(
+  "/opportunities/:id/scenarios/:scenarioId",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { id, scenarioId } = req.params;
+
+      const opportunity = await Opportunity.findById(id);
+      if (!opportunity) {
+        return res.status(404).json({ error: "Opportunity not found" });
+      }
+
+      opportunity.incomeScenarios = opportunity.incomeScenarios.filter(
+        (scenario) => scenario._id.toString() !== scenarioId
+      );
+
+      await opportunity.save();
+      res.json({ message: "Scenario removed successfully" });
+    } catch (error) {
+      console.error("Error removing scenario:", error);
+      res.status(500).json({ error: "Failed to remove scenario" });
+    }
+  }
+);
 
 export default router;
