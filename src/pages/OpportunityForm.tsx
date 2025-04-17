@@ -20,7 +20,7 @@ function OpportunityForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Used for future loading indicators
 
   const [formData, setFormData] = useState<Opportunity>({
     title: '',
@@ -60,11 +60,10 @@ function OpportunityForm() {
         try {
           setIsLoading(true);
           // Call the getOpportunity function and store the result
-          const result = await getOpportunity(id);
+          const opportunity = await getOpportunity(id);
 
-          // Check if we received an opportunity data
-          if (result) {
-            const opportunity = result;
+          // Check if we received opportunity data
+          if (opportunity) {
             setFormData({
               ...opportunity,
               id: opportunity.id || opportunity._id, // Ensure the ID is set

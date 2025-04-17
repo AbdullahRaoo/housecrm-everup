@@ -349,6 +349,15 @@ function Opportunities() {
                 // Safely extract the ID to prevent TypeScript errors
                 const opportunityId = opportunity._id || opportunity.id || '';
 
+                // Safely extract customer information
+                const customerId = typeof opportunity.customerId === 'object' && opportunity.customerId
+                  ? opportunity.customerId._id || opportunity.customerId.id || ''
+                  : (opportunity.customerId || '');
+
+                const customerName = typeof opportunity.customerId === 'object' && opportunity.customerId && 'name' in opportunity.customerId
+                  ? opportunity.customerId.name
+                  : opportunity.customer?.name || 'Unknown customer';
+
                 return (
                   <tr key={opportunityId} className="hover:bg-gray-50">
                     <td className="px-5 py-5 border-b border-gray-200">
@@ -366,11 +375,9 @@ function Opportunities() {
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200">
                       {opportunity.customerId ? (
-                        <Link to={`/customers/${typeof opportunity.customerId === 'object' && opportunity.customerId ?
-                          opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`}
+                        <Link to={`/customers/${customerId}`}
                           className="text-gray-900 whitespace-no-wrap">
-                          {typeof opportunity.customerId === 'object' && opportunity.customerId && 'name' in opportunity.customerId ?
-                            opportunity.customerId.name : opportunity.customer?.name || 'Unknown customer'}
+                          {customerName}
                         </Link>
                       ) : (
                         <span className="text-gray-500">No customer assigned</span>

@@ -11,6 +11,7 @@ interface Document {
 }
 
 interface DocumentManagerProps {
+  // Will be used in future implementation
   propertyId?: string;
 }
 
