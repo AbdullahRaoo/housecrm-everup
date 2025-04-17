@@ -8,10 +8,10 @@ declare const process: {
   };
 };
 
-const API_URL =
-  process.env.NODE_ENV === "production"
+const API_URL = import.meta.env.VITE_API_URL ||
+  (process.env.NODE_ENV === "production"
     ? "/api" // In production, API is served from same origin
-    : "http://localhost:5001/api"; // In development, API is on port 5001
+    : "http://localhost:5001/api"); // In development, API is on port 5001
 
 // Calendar API
 export const calendarApi = {
