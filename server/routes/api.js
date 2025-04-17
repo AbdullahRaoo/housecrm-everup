@@ -3,11 +3,13 @@ import dotenv from "dotenv";
 import express from "express";
 import jwt from "jsonwebtoken";
 import xlsx from "xlsx";
+import { logManualActivity } from "../middleware/logger.js";
 import Customer from "../models/Customer.js";
 import Event from "../models/Event.js";
 import Opportunity from "../models/Opportunity.js";
 import Property from "../models/Property.js";
 import User from "../models/User.js";
+import { logService } from "../services/logService.js";
 
 // Load environment variables
 dotenv.config();
@@ -131,6 +133,14 @@ router.post("/auth/register", async (req, res) => {
       { expiresIn: "24h" }
     );
 
+    await logManualActivity(req, {
+      action: "CREATE",
+      entityType: "USER",
+      entityId: user._id,
+      description: `New user registered: ${user.name} (${user.email})`,
+      details: { role: user.role, isAdmin: user.isAdmin },
+    });
+
     // Return user data and token
     res.status(201).json({
       token,
@@ -183,6 +193,15 @@ router.post("/auth/login", async (req, res) => {
       process.env.JWT_SECRET || "your_jwt_secret_key_here",
       { expiresIn: "24h" }
     );
+
+    // Log the login activity
+    logManualActivity(req, {
+      action: "LOGIN",
+      entityType: "USER",
+      entityId: user._id,
+      description: `User logged in: ${user.name} (${user.email})`,
+      details: { role: user.role },
+    });
 
     // Return user data and token
     res.json({
@@ -555,6 +574,125 @@ router.get(
     }
   }
 );
+
+// LOG ROUTES (ADMIN ONLY)
+
+// Get logs with filtering and pagination
+router.get("/logs", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 50,
+      userId,
+      action,
+      entityType,
+      entityId,
+      startDate,
+      endDate,
+      searchTerm,
+    } = req.query;
+
+    const result = await logService.getLogs({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      userId,
+      action,
+      entityType,
+      entityId,
+      startDate,
+      endDate,
+      searchTerm,
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    res.status(500).json({ error: "Failed to fetch logs" });
+  }
+});
+
+// Get log statistics
+router.get("/logs/stats", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const stats = await logService.getLogStats();
+    res.json(stats);
+  } catch (error) {
+    console.error("Error fetching log stats:", error);
+    res.status(500).json({ error: "Failed to fetch log statistics" });
+  }
+});
+
+// Clear old logs
+router.delete("/logs/cleanup", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { days = 90 } = req.query;
+    const deletedCount = await logService.clearOldLogs(parseInt(days));
+
+    res.json({
+      message: `Successfully cleared ${deletedCount} logs older than ${days} days`,
+      deletedCount,
+    });
+  } catch (error) {
+    console.error("Error clearing old logs:", error);
+    res.status(500).json({ error: "Failed to clear old logs" });
+  }
+});
+
+// Export logs as CSV
+router.get("/logs/export/csv", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { userId, action, entityType, startDate, endDate, searchTerm } =
+      req.query;
+
+    // Get all logs that match the filters (no pagination)
+    const result = await logService.getLogs({
+      page: 1,
+      limit: 10000, // High limit to get all logs
+      userId,
+      action,
+      entityType,
+      startDate,
+      endDate,
+      searchTerm,
+    });
+
+    // Format logs for CSV
+    const logsForExport = result.logs.map((log) => ({
+      ID: log._id.toString(),
+      Timestamp: new Date(log.createdAt).toISOString(),
+      User: log.userId ? log.userId.name || log.userId : "System",
+      Email: log.userId && log.userId.email ? log.userId.email : "",
+      Action: log.action,
+      "Entity Type": log.entityType,
+      Description: log.description,
+      "IP Address": log.ipAddress || "",
+      "User Agent": log.userAgent || "",
+    }));
+
+    // Create workbook for CSV
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.json_to_sheet(logsForExport);
+    xlsx.utils.book_append_sheet(wb, ws, "System Logs");
+
+    // Generate CSV
+    const csvContent = xlsx.utils.sheet_to_csv(ws);
+
+    // Set headers for file download
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="system_logs_${
+        new Date().toISOString().split("T")[0]
+      }.csv"`
+    );
+    res.setHeader("Content-Type", "text/csv");
+
+    // Send the CSV data
+    res.send(csvContent);
+  } catch (error) {
+    console.error("Error exporting logs:", error);
+    res.status(500).json({ error: "Failed to export logs" });
+  }
+});
 
 // CUSTOMER ROUTES
 

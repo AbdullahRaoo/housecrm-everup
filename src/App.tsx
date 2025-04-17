@@ -11,6 +11,7 @@ import CustomerForm from './pages/CustomerForm';
 import Customers from './pages/Customers';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Logs from './pages/Logs';
 import Opportunities from './pages/Opportunities';
 import OpportunityDetail from './pages/OpportunityDetail';
 import OpportunityForm from './pages/OpportunityForm';
@@ -53,6 +54,7 @@ function App() {
                               <Route path="/opportunities/:id" element={<OpportunityDetail />} />
                               <Route path="/opportunities/edit/:id" element={<OpportunityForm />} />
                               <Route path="/sheets" element={<Sheets />} />
+                              <Route path="/logs" element={<Logs />} />
                               <Route path="/users" element={<Users />} />
                             </Routes>
                           </main>
