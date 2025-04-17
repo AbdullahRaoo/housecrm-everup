@@ -33,6 +33,9 @@ function Customers() {
   const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
   const [customerTasks, setCustomerTasks] = useState<Record<string, CalendarEvent[]>>({});
   const [customerProperties, setCustomerProperties] = useState<Record<string, any[]>>({});
+  const [availableProperties, setAvailableProperties] = useState<any[]>([]);
+  const [isLoadingProperties, setIsLoadingProperties] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<string>('');
 
   useEffect(() => {
     if (token) {
@@ -46,6 +49,12 @@ function Customers() {
       fetchCustomerProperties(expandedCustomerId);
     }
   }, [expandedCustomerId, token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchAvailableProperties();
+    }
+  }, [token]);
 
   const fetchCustomerTasks = async (customerId: string) => {
     try {
@@ -105,6 +114,86 @@ function Customers() {
       }));
     } catch (error) {
       console.error('Error fetching customer properties:', error);
+    }
+  };
+
+  const fetchAvailableProperties = async () => {
+    if (!token) return;
+
+    try {
+      setIsLoadingProperties(true);
+      const response = await fetch('/api/properties', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+
+      const properties = await response.json();
+      setAvailableProperties(properties);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setIsLoadingProperties(false);
+    }
+  };
+
+  // Function to add a property interest to a customer
+  const addPropertyInterest = async (custId: string, propertyId: string) => {
+    if (!custId || !propertyId || !token) {
+      alert('Missing customer or property information');
+      return;
+    }
+
+    try {
+      // Find the customer in the current state
+      const customer = customers.find(c => c.id === custId || c._id === custId);
+      if (!customer) {
+        alert('Customer not found');
+        return;
+      }
+
+      console.log('Found customer:', customer);
+
+      // Prepare updated propertiesViewed array
+      const updatedPropertiesViewed = [
+        ...(customer.propertiesViewed || []),
+        propertyId
+      ];
+
+      // Remove duplicates
+      const uniquePropertiesViewed = [...new Set(updatedPropertiesViewed)];
+
+      // Ensure we're using the correct ID field
+      const customerIdToUse = customer.id || customer._id;
+      if (!customerIdToUse) {
+        alert('Invalid customer ID');
+        return;
+      }
+
+      // Update customer with new property interest
+      const updatedCustomer = {
+        ...customer,
+        id: customerIdToUse, // Ensure we always have an id field
+        propertiesViewed: uniquePropertiesViewed
+      };
+
+      console.log('Updating customer with:', updatedCustomer);
+
+      await updateCustomer(updatedCustomer as Customer);
+
+      // Refresh the customer properties list
+      await fetchCustomerProperties(custId);
+
+      // Reset property selection
+      setSelectedProperty('');
+
+      // Show success feedback
+      alert('Property interest added successfully');
+    } catch (error) {
+      console.error('Error adding property interest:', error);
+      alert(`Failed to add property interest: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -234,7 +323,7 @@ function Customers() {
     const properties = customerProperties[customerId] || [];
 
     return (
-      <tr>
+      <tr key={`details-${customerId}`}>
         <td colSpan={7} className="px-5 py-5 bg-gray-50 border-b border-gray-200">
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -244,13 +333,13 @@ function Customers() {
                   <p className="text-gray-500 italic">No tasks assigned to this customer</p>
                 ) : (
                   <div className="space-y-3">
-                    {tasks.map((task) => (
-                      <div key={task.id} className="border-b pb-2">
+                    {tasks.map((task, idx) => (
+                      <div key={task.id || `task-${idx}-${customerId}`} className="border-b pb-2">
                         <div className="flex justify-between">
                           <p className="font-medium text-gray-700">{task.title}</p>
                           <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                              task.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
-                                'bg-yellow-100 text-yellow-800'
+                            task.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
                             }`}>
                             {task.status}
                           </span>
@@ -272,8 +361,8 @@ function Customers() {
                   <p className="text-gray-500 italic">No property interests recorded</p>
                 ) : (
                   <div className="space-y-3">
-                    {properties.map((property) => (
-                      <div key={property.id || property._id} className="flex items-center border-b pb-2">
+                    {properties.map((property, propIdx) => (
+                      <div key={`${property.id || property._id}-${propIdx}`} className="flex items-center border-b pb-2">
                         <div className="w-16 h-16 flex-shrink-0">
                           <img
                             src={property.media?.photos?.[0] || 'https://via.placeholder.com/150'}
@@ -300,56 +389,40 @@ function Customers() {
                     ))}
                   </div>
                 )}
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow md:col-span-2">
-                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Customer Preferences & Notes</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1">Budget Range</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.min
-                        ? `$${customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.min.toLocaleString()} -
-                           $${customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.budget?.max.toLocaleString()}`
-                        : 'No budget specified'
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Add Property Interest</label>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
+                    >
+                      <option value="">Select a property</option>
+                      {availableProperties
+                        .filter(property => {
+                          // Filter out properties that are already in the customer's interests
+                          const propertyId = property.id || property._id;
+                          const customerPropertyIds = properties.map(p => p.id || p._id);
+                          return !customerPropertyIds.includes(propertyId);
+                        })
+                        .map((property, idx) => (
+                          <option key={`option-${property.id || property._id}-${idx}`} value={property.id || property._id}>
+                            {property.title}
+                          </option>
+                        ))
                       }
-                    </p>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Preferred Locations</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.location?.length
-                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.location?.join(', ')
-                        : 'No locations specified'
-                      }
-                    </p>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Property Type Preferences</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.propertyType?.length
-                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.propertyType?.join(', ')
-                        : 'No property types specified'
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1">Notes</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.notes || 'No notes available'}
-                    </p>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Last Interaction</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.lastInteraction
-                        ? new Date(customers.find(c => c.id === customerId || c._id === customerId)?.lastInteraction!).toLocaleString()
-                        : 'No recent interaction recorded'
-                      }
-                    </p>
-                    <h5 className="font-medium text-sm text-gray-600 mb-1 mt-3">Required Features</h5>
-                    <p className="text-gray-800">
-                      {customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.features?.length
-                        ? customers.find(c => c.id === customerId || c._id === customerId)?.preferences?.features?.join(', ')
-                        : 'No specific features required'
-                      }
-                    </p>
+                    </select>
+                    <button
+                      onClick={() => addPropertyInterest(customerId, selectedProperty)}
+                      disabled={!selectedProperty}
+                      className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 disabled:opacity-50"
+                    >
+                      Add
+                    </button>
                   </div>
                 </div>
               </div>
+
               <div className="bg-white p-4 rounded-lg shadow md:col-span-2">
                 <div className="flex justify-between items-center">
                   <h4 className="font-semibold text-lg text-gray-700">Quick Actions</h4>
@@ -572,8 +645,8 @@ function Customers() {
                 </td>
               </tr>
             ) : (
-              paginatedCustomers.map((customer) => (
-                <React.Fragment key={customer._id || customer.id}>
+              paginatedCustomers.map((customer, index) => (
+                <React.Fragment key={`customer-${customer._id || customer.id}-${index}`}>
                   <tr
                     className={`hover:bg-gray-50 cursor-pointer ${expandedCustomerId === (customer._id || customer.id) ? 'bg-gray-50' : ''}`}
                     onClick={() => toggleCustomerExpand(customer._id || customer.id)}
