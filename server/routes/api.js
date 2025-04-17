@@ -740,6 +740,86 @@ router.get("/logs/export/csv", authenticateToken, isAdmin, async (req, res) => {
   }
 });
 
+// Export logs as Excel
+router.get(
+  "/logs/export/excel",
+  authenticateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const { userId, action, entityType, startDate, endDate, searchTerm } =
+        req.query;
+
+      // Get all logs that match the filters (no pagination)
+      const result = await logService.getLogs({
+        page: 1,
+        limit: 10000, // High limit to get all logs
+        userId,
+        action,
+        entityType,
+        startDate,
+        endDate,
+        searchTerm,
+      });
+
+      // Format logs for Excel
+      const logsForExport = result.logs.map((log) => ({
+        ID: log._id.toString(),
+        Timestamp: new Date(log.createdAt).toISOString(),
+        User: log.userId ? log.userId.name || log.userId : "System",
+        Email: log.userId && log.userId.email ? log.userId.email : "",
+        Action: log.action,
+        "Entity Type": log.entityType,
+        Description: log.description,
+        "IP Address": log.ipAddress || "",
+        "User Agent": log.userAgent || "",
+      }));
+
+      // Create workbook
+      const wb = xlsx.utils.book_new();
+
+      // Add worksheet with data
+      const ws = xlsx.utils.json_to_sheet(logsForExport);
+      xlsx.utils.book_append_sheet(wb, ws, "System Logs");
+
+      // Set column widths for better readability
+      const colWidths = [
+        { wch: 24 }, // ID
+        { wch: 25 }, // Timestamp
+        { wch: 20 }, // User
+        { wch: 30 }, // Email
+        { wch: 15 }, // Action
+        { wch: 15 }, // Entity Type
+        { wch: 40 }, // Description
+        { wch: 15 }, // IP Address
+        { wch: 30 }, // User Agent
+      ];
+      ws["!cols"] = colWidths;
+
+      // Create buffer for download
+      const excelBuffer = xlsx.write(wb, { bookType: "xlsx", type: "buffer" });
+
+      // Set headers for file download
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="system_logs_${
+          new Date().toISOString().split("T")[0]
+        }.xlsx"`
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      // Send the file
+      res.send(Buffer.from(excelBuffer));
+    } catch (error) {
+      console.error("Error exporting logs:", error);
+      res.status(500).json({ error: "Failed to export logs" });
+    }
+  }
+);
+
 // CUSTOMER ROUTES
 
 // Get all customers

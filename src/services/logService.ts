@@ -61,9 +61,12 @@ const logService = {
   },
 
   /**
-   * Get export URL for logs CSV
+   * Get export URL for logs based on format
    */
-  getExportUrl(options: LogFilterOptions = {}): string {
+  getExportUrl(
+    options: LogFilterOptions = {},
+    format: "csv" | "excel" = "csv"
+  ): string {
     const queryParams = new URLSearchParams();
 
     // Add all provided options as query parameters
@@ -73,7 +76,36 @@ const logService = {
       }
     });
 
-    return `${API_URL}/logs/export/csv?${queryParams.toString()}`;
+    return `${API_URL}/logs/export/${format}?${queryParams.toString()}`;
+  },
+
+  /**
+   * Export logs as a blob (for direct download)
+   */
+  async exportLogs(
+    options: LogFilterOptions = {},
+    format: "csv" | "excel" = "csv"
+  ): Promise<Blob> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      // Add all provided options as query parameters
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      const response = await axios.get(
+        `${API_URL}/logs/export/${format}?${queryParams.toString()}`,
+        { responseType: "blob" }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error exporting logs as ${format}:`, error);
+      throw error;
+    }
   },
 };
 

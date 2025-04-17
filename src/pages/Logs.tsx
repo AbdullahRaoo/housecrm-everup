@@ -27,6 +27,7 @@ function Logs() {
     startDate: '',
     endDate: ''
   });
+  const [isExporting, setIsExporting] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -98,9 +99,34 @@ function Logs() {
   };
 
   // Handle export
-  const handleExport = () => {
-    const exportUrl = logService.getExportUrl(filters);
-    window.open(exportUrl, '_blank');
+  const handleExport = async (format: 'csv' | 'excel') => {
+    if (!user?.isAdmin) {
+      alert('You need admin access to export log data.');
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+
+      // Get the blob using our API service
+      const blob = await logService.exportLogs(filters, format);
+
+      // Create a download link for the blob
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `system_logs_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setIsExporting(false);
+    } catch (error) {
+      console.error(`Error exporting as ${format}:`, error);
+      alert(`Failed to export logs as ${format}. Please try again.`);
+      setIsExporting(false);
+    }
   };
 
   // Format date/time
@@ -169,12 +195,42 @@ function Logs() {
           <h3 className="text-3xl font-medium text-gray-700">System Logs</h3>
           <p className="mt-1 text-sm text-gray-500">Track all activities in the CRM system</p>
         </div>
-        <div className="mt-4 md:mt-0 space-x-2">
+        <div className="mt-4 md:mt-0 space-x-2 flex flex-wrap gap-2">
           <button
-            onClick={handleExport}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            onClick={() => handleExport('excel')}
+            disabled={isExporting}
+            className={`${isExporting ? 'bg-green-400' : 'bg-green-600'} text-white px-4 py-2 rounded-lg
+              hover:bg-green-700 transition-colors duration-200
+              font-medium shadow-sm flex items-center gap-1`}
           >
-            Export Logs
+            {isExporting ? (
+              <span className="animate-pulse">Exporting...</span>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export Excel
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => handleExport('csv')}
+            disabled={isExporting}
+            className={`${isExporting ? 'bg-blue-400' : 'bg-blue-600'} text-white px-4 py-2 rounded-lg
+              hover:bg-blue-700 transition-colors duration-200
+              font-medium shadow-sm flex items-center gap-1`}
+          >
+            {isExporting ? (
+              <span className="animate-pulse">Exporting...</span>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export CSV
+              </>
+            )}
           </button>
           <button
             onClick={() => handleClearOldLogs(90)}
@@ -393,8 +449,8 @@ function Logs() {
                           key={i}
                           onClick={() => handleFilterChange('page', i + 1)}
                           className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${pagination.page === i + 1
-                              ? 'text-[#e56e43] border-[#e56e43] z-10'
-                              : 'text-gray-500 hover:bg-gray-50'
+                            ? 'text-[#e56e43] border-[#e56e43] z-10'
+                            : 'text-gray-500 hover:bg-gray-50'
                             }`}
                         >
                           {i + 1}
@@ -420,8 +476,8 @@ function Logs() {
                     onClick={() => handleFilterChange('page', Math.min(pagination.pages, pagination.page + 1))}
                     disabled={pagination.page >= pagination.pages}
                     className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${pagination.page >= pagination.pages
-                        ? 'text-gray-300 cursor-not-allowed'
-                        : 'text-gray-500 hover:bg-gray-50'
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-500 hover:bg-gray-50'
                       }`}
                   >
                     Next
