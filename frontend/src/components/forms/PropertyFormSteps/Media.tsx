@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { useAuth } from '../../../hooks/useAuth';
@@ -14,7 +14,7 @@ interface MediaProps {
 
 export function Media({ setValue, watch, errors }: MediaProps) {
   const [previews, setPreviews] = useState<string[]>([]);
-  const [cloudinaryImages, setCloudinaryImages] = useState<CloudinaryImage[]>([]);
+  const [, setImages] = useState<CloudinaryImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -47,7 +47,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
 
       // Set previews and images states
       setPreviews(normalizedImages.map(img => img.url));
-      setCloudinaryImages(normalizedImages);
+      setImages(normalizedImages);
 
       // Use setTimeout to ensure setValue happens after render is complete
       setTimeout(() => {
@@ -83,7 +83,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
       const uploadedImages = await mediaApi.uploadImages(validFiles, token);
 
       // Update the images state with the new CloudinaryImages
-      setCloudinaryImages(prev => {
+      setImages(prev => {
         const updated = [...prev, ...uploadedImages];
         setTimeout(() => {
           // Use type assertion to ensure TypeScript understands this is safe
@@ -123,7 +123,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
     setPreviews(prev => prev.filter((_, i) => i !== index));
 
     // Remove from images and update form
-    setCloudinaryImages(prev => {
+    setImages(prev => {
       const updated = prev.filter((_, i) => i !== index);
       setTimeout(() => {
         // Use type assertion to ensure TypeScript understands this is safe

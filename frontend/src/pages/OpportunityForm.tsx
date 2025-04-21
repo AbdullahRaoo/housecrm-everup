@@ -19,7 +19,7 @@ function OpportunityForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<Opportunity>({
     title: '',
@@ -58,13 +58,17 @@ function OpportunityForm() {
       if (id && token) {
         try {
           setIsLoading(true);
-          const opportunity = await getOpportunity(id);
-          if (opportunity) {
+          // Call getOpportunity but don't check its return value directly
+          await getOpportunity(id);
+
+          // Instead, check if selectedOpportunity is available from context state
+          if (selectedOpportunity) {
             setFormData({
-              ...opportunity,
-              id: opportunity.id || opportunity._id, // Ensure the ID is set
-              validUntil: opportunity.validUntil ?
-                new Date(opportunity.validUntil).toISOString().split('T')[0] :
+              // Use type assertion to ensure TypeScript understands this is safe
+              ...(selectedOpportunity as Opportunity),
+              id: selectedOpportunity.id || selectedOpportunity._id, // Ensure the ID is set
+              validUntil: selectedOpportunity.validUntil ?
+                new Date(selectedOpportunity.validUntil).toISOString().split('T')[0] :
                 new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split('T')[0]
             });
           }
@@ -80,7 +84,7 @@ function OpportunityForm() {
     if (isEditing) {
       loadOpportunity();
     }
-  }, [id, isEditing, token]);
+  }, [id, isEditing, token, getOpportunity, selectedOpportunity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
 
+interface DocumentManagerProps {
+  propertyId?: string;
+}
+
 interface Document {
   id: string;
   name: string;
@@ -7,9 +11,10 @@ interface Document {
   size: number;
   uploadedAt: string;
   url: string;
+  propertyId?: string;
 }
 
-export function DocumentManager() {
+export function DocumentManager({ propertyId }: DocumentManagerProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +30,7 @@ export function DocumentManager() {
         size: file.size,
         uploadedAt: new Date().toISOString(),
         url: URL.createObjectURL(file),
+        propertyId, // Add the propertyId to the document
       }));
       setDocuments([...documents, ...newDocs]);
     }

@@ -31,17 +31,22 @@ if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
 
-// Enhanced CORS configuration with all possible development origins
-app.use(
-  cors({
-    origin: [
+// Get allowed origins from environment variable or use default development origins
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",")
+  : [
       "http://localhost:5173",
       "http://127.0.0.1:5173",
       "http://localhost:5174",
       "http://127.0.0.1:5174",
       "http://localhost:3000",
       "http://127.0.0.1:3000",
-    ],
+    ];
+
+// CORS configuration with environment variable support
+app.use(
+  cors({
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

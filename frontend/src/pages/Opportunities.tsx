@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOpportunity } from '../context/OpportunityContext';
@@ -361,8 +362,12 @@ function Opportunities() {
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200">
                     {opportunity.customerId ? (
-                      <Link to={`/customers/${typeof opportunity.customerId === 'object' ? opportunity.customerId._id || opportunity.customerId.id : opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
-                        {opportunity.customerId.name || opportunity.customer?.name || 'Unknown customer'}
+                      <Link to={`/customers/${typeof opportunity.customerId === 'object' && opportunity.customerId ?
+                        (opportunity.customerId as any)._id || (opportunity.customerId as any).id :
+                        opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
+                        {typeof opportunity.customerId === 'object' && opportunity.customerId ?
+                          (opportunity.customerId as any).name || opportunity.customer?.name || 'Unknown customer' :
+                          opportunity.customer?.name || 'Unknown customer'}
                       </Link>
                     ) : (
                       <span className="text-gray-500">No customer assigned</span>

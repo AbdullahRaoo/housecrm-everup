@@ -225,10 +225,6 @@ function Dashboard() {
 
       {/* Upcoming Tasks */}
       <div className="mt-8">
-        <div className="flex justify-between items-center mb-6">
-          <h4 className="text-xl font-semibold text-gray-800">Upcoming Tasks</h4>
-          <Link to="/calendar" className="text-[#e56e43] hover:text-[#e56e43]/80">View calendar</Link>
-        </div>
         <div className="bg-white rounded-lg shadow-md divide-y">
           {upcomingTasks.map(task => (
             <div key={task.id} className="p-4 hover:bg-gray-50">

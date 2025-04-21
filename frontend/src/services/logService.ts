@@ -1,8 +1,8 @@
 import axios from "axios";
 import { LogFilterOptions, LogResponse, LogStats } from "../types/log";
 
-// Base API URL
-const API_URL = "/api";
+// Get API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 /**
  * Service to handle log-related API calls

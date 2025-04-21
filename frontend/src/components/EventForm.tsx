@@ -68,8 +68,8 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
     start: event?.start || new Date().toISOString(),
     end: event?.end || getDefaultEndTime().toISOString(),
     description: event?.description || '',
-    propertyId: event?.propertyId || null,
-    customerId: event?.customerId || null,
+    propertyId: event?.propertyId || undefined,
+    customerId: event?.customerId || undefined,
     status: event?.status || 'Pending',
     deadline: event?.deadline || getDefaultDeadline().toISOString(),
     isGoogleCalendarSync: event?.isGoogleCalendarSync || false
@@ -89,8 +89,8 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
         start: event.start || new Date().toISOString(),
         end: event.end || getDefaultEndTime().toISOString(),
         description: event.description || '',
-        propertyId: event.propertyId || null,
-        customerId: event.customerId || null,
+        propertyId: event.propertyId || undefined,
+        customerId: event.customerId || undefined,
         status: event.status || 'Pending',
         deadline: event.deadline || getDefaultDeadline().toISOString(),
         isGoogleCalendarSync: event.isGoogleCalendarSync || false
@@ -112,8 +112,8 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
         start: now.toISOString(),
         end: end.toISOString(),
         description: '',
-        propertyId: null,
-        customerId: null,
+        propertyId: undefined,
+        customerId: undefined,
         status: 'Pending',
         deadline: deadline.toISOString(),
         isGoogleCalendarSync: false
@@ -176,11 +176,11 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
     const value = e.target.value;
     console.log('Customer selected:', value);
 
-    // If value is empty, set to null
+    // If value is empty, set to undefined
     if (value === '') {
       setFormData(prev => ({
         ...prev,
-        customerId: null
+        customerId: undefined
       }));
       return;
     }

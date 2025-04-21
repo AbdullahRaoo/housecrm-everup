@@ -27,10 +27,7 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "your_jwt_secret_key_here"
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -66,10 +63,7 @@ const mockAdminCheck = (req, res, next) => {
   } else {
     try {
       // Try JWT verification for real tokens
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "your_jwt_secret_key_here"
-      );
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       if (decoded.isAdmin) {
         req.user = decoded;
         next();
@@ -129,7 +123,7 @@ router.post("/auth/register", async (req, res) => {
         isAdmin: user.isAdmin,
         role: user.role,
       },
-      process.env.JWT_SECRET || "your_jwt_secret_key_here",
+      process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
 
@@ -190,7 +184,7 @@ router.post("/auth/login", async (req, res) => {
         isAdmin: user.isAdmin,
         role: user.role,
       },
-      process.env.JWT_SECRET || "your_jwt_secret_key_here",
+      process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
 

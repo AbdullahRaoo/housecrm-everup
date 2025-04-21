@@ -33,10 +33,6 @@ export function createStorageService<T extends { id: string }>(
   const endpoint = apiEndpointMap[key] || key;
   const apiUrl = `/api/${endpoint}`;
 
-  console.log(
-    `Creating storage service for key ${key}, using API endpoint: ${apiUrl}`
-  );
-
   const getAll = async (): Promise<T[]> => {
     try {
       const response = await axios.get(apiUrl);

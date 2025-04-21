@@ -1,17 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // API service for handling backend requests
 
-// Add explicit type declaration for process.env
-declare const process: {
-  env: {
-    NODE_ENV: string;
-  };
-};
-
-const API_URL =
-  process.env.NODE_ENV === "production"
-    ? "/api" // In production, API is served from same origin
-    : "http://localhost:5001/api"; // In development, API is on port 5001
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 // Calendar API
 export const calendarApi = {
