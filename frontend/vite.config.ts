@@ -23,5 +23,17 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    // Add build configuration for production
+    build: {
+      outDir: "dist",
+      emptyOutDir: true,
+      sourcemap: false,
+    },
+    // Preview config for production preview
+    preview: {
+      port: 3000,
+      host: true,
+      strictPort: true,
+    },
   };
 });
