@@ -52,7 +52,7 @@ Before you begin, ensure you have the following installed:
 ### Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Tabish5858/CRM_Realstate
 cd CRM_Realstate
 ```
 
