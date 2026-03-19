@@ -5,18 +5,12 @@
 import axios from "axios";
 
 // Get the API URL from environment variables
-//const API_URL = import.meta.env.VITE_API_URL || "/api";
 const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "") || "/api";
-const API_HOST = import.meta.env.VITE_API_HOST || "http://localhost";
-const API_PORT = import.meta.env.VITE_API_PORT || "5000";
-
-// Create the full API base URL
-const API_BASE_URL = `${API_HOST}:${API_PORT}`;
-const FULL_API_URL = `${API_HOST}:${API_PORT}${API_URL}`;
+const FULL_API_URL = API_URL;
 
 // Axios instance with the correct base URL
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
