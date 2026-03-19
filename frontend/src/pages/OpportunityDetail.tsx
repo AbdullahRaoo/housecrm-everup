@@ -86,8 +86,8 @@ function OpportunityDetail() {
     return (
       <div className="container mx-auto px-6 py-8">
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg">
-          <strong className="font-bold">Warning!</strong>
-          <span className="block sm:inline ml-2">Opportunity not found.</span>
+          <strong className="font-bold">¡Advertencia!</strong>
+          <span className="block sm:inline ml-2">Oportunidad no encontrada.</span>
         </div>
       </div>
     );
@@ -111,13 +111,13 @@ function OpportunityDetail() {
             to={`/opportunities/edit/${id}`}
             className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
           >
-            Edit
+            Editar
           </Link>
           <button
             onClick={() => setShowDeleteModal(true)}
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
           >
-            Delete
+            Eliminar
           </button>
         </div>
       </div>
@@ -126,36 +126,36 @@ function OpportunityDetail() {
         <div className="md:col-span-2">
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-700">Opportunity Details</h4>
+              <h4 className="text-lg font-semibold text-gray-700">Detalles de la oportunidad</h4>
             </div>
             <div className="p-6">
               {opportunity.description && (
                 <div className="mb-6">
-                  <h5 className="text-gray-600 font-medium mb-2">Description</h5>
+                  <h5 className="text-gray-600 font-medium mb-2">Descripción</h5>
                   <p className="text-gray-800">{opportunity.description}</p>
                 </div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h5 className="text-gray-600 font-medium mb-2">Budget</h5>
+                  <h5 className="text-gray-600 font-medium mb-2">Presupuesto</h5>
                   <p className="text-2xl font-bold text-[#e56e43]">
                     {formatCurrency(opportunity.budget.amount, opportunity.budget.currency)}
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-gray-600 font-medium mb-2">Valid Until</h5>
+                  <h5 className="text-gray-600 font-medium mb-2">Válido hasta</h5>
                   <p className="text-gray-800">
                     {formatDate(opportunity.validUntil)}
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-gray-600 font-medium mb-2">Customer</h5>
+                  <h5 className="text-gray-600 font-medium mb-2">Cliente</h5>
                   <Link
                     to={`/customers/${opportunity.customerId}`}
                     className="text-blue-600 hover:text-blue-800 font-medium"
                   >
-                    {opportunity.customer?.name || 'Unknown customer'}
+                    {opportunity.customer?.name || 'Cliente desconocido'}
                   </Link>
                   {opportunity.customer?.email && (
                     <p className="text-gray-500 text-sm mt-1">{opportunity.customer.email}</p>
@@ -163,12 +163,12 @@ function OpportunityDetail() {
                 </div>
                 {opportunity.propertyId && (
                   <div>
-                    <h5 className="text-gray-600 font-medium mb-2">Related Property</h5>
+                    <h5 className="text-gray-600 font-medium mb-2">Propiedad relacionada</h5>
                     <Link
                       to={`/properties/${opportunity.propertyId}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      {opportunity.property?.title || 'View property'}
+                      {opportunity.property?.title || 'Ver propiedad'}
                     </Link>
                   </div>
                 )}
@@ -176,10 +176,10 @@ function OpportunityDetail() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
                 <div>
-                  <p>Created: {formatDate(opportunity.createdAt)}</p>
+                  <p>Creado: {formatDate(opportunity.createdAt)}</p>
                 </div>
                 <div>
-                  <p>Last Updated: {formatDate(opportunity.updatedAt)}</p>
+                  <p>Última actualización: {formatDate(opportunity.updatedAt)}</p>
                 </div>
               </div>
             </div>
@@ -188,12 +188,12 @@ function OpportunityDetail() {
           {/* Income Scenarios Section */}
           <div className="bg-white rounded-lg shadow mt-6">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h4 className="text-lg font-semibold text-gray-700">Income Scenarios</h4>
+              <h4 className="text-lg font-semibold text-gray-700">Escenarios de ingreso</h4>
               <Link
                 to={`/opportunities/edit/${id}`}
                 className="text-blue-600 hover:text-blue-800 text-sm"
               >
-                Add/Edit Scenarios
+                Agregar/Editar escenarios
               </Link>
             </div>
 
@@ -203,22 +203,22 @@ function OpportunityDetail() {
                   <thead>
                     <tr>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Scenario
+                        Escenario
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Income
+                        Ingreso
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Expenses
+                        Gastos
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Net Income
+                        Ingreso neto
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         ROI
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Probability
+                        Probabilidad
                       </th>
                     </tr>
                   </thead>
@@ -278,7 +278,7 @@ function OpportunityDetail() {
               </div>
             ) : (
               <div className="p-6 text-center text-gray-500">
-                No income scenarios have been added yet.
+                Aún no se han agregado escenarios de ingreso.
               </div>
             )}
           </div>
@@ -288,11 +288,11 @@ function OpportunityDetail() {
           {/* Summary Card */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-700">Summary</h4>
+              <h4 className="text-lg font-semibold text-gray-700">Resumen</h4>
             </div>
             <div className="p-6">
               <div className="mb-4">
-                <h5 className="text-gray-600 font-medium mb-2">Total Budget</h5>
+                <h5 className="text-gray-600 font-medium mb-2">Presupuesto total</h5>
                 <p className="text-2xl font-bold text-[#e56e43]">
                   {formatCurrency(opportunity.budget.amount, opportunity.budget.currency)}
                 </p>
@@ -301,7 +301,7 @@ function OpportunityDetail() {
               {opportunity.incomeScenarios && opportunity.incomeScenarios.length > 0 && (
                 <>
                   <div className="mb-4">
-                    <h5 className="text-gray-600 font-medium mb-2">Potential Income (Highest)</h5>
+                    <h5 className="text-gray-600 font-medium mb-2">Ingreso potencial (más alto)</h5>
                     <p className="text-xl font-semibold text-green-600">
                       {formatCurrency(
                         Math.max(...opportunity.incomeScenarios.map(s => s.income)),
@@ -311,7 +311,7 @@ function OpportunityDetail() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="text-gray-600 font-medium mb-2">Weighted Average Income</h5>
+                    <h5 className="text-gray-600 font-medium mb-2">Ingreso promedio ponderado</h5>
                     <p className="text-xl font-semibold text-green-600">
                       {formatCurrency(
                         opportunity.incomeScenarios.reduce((sum, scenario) =>
@@ -322,7 +322,7 @@ function OpportunityDetail() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="text-gray-600 font-medium mb-2">Best ROI</h5>
+                    <h5 className="text-gray-600 font-medium mb-2">Mejor ROI</h5>
                     <p className="text-xl font-semibold text-blue-600">
                       {opportunity.incomeScenarios
                         .filter(s => s.roi !== undefined)
@@ -342,14 +342,14 @@ function OpportunityDetail() {
                   to={opportunity.customerId ? `/customers/${opportunity.customerId}` : '/customers'}
                   className="block px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-center mb-2"
                 >
-                  View Customer
+                  Ver cliente
                 </Link>
                 {opportunity.propertyId && (
                   <Link
                     to={`/properties/${opportunity.propertyId}`}
                     className="block px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-center"
                   >
-                    View Property
+                    Ver propiedad
                   </Link>
                 )}
               </div>
@@ -359,7 +359,7 @@ function OpportunityDetail() {
           {/* Quick Actions */}
           <div className="bg-white rounded-lg shadow overflow-hidden mt-6">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-700">Actions</h4>
+              <h4 className="text-lg font-semibold text-gray-700">Acciones</h4>
             </div>
             <div className="p-6">
               <button
@@ -369,8 +369,8 @@ function OpportunityDetail() {
                 }}
                 className="block w-full px-4 py-2 bg-[#e56e43] hover:bg-[#e56e43]/90 text-white rounded-lg text-center mb-3"
               >
-                {opportunity.status === 'Draft' ? 'Mark as Proposed' :
-                  opportunity.status === 'Proposed' ? 'Mark as Accepted' : 'Update Status'}
+                {opportunity.status === 'Draft' ? 'Marcar como propuesta' :
+                  opportunity.status === 'Proposed' ? 'Marcar como aceptada' : 'Actualizar estado'}
               </button>
 
               <button
@@ -380,7 +380,7 @@ function OpportunityDetail() {
                 }}
                 className="block w-full px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-center"
               >
-                Schedule Related Task
+                Agendar tarea relacionada
               </button>
             </div>
           </div>
@@ -391,20 +391,20 @@ function OpportunityDetail() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-lg font-medium mb-4">Confirm Delete</h3>
-            <p>Are you sure you want to delete this opportunity? This action cannot be undone.</p>
+            <h3 className="text-lg font-medium mb-4">Confirmar eliminación</h3>
+            <p>¿Está seguro de que desea eliminar esta oportunidad? Esta acción no se puede deshacer.</p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
-                Delete
+                Eliminar
               </button>
             </div>
           </div>

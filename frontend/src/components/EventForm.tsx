@@ -217,60 +217,60 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Title</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Título</label>
         <input
           type="text"
           value={formData.title}
           onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
           className={inputClasses}
           required
-          placeholder="Task title"
+          placeholder="Título de la tarea"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Type</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Tipo</label>
           <select
             value={formData.type}
             onChange={e => setFormData(prev => ({ ...prev, type: e.target.value as EventType }))}
             className={`${inputClasses} appearance-none cursor-pointer`}
           >
-            <option key="visit-type" value="Visit">Visit</option>
-            <option key="call-type" value="Call">Call</option>
-            <option key="email-type" value="Email">Email</option>
-            <option key="task-type" value="Task">Task</option>
+            <option key="visit-type" value="Visit">Visita</option>
+            <option key="call-type" value="Call">Llamada</option>
+            <option key="email-type" value="Email">Correo</option>
+            <option key="task-type" value="Task">Tarea</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Estado</label>
           <select
             value={formData.status}
             onChange={e => setFormData(prev => ({ ...prev, status: e.target.value as "Pending" | "Completed" | "Cancelled" }))}
             className={`${inputClasses} appearance-none cursor-pointer`}
           >
-            <option key="pending-status" value="Pending">Pending</option>
-            <option key="completed-status" value="Completed">Completed</option>
-            <option key="cancelled-status" value="Cancelled">Cancelled</option>
+            <option key="pending-status" value="Pending">Pendiente</option>
+            <option key="completed-status" value="Completed">Completada</option>
+            <option key="cancelled-status" value="Cancelled">Cancelada</option>
           </select>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Customer</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Cliente</label>
         <select
           value={formData.customerId || ''}
           onChange={handleCustomerChange}
           className={`${inputClasses} appearance-none cursor-pointer`}
         >
-          <option key="unassigned-customer" value="">Unassigned</option>
+          <option key="unassigned-customer" value="">Sin asignar</option>
           {customers.map((customer, index) => (
             <option
               key={`customer-index-${index}`}
               value={customer.id || ''}
             >
-              {customer.name || 'Unnamed Customer'}
+              {customer.name || 'Cliente sin nombre'}
             </option>
           ))}
         </select>
@@ -278,7 +278,7 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Start</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Inicio</label>
           <input
             type="datetime-local"
             value={startDateInput}
@@ -288,7 +288,7 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">End</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Fin</label>
           <input
             type="datetime-local"
             value={endDateInput}
@@ -300,7 +300,7 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Deadline</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Fecha límite</label>
         <input
           type="date"
           value={deadlineInput}
@@ -310,13 +310,13 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Description</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Descripción</label>
         <textarea
           value={formData.description || ''}
           onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
           className={`${inputClasses} resize-none`}
           rows={2}
-          placeholder="Add description or notes"
+          placeholder="Agregue una descripción o notas"
         />
       </div>
 
@@ -330,7 +330,7 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
           id="googleSync"
         />
         <label htmlFor="googleSync" className="ml-2 text-sm text-gray-700 select-none">
-          Sync with Google Calendar
+          Sincronizar con Google Calendar
         </label>
       </div>
 
@@ -341,14 +341,14 @@ export function EventForm({ event, onSubmit, onCancel, customers = [] }: EventFo
           className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50
           transition-colors duration-200"
         >
-          Cancel
+          Cancelar
         </button>
         <button
           type="submit"
           className="px-4 py-2 bg-[#e56e43] text-white rounded-lg
           hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
         >
-          {event?.id ? 'Update' : 'Add'} Task
+          {event?.id ? 'Actualizar' : 'Agregar'} tarea
         </button>
       </div>
     </form>

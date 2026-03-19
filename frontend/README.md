@@ -36,7 +36,7 @@ Create a `.env` file in the root directory with the following variables:
 MONGODB_URI=your_mongodb_connection_string
 
 # Server Port
-PORT=5001
+PORT=5432
 
 # JWT Secret for Authentication
 JWT_SECRET=your_jwt_secret_key

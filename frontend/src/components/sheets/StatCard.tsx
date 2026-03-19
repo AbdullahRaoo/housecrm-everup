@@ -48,7 +48,7 @@ const StatCard: React.FC<StatCardProps> = ({
             </svg>
           )}
           <span className="text-sm font-medium">
-            {Math.abs(trend).toFixed(1)}% {trend > 0 ? 'increase' : trend < 0 ? 'decrease' : 'no change'} from last period
+            {Math.abs(trend).toFixed(1)}% {trend > 0 ? 'aumento' : trend < 0 ? 'disminución' : 'sin cambio'} respecto al periodo anterior
           </span>
         </div>
       )}

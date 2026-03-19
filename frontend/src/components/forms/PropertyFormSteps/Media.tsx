@@ -137,12 +137,12 @@ export function Media({ setValue, watch, errors }: MediaProps) {
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">
-          Property Images
+          Imágenes de la propiedad
           <span className="text-red-500 ml-1">*</span>
         </label>
         {errors.media?.images && (
           <p className="mt-1 text-sm text-red-500">
-            Please upload at least one image
+            Por favor, suba al menos una imagen
           </p>
         )}
         <div
@@ -160,7 +160,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
           {isUploading ? (
             <div className="flex flex-col items-center justify-center">
               <div className="w-12 h-12 border-4 border-t-[#e56e43] border-r-[#e56e43]/30 border-b-[#e56e43]/30 border-l-[#e56e43]/30 rounded-full animate-spin"></div>
-              <p className="mt-2 text-sm text-gray-600">Uploading images...</p>
+              <p className="mt-2 text-sm text-gray-600">Subiendo imágenes...</p>
             </div>
           ) : (
             <div className="space-y-2 text-center">
@@ -180,7 +180,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
               </svg>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <label className="relative cursor-pointer rounded-md font-medium text-[#e56e43] hover:text-[#e56e43]/80 transition-colors duration-200">
-                  <span>Upload files</span>
+                  <span>Subir archivos</span>
                   <input
                     type="file"
                     multiple
@@ -190,8 +190,8 @@ export function Media({ setValue, watch, errors }: MediaProps) {
                     disabled={isUploading}
                   />
                 </label>
-                <p className="mt-1">or drag and drop</p>
-                <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF up to 10MB</p>
+                <p className="mt-1">o arrastre y suelte</p>
+                <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF hasta 10MB</p>
               </div>
             </div>
           )}
@@ -204,7 +204,7 @@ export function Media({ setValue, watch, errors }: MediaProps) {
             <div key={index} className="relative group">
               <img
                 src={preview}
-                alt={`Preview ${index + 1}`}
+                alt={`Vista previa ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-[1.02]"
               />
               <button

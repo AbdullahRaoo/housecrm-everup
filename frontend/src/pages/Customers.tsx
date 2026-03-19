@@ -327,9 +327,9 @@ function Customers() {
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white p-4 rounded-lg shadow">
-                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Tasks Assigned ({tasks.length})</h4>
+                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Tareas asignadas ({tasks.length})</h4>
                 {tasks.length === 0 ? (
-                  <p className="text-gray-500 italic">No tasks assigned to this customer</p>
+                  <p className="text-gray-500 italic">No hay tareas asignadas a este cliente</p>
                 ) : (
                   <div className="space-y-3">
                     {tasks.map((task, idx) => (
@@ -355,9 +355,9 @@ function Customers() {
                 )}
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Property Interests ({properties.length})</h4>
+                <h4 className="font-semibold text-lg mb-3 text-gray-700 border-b pb-2">Intereses de propiedad ({properties.length})</h4>
                 {properties.length === 0 ? (
-                  <p className="text-gray-500 italic">No property interests recorded</p>
+                  <p className="text-gray-500 italic">No hay intereses de propiedad registrados</p>
                 ) : (
                   <div className="space-y-3">
                     {properties.map((property, propIdx) => (
@@ -382,21 +382,21 @@ function Customers() {
                           to={`/properties/${property.id || property._id}`}
                           className="text-blue-600 hover:text-blue-800 ml-2"
                         >
-                          View
+                          Ver
                         </Link>
                       </div>
                     ))}
                   </div>
                 )}
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Add Property Interest</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Agregar interés de propiedad</label>
                   <div className="flex items-center gap-2">
                     <select
                       value={selectedProperty}
                       onChange={(e) => setSelectedProperty(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                     >
-                      <option value="">Select a property</option>
+                      <option value="">Seleccionar una propiedad</option>
                       {availableProperties
                         .filter(property => {
                           // Filter out properties that are already in the customer's interests
@@ -416,7 +416,7 @@ function Customers() {
                       disabled={!selectedProperty}
                       className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 disabled:opacity-50"
                     >
-                      Add
+                      Agregar
                     </button>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ function Customers() {
 
               <div className="bg-white p-4 rounded-lg shadow md:col-span-2">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-semibold text-lg text-gray-700">Quick Actions</h4>
+                  <h4 className="font-semibold text-lg text-gray-700">Acciones rápidas</h4>
                   <div className="space-x-2">
                     <Link
                       to={`/calendar?customerId=${customerId}`}
@@ -433,7 +433,7 @@ function Customers() {
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      Schedule Task
+                      Programar tarea
                     </Link>
                     <button
                       onClick={() => handleEditCustomer(customers.find(c => c.id === customerId || c._id === customerId)!)}
@@ -442,7 +442,7 @@ function Customers() {
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
-                      Edit Profile
+                      Editar perfil
                     </button>
                   </div>
                 </div>
@@ -475,36 +475,22 @@ function Customers() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-gray-700 text-3xl font-medium">Customers</h3>
-          <p className="text-gray-500 mt-1">{filteredCustomers.length} customers found</p>
-        </div>
-        <div className="flex gap-2">
-          {selectedCustomers.length > 0 && (
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-            >
-              Delete Selected ({selectedCustomers.length})
-            </button>
-          )}
-          <Link
-            to="/customers/new"
-            className="bg-[#e56e43] hover:bg-[#e56e43] text-white px-4 py-2 rounded-lg flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add Customer
-          </Link>
-        </div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-3xl font-semibold text-gray-800">Clientes</h3>
+        <Link
+          to="/customers/new"
+          className="inline-flex items-center px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Añadir cliente
+        </Link>
       </div>
-
       <div className="mt-6 flex gap-4">
         <input
           type="text"
-          placeholder="Search customers..."
+          placeholder="Buscar clientes..."
           value={filters.search}
           onChange={(e) => handleSearch(e.target.value)}
           className="w-64 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
@@ -514,21 +500,20 @@ function Customers() {
           onChange={(e) => handleStatusFilter(e.target.value as FilterState['status'])}
           className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
         >
-          <option value="all">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
+          <option value="all">Todos los estados</option>
+          <option value="Active">Activo</option>
+          <option value="Inactive">Inactivo</option>
         </select>
         <select
           value={filters.itemsPerPage}
           onChange={(e) => setFilters(prev => ({ ...prev, itemsPerPage: Number(e.target.value), page: 1 }))}
           className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
         >
-          <option value="10">10 per page</option>
-          <option value="25">25 per page</option>
-          <option value="50">50 per page</option>
+          <option value="10">10 por página</option>
+          <option value="25">25 por página</option>
+          <option value="50">50 por página</option>
         </select>
       </div>
-
       <div className="mt-8 bg-white shadow rounded-lg overflow-hidden">
         <table className="min-w-full leading-normal">
           <thead>
@@ -541,106 +526,64 @@ function Customers() {
                   className="rounded border-gray-300"
                 />
               </th>
-              <th
-                onClick={() => handleSort('name')}
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-              >
+              <th onClick={() => handleSort('name')} className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer">
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</span>
                   {filters.sortBy === 'name' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                     </svg>
                   )}
                 </div>
               </th>
-              <th
-                onClick={() => handleSort('email')}
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-              >
+              <th onClick={() => handleSort('email')} className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer">
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Correo electrónico</span>
                   {filters.sortBy === 'email' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                     </svg>
                   )}
                 </div>
               </th>
-              <th
-                onClick={() => handleSort('phone')}
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-              >
+              <th onClick={() => handleSort('phone')} className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer">
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Teléfono</span>
                   {filters.sortBy === 'phone' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                     </svg>
                   )}
                 </div>
               </th>
-              <th
-                onClick={() => handleSort('status')}
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-              >
+              <th onClick={() => handleSort('status')} className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer">
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</span>
                   {filters.sortBy === 'status' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                     </svg>
                   )}
                 </div>
               </th>
-              <th
-                onClick={() => handleSort('joinedDate')}
-                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
-              >
+              <th onClick={() => handleSort('joinedDate')} className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer">
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined Date</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha de registro</span>
                   {filters.sortBy === 'joinedDate' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={filters.sortDirection === 'asc' ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                     </svg>
                   )}
                 </div>
               </th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</span>
-              </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
             </tr>
           </thead>
           <tbody>
             {paginatedCustomers.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-5 py-5 text-center text-gray-500">
-                  No customers found
+                  No se encontraron clientes
                 </td>
               </tr>
             ) : (
@@ -698,7 +641,7 @@ function Customers() {
                           }}
                           className="text-[#e56e43] hover:text-blue-900"
                         >
-                          Edit
+                          Editar
                         </button>
                         <button
                           onClick={(e) => {
@@ -708,7 +651,7 @@ function Customers() {
                           }}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Delete
+                          Eliminar
                         </button>
                         <button
                           onClick={(e) => {
@@ -717,7 +660,7 @@ function Customers() {
                           }}
                           className="text-gray-600 hover:text-gray-900 flex items-center"
                         >
-                          <span className="mr-1">Details</span>
+                          <span className="mr-1">Detalles</span>
                           <svg
                             className={`w-4 h-4 transform transition-transform ${expandedCustomerId === (customer._id || customer.id) ? 'rotate-180' : ''}`}
                             fill="none"
@@ -741,9 +684,9 @@ function Customers() {
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center">
           <span className="text-gray-600">
-            Showing {((filters.page - 1) * filters.itemsPerPage) + 1} to{' '}
-            {Math.min(filters.page * filters.itemsPerPage, filteredCustomers.length)} of{' '}
-            {filteredCustomers.length} entries
+            Mostrando {((filters.page - 1) * filters.itemsPerPage) + 1} a{' '}
+            {Math.min(filters.page * filters.itemsPerPage, filteredCustomers.length)} de{' '}
+            {filteredCustomers.length} entradas
           </span>
         </div>
         <div className="flex gap-2">
@@ -752,7 +695,7 @@ function Customers() {
             disabled={filters.page === 1}
             className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            Previous
+            Anterior
           </button>
           <div className="flex gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -771,7 +714,7 @@ function Customers() {
             disabled={filters.page === totalPages}
             className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            Next
+            Siguiente
           </button>
         </div>
       </div>
@@ -779,20 +722,20 @@ function Customers() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-lg font-medium mb-4">Confirm Delete</h3>
-            <p>Are you sure you want to delete {selectedCustomers.length} selected customer(s)?</p>
+            <h3 className="text-lg font-medium mb-4">Confirmar eliminación</h3>
+            <p>¿Estás seguro de que deseas eliminar {selectedCustomers.length} cliente(s) seleccionado(s)?</p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 onClick={handleBulkDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
-                Delete
+                Eliminar
               </button>
             </div>
           </div>
@@ -803,7 +746,7 @@ function Customers() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Edit Customer</h3>
+              <h3 className="text-lg font-medium">Editar cliente</h3>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-500 hover:text-gray-700"
@@ -817,7 +760,7 @@ function Customers() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
+                  Nombre
                 </label>
                 <input
                   type="text"
@@ -832,7 +775,7 @@ function Customers() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
+                  Correo electrónico
                 </label>
                 <input
                   type="email"
@@ -847,7 +790,7 @@ function Customers() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
+                  Teléfono
                 </label>
                 <input
                   type="tel"
@@ -862,7 +805,7 @@ function Customers() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  Estado
                 </label>
                 <select
                   value={customerToEdit.status}
@@ -872,14 +815,14 @@ function Customers() {
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]/20 focus:border-[#e56e43]"
                 >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="Active">Activo</option>
+                  <option value="Inactive">Inactivo</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes
+                  Notas
                 </label>
                 <textarea
                   value={customerToEdit.notes}
@@ -898,13 +841,13 @@ function Customers() {
                 onClick={() => setShowEditModal(false)}
                 className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 onClick={() => handleUpdateCustomer(customerToEdit)}
                 className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200"
               >
-                Save Changes
+                Guardar cambios
               </button>
             </div>
           </div>

@@ -88,6 +88,22 @@ function Opportunities() {
     }
   };
 
+  // Handle bulk delete of selected opportunities
+  const handleBulkDelete = async () => {
+    if (!token || selectedOpportunities.length === 0) return;
+    try {
+      for (const id of selectedOpportunities) {
+        await deleteOpportunity(id);
+      }
+      fetchOpportunities(); // Refresh the list
+      setShowDeleteModal(false);
+      setSelectedOpportunities([]);
+    } catch (error) {
+      console.error("Error al eliminar oportunidades:", error);
+      alert("No se pudieron eliminar todas las oportunidades. Por favor, inténtelo de nuevo.");
+    }
+  };
+
   // Filter opportunities based on search and status
   const filteredOpportunities = (opportunities || [])
     .filter(opportunity => {
@@ -175,8 +191,8 @@ function Opportunities() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-gray-700 text-3xl font-medium">Opportunities</h3>
-          <p className="text-gray-500 mt-1">{filteredOpportunities.length} opportunities found</p>
+          <h3 className="text-gray-700 text-3xl font-medium">Oportunidades</h3>
+          <p className="text-gray-500 mt-1">{filteredOpportunities.length} oportunidades encontradas</p>
         </div>
         <div className="flex gap-2">
           {selectedOpportunities.length > 0 && (
@@ -184,7 +200,7 @@ function Opportunities() {
               onClick={() => setShowDeleteModal(true)}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
             >
-              Delete Selected ({selectedOpportunities.length})
+              Eliminar seleccionadas ({selectedOpportunities.length})
             </button>
           )}
           <Link
@@ -194,7 +210,7 @@ function Opportunities() {
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Create Opportunity
+            Crear oportunidad
           </Link>
         </div>
       </div>
@@ -202,7 +218,7 @@ function Opportunities() {
       <div className="mt-6 flex gap-4">
         <input
           type="text"
-          placeholder="Search opportunities..."
+          placeholder="Buscar oportunidades..."
           value={filters.search}
           onChange={(e) => handleSearch(e.target.value)}
           className="w-64 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
@@ -212,21 +228,21 @@ function Opportunities() {
           onChange={(e) => handleStatusFilter(e.target.value as FilterState['status'])}
           className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
         >
-          <option value="all">All Status</option>
-          <option value="Draft">Draft</option>
-          <option value="Proposed">Proposed</option>
-          <option value="Accepted">Accepted</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Expired">Expired</option>
+          <option value="all">Todos los estados</option>
+          <option value="Draft">Borrador</option>
+          <option value="Proposed">Propuesta</option>
+          <option value="Accepted">Aceptada</option>
+          <option value="Rejected">Rechazada</option>
+          <option value="Expired">Expirada</option>
         </select>
         <select
           value={filters.itemsPerPage}
           onChange={(e) => setFilters(prev => ({ ...prev, itemsPerPage: Number(e.target.value), page: 1 }))}
           className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
         >
-          <option value="10">10 per page</option>
-          <option value="25">25 per page</option>
-          <option value="50">50 per page</option>
+          <option value="10">10 por página</option>
+          <option value="25">25 por página</option>
+          <option value="50">50 por página</option>
         </select>
       </div>
 
@@ -247,7 +263,7 @@ function Opportunities() {
                 className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Title</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Título</span>
                   {filters.sortBy === 'title' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path
@@ -265,7 +281,7 @@ function Opportunities() {
                 className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Cliente</span>
                   {filters.sortBy === 'customerName' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path
@@ -283,7 +299,7 @@ function Opportunities() {
                 className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Budget</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Presupuesto</span>
                   {filters.sortBy === 'budget' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path
@@ -301,7 +317,7 @@ function Opportunities() {
                 className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</span>
                   {filters.sortBy === 'status' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path
@@ -319,7 +335,7 @@ function Opportunities() {
                 className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left cursor-pointer"
               >
                 <div className="flex items-center">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Created</span>
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Creado</span>
                   {filters.sortBy === 'createdAt' && (
                     <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path
@@ -333,7 +349,7 @@ function Opportunities() {
                 </div>
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</span>
+                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</span>
               </th>
             </tr>
           </thead>
@@ -341,7 +357,7 @@ function Opportunities() {
             {paginatedOpportunities.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-5 py-5 text-center text-gray-500">
-                  No opportunities found
+                  No se encontraron oportunidades
                 </td>
               </tr>
             ) : (
@@ -366,11 +382,11 @@ function Opportunities() {
                         (opportunity.customerId as any)._id || (opportunity.customerId as any).id :
                         opportunity.customerId}`} className="text-gray-900 whitespace-no-wrap">
                         {typeof opportunity.customerId === 'object' && opportunity.customerId ?
-                          (opportunity.customerId as any).name || opportunity.customer?.name || 'Unknown customer' :
-                          opportunity.customer?.name || 'Unknown customer'}
+                          (opportunity.customerId as any).name || opportunity.customer?.name || 'Cliente desconocido' :
+                          opportunity.customer?.name || 'Cliente desconocido'}
                       </Link>
                     ) : (
-                      <span className="text-gray-500">No customer assigned</span>
+                      <span className="text-gray-500">Sin cliente asignado</span>
                     )}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200">
@@ -402,13 +418,13 @@ function Opportunities() {
                         to={`/opportunities/edit/${opportunity._id || opportunity.id}`}
                         className="text-blue-600 hover:text-blue-900"
                       >
-                        Edit
+                        Editar
                       </Link>
                       <button
                         onClick={() => handleDeleteOpportunity(opportunity._id || opportunity.id || '')}
                         className="text-red-600 hover:text-red-900"
                       >
-                        Delete
+                        Eliminar
                       </button>
                     </div>
                   </td>
@@ -423,9 +439,9 @@ function Opportunities() {
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center">
           <span className="text-gray-600">
-            Showing {((filters.page - 1) * filters.itemsPerPage) + 1} to{' '}
-            {Math.min(filters.page * filters.itemsPerPage, filteredOpportunities.length)} of{' '}
-            {filteredOpportunities.length} entries
+            Mostrando {((filters.page - 1) * filters.itemsPerPage) + 1} a{' '}
+            {Math.min(filters.page * filters.itemsPerPage, filteredOpportunities.length)} de{' '}
+            {filteredOpportunities.length} registros
           </span>
         </div>
         <div className="flex gap-2">
@@ -434,7 +450,7 @@ function Opportunities() {
             disabled={filters.page === 1}
             className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            Previous
+            Anterior
           </button>
           <div className="flex gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -452,7 +468,7 @@ function Opportunities() {
             disabled={filters.page === totalPages}
             className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            Next
+            Siguiente
           </button>
         </div>
       </div>
@@ -461,23 +477,20 @@ function Opportunities() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-lg font-medium mb-4">Confirm Delete</h3>
-            <p>Are you sure you want to delete {selectedOpportunities.length} selected opportunity(s)?</p>
+            <h3 className="text-lg font-medium mb-4">Confirmar eliminación</h3>
+            <p>¿Está seguro de que desea eliminar las oportunidades seleccionadas? Esta acción no se puede deshacer.</p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                Cancelar
               </button>
               <button
-                onClick={async () => {
-                  // Implementation for bulk delete will go here
-                  setShowDeleteModal(false);
-                }}
+                onClick={handleBulkDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
-                Delete
+                Eliminar
               </button>
             </div>
           </div>

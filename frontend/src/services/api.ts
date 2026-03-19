@@ -2,14 +2,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // API service for handling backend requests
 
+import axios from "axios";
+
 // Get the API URL from environment variables
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+//const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "") || "/api";
+const API_HOST = import.meta.env.VITE_API_HOST || "http://localhost";
+const API_PORT = import.meta.env.VITE_API_PORT || "5000";
+
+// Create the full API base URL
+const API_BASE_URL = `${API_HOST}:${API_PORT}`;
+const FULL_API_URL = `${API_HOST}:${API_PORT}${API_URL}`;
+
+// Axios instance with the correct base URL
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // Calendar API
 export const calendarApi = {
   // Get all calendar events
   getEvents: async (token: string): Promise<any[]> => {
-    const response = await fetch(`${API_URL}/calendar`, {
+    const response = await fetch(`${FULL_API_URL}/calendar`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -24,7 +41,7 @@ export const calendarApi = {
 
   // Add a new calendar event
   addEvent: async (eventData: any, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/calendar`, {
+    const response = await fetch(`${FULL_API_URL}/calendar`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +63,7 @@ export const calendarApi = {
     eventData: any,
     token: string
   ): Promise<any> => {
-    const response = await fetch(`${API_URL}/calendar/${id}`, {
+    const response = await fetch(`${FULL_API_URL}/calendar/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +81,7 @@ export const calendarApi = {
 
   // Delete a calendar event
   deleteEvent: async (id: string, token: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/calendar/${id}`, {
+    const response = await fetch(`${FULL_API_URL}/calendar/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -78,7 +95,7 @@ export const calendarApi = {
 
   // Export full calendar as Excel
   exportExcel: async (token: string): Promise<Blob> => {
-    const response = await fetch(`${API_URL}/export/calendar/excel`, {
+    const response = await fetch(`${FULL_API_URL}/export/calendar/excel`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -93,7 +110,7 @@ export const calendarApi = {
 
   // Export full calendar as CSV
   exportCsv: async (token: string): Promise<Blob> => {
-    const response = await fetch(`${API_URL}/export/calendar/csv`, {
+    const response = await fetch(`${FULL_API_URL}/export/calendar/csv`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -114,7 +131,7 @@ export const calendarApi = {
     token: string
   ): Promise<Blob> => {
     const response = await fetch(
-      `${API_URL}/export/calendar/${format}/${filterType}/${filterId}`,
+      `${FULL_API_URL}/export/calendar/${format}/${filterType}/${filterId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -135,7 +152,7 @@ export const customerApi = {
   // Get all customers
   getCustomers: async (token: string): Promise<any[]> => {
     try {
-      const response = await fetch(`${API_URL}/customers`, {
+      const response = await fetch(`${FULL_API_URL}/customers`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -161,7 +178,7 @@ export const customerApi = {
         throw new Error("Customer ID is required");
       }
 
-      const response = await fetch(`${API_URL}/customers/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/customers/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -188,7 +205,7 @@ export const customerApi = {
         JSON.stringify(customerData, null, 2)
       );
 
-      const response = await fetch(`${API_URL}/customers`, {
+      const response = await fetch(`${FULL_API_URL}/customers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -226,7 +243,7 @@ export const customerApi = {
         JSON.stringify(customerData, null, 2)
       );
 
-      const response = await fetch(`${API_URL}/customers/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/customers/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -257,7 +274,7 @@ export const customerApi = {
 
       console.log(`Deleting customer with id: ${id}`);
 
-      const response = await fetch(`${API_URL}/customers/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/customers/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -281,7 +298,7 @@ export const propertyApi = {
   // Get all properties
   getProperties: async (token: string): Promise<any[]> => {
     try {
-      const response = await fetch(`${API_URL}/properties`, {
+      const response = await fetch(`${FULL_API_URL}/properties`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -315,7 +332,7 @@ export const propertyApi = {
 
       console.log(`Fetching property with ID: ${id}`);
 
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/properties/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -343,7 +360,7 @@ export const propertyApi = {
   // Add a new property
   addProperty: async (propertyData: any, token: string): Promise<any> => {
     try {
-      const response = await fetch(`${API_URL}/properties`, {
+      const response = await fetch(`${FULL_API_URL}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -390,7 +407,7 @@ export const propertyApi = {
         delete cleanData._id;
       }
 
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/properties/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -427,7 +444,7 @@ export const propertyApi = {
 
       console.log(`Deleting property with ID: ${id}`);
 
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/properties/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -455,7 +472,7 @@ export const authApi = {
     email: string;
     password: string;
   }): Promise<any> => {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${FULL_API_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -472,7 +489,7 @@ export const authApi = {
 
   // Register
   register: async (userData: any): Promise<any> => {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${FULL_API_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -489,7 +506,7 @@ export const authApi = {
 
   // Get current user profile
   getProfile: async (token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/auth/profile`, {
+    const response = await fetch(`${FULL_API_URL}/auth/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -504,7 +521,7 @@ export const authApi = {
 
   // Update user profile
   updateProfile: async (userData: any, token: string): Promise<any> => {
-    const response = await fetch(`${API_URL}/auth/profile`, {
+    const response = await fetch(`${FULL_API_URL}/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -528,7 +545,7 @@ export const mediaApi = {
     const formData = new FormData();
     formData.append("image", imageFile);
 
-    const response = await fetch(`${API_URL}/uploads/image`, {
+    const response = await fetch(`${FULL_API_URL}/uploads/image`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -550,7 +567,7 @@ export const mediaApi = {
       formData.append("images", file);
     });
 
-    const response = await fetch(`${API_URL}/uploads/images`, {
+    const response = await fetch(`${FULL_API_URL}/uploads/images`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -568,7 +585,7 @@ export const mediaApi = {
   // Delete an image from Cloudinary
   deleteImage: async (publicId: string, token: string): Promise<any> => {
     const response = await fetch(
-      `${API_URL}/uploads/image/${encodeURIComponent(publicId)}`,
+      `${FULL_API_URL}/uploads/image/${encodeURIComponent(publicId)}`,
       {
         method: "DELETE",
         headers: {
@@ -590,7 +607,7 @@ export const opportunityApi = {
   // Get all opportunities
   getOpportunities: async (token: string): Promise<any[]> => {
     try {
-      const response = await fetch(`${API_URL}/opportunities`, {
+      const response = await fetch(`${FULL_API_URL}/opportunities`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -614,7 +631,7 @@ export const opportunityApi = {
   ): Promise<any[]> => {
     try {
       const response = await fetch(
-        `${API_URL}/opportunities/customer/${customerId}`,
+        `${FULL_API_URL}/opportunities/customer/${customerId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -643,7 +660,7 @@ export const opportunityApi = {
         throw new Error("Invalid opportunity ID format");
       }
 
-      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/opportunities/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -679,7 +696,7 @@ export const opportunityApi = {
   // Create new opportunity
   addOpportunity: async (opportunity: any, token: string): Promise<any> => {
     try {
-      const response = await fetch(`${API_URL}/opportunities`, {
+      const response = await fetch(`${FULL_API_URL}/opportunities`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -720,7 +737,7 @@ export const opportunityApi = {
       // Remove redundant ID fields that could cause issues with MongoDB
       if (cleanOpportunity._id) delete cleanOpportunity._id;
 
-      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/opportunities/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -759,7 +776,7 @@ export const opportunityApi = {
   // Delete opportunity
   deleteOpportunity: async (id: string, token: string): Promise<void> => {
     try {
-      const response = await fetch(`${API_URL}/opportunities/${id}`, {
+      const response = await fetch(`${FULL_API_URL}/opportunities/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -783,7 +800,7 @@ export const opportunityApi = {
   ): Promise<any> => {
     try {
       const response = await fetch(
-        `${API_URL}/opportunities/${opportunityId}/scenarios`,
+        `${FULL_API_URL}/opportunities/${opportunityId}/scenarios`,
         {
           method: "POST",
           headers: {
@@ -813,7 +830,7 @@ export const opportunityApi = {
   ): Promise<void> => {
     try {
       const response = await fetch(
-        `${API_URL}/opportunities/${opportunityId}/scenarios/${scenarioId}`,
+        `${FULL_API_URL}/opportunities/${opportunityId}/scenarios/${scenarioId}`,
         {
           method: "DELETE",
           headers: {

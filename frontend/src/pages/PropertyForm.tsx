@@ -74,14 +74,14 @@ function PropertyForm() {
       }
 
       try {
-        const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/properties/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
         if (!response.ok) {
-          throw new Error('Property not found');
+          throw new Error('Propiedad no encontrada');
         }
 
         const property = await response.json();
@@ -117,7 +117,7 @@ function PropertyForm() {
     }
 
     if (!mediaImages || mediaImages.length === 0) {
-      alert('Please upload at least one image');
+      alert('Por favor suba al menos una imagen');
       return;
     }
 
@@ -139,13 +139,13 @@ function PropertyForm() {
 
       if (id) {
         await updateProperty({ ...propertyData, id } as Property);
-        alert('Property updated successfully!');
+        alert('¡Propiedad actualizada exitosamente!');
       } else {
         await addProperty({
           ...propertyData,
           createdAt: new Date().toISOString()
         });
-        alert('Property created successfully!');
+        alert('¡Propiedad creada exitosamente!');
       }
 
       // Refresh properties list to include the new/updated property
@@ -153,7 +153,7 @@ function PropertyForm() {
       navigate('/properties');
     } catch (error) {
       console.error('Failed to save property:', error);
-      alert('Failed to save property. Please try again.');
+      alert('No se pudo guardar la propiedad. Por favor, inténtelo de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
@@ -210,7 +210,7 @@ function PropertyForm() {
   };
 
   const renderStepIndicator = () => {
-    const steps = ['Basic Details', 'Features & Amenities', 'Location', 'Media'];
+    const steps = ['Detalles básicos', 'Características y amenidades', 'Ubicación', 'Medios'];
     return (
       <div className="flex mb-8 relative">
         {steps.map((stepName, index) => (
@@ -285,7 +285,7 @@ function PropertyForm() {
     <div className="container mx-auto px-6 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-          {id ? 'Edit Property' : 'Add New Property'}
+          {id ? 'Editar propiedad' : 'Agregar nueva propiedad'}
         </h1>
 
         {renderStepIndicator()}
@@ -303,7 +303,7 @@ function PropertyForm() {
                   hover:bg-gray-50 transition-colors duration-200
                   disabled:opacity-50 disabled:hover:bg-white"
               >
-                Previous
+                Anterior
               </button>
               <button
                 type="submit"
@@ -313,8 +313,8 @@ function PropertyForm() {
                   disabled:opacity-50"
               >
                 {step === 4
-                  ? isSubmitting ? 'Saving...' : 'Save Property'
-                  : 'Next'
+                  ? isSubmitting ? 'Guardando...' : 'Guardar propiedad'
+                  : 'Siguiente'
                 }
               </button>
             </div>

@@ -1,10 +1,14 @@
-# Ignore upload folder at root
-/upload/
+node_modules/
+dist/
+build/
+uploads/
+*.log
 
 # Ignore node_modules in both frontend and server
 /frontend/node_modules/
 /server/node_modules/
 /server/.env
+frontend/.env
 
 # Environment variables
 .env
@@ -12,3 +16,6 @@
 .env.development
 .env.test
 .env.production
+
+*.zip
+udo lsof -i :443

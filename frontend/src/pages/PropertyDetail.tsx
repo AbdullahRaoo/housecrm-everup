@@ -8,6 +8,7 @@ import { PropertyStatistics } from '../components/PropertyStatistics';
 import { VisitScheduler } from '../components/VisitScheduler';
 import { useProperty } from '../context/PropertyContext';
 import { useAuth } from '../hooks/useAuth';
+import { propertyApi } from '../services/api'; // Import the propertyApi service
 import { CloudinaryImage, Property } from '../types/property';
 
 type TabType = 'details' | 'features' | 'location' | 'documents';
@@ -44,17 +45,8 @@ function PropertyDetail() {
 
     try {
       console.log(`Fetching property with ID: ${id}`);
-      const response = await fetch(`http://localhost:5001/api/properties/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Property not found (Status: ${response.status})`);
-      }
-
-      const data = await response.json();
+      // Use the propertyApi service instead of direct fetch
+      const data = await propertyApi.getProperty(id, token);
 
       // Add client-side id if needed
       if (data._id && !data.id) {
@@ -87,10 +79,10 @@ function PropertyDetail() {
 
       // TypeScript cast to tell TypeScript this object conforms to Property type
       setProperty(data as Property);
+      setLoading(false);
     } catch (error: any) {
       console.error('Error fetching property:', error);
       setError(`Error fetching property: ${error.message}`);
-    } finally {
       setLoading(false);
     }
   }, [id, token]);
@@ -102,16 +94,16 @@ function PropertyDetail() {
   const handleDelete = async () => {
     if (!id || !property) return;
 
-    if (window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta propiedad? Esta acción no se puede deshacer.')) {
       try {
         console.log(`Deleting property with ID: ${id}`);
         // Use the deleteProperty function from context
         await deleteProperty(id);
-        alert('Property deleted successfully!');
+        alert('¡Propiedad eliminada exitosamente!');
         navigate('/properties');
       } catch (error) {
         console.error('Failed to delete property:', error);
-        alert('Failed to delete property. Please try again.');
+        alert('Error al eliminar la propiedad. Por favor, inténtalo de nuevo.');
       }
     }
   };
@@ -149,7 +141,10 @@ function PropertyDetail() {
         status: 'Scheduled' as const
       };
 
-      const response = await fetch(`http://localhost:5001/api/visits`, {
+      // Use API_URL constant from api.ts instead of environment variable directly
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
+
+      const response = await fetch(`${API_URL}/visits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,10 +173,10 @@ function PropertyDetail() {
       });
 
       setShowVisitModal(false);
-      alert('Visit scheduled successfully!');
+      alert('Visita agendada exitosamente!');
     } catch (error) {
       console.error('Failed to schedule visit:', error);
-      alert('Failed to schedule visit. Please try again.');
+      alert('Error al agendar visita. Por favor, inténtalo de nuevo.');
     }
   }, [property, id, token]);
 
@@ -202,12 +197,12 @@ function PropertyDetail() {
       <div className="container mx-auto px-6 py-8">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
           <p className="font-bold">Error</p>
-          <p className="mt-1">{error || 'Property not found'}</p>
+          <p className="mt-1">{error || 'Propiedad no encontrada'}</p>
           <button
             onClick={() => navigate('/properties')}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
           >
-            Back to Properties
+            Volver a Propiedades
           </button>
         </div>
       </div>
@@ -224,11 +219,11 @@ function PropertyDetail() {
             <p className="text-gray-700 leading-relaxed">{property.description}</p>
             <div className="mt-6 grid grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2">Location</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">Ubicación</h3>
                 <p className="text-gray-600">{property.location.address}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2">Price</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">Precio</h3>
                 <p className="text-[#e56e43] text-xl font-bold">
                   ${property.price.toLocaleString()}
                 </p>
@@ -241,24 +236,24 @@ function PropertyDetail() {
         return (
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h3 className="font-semibold text-gray-800 mb-4">Property Features</h3>
+              <h3 className="font-semibold text-gray-800 mb-4">Características de la propiedad</h3>
               <ul className="space-y-3">
                 <li className="flex justify-between items-center">
-                  <span className="text-gray-600">Bedrooms</span>
+                  <span className="text-gray-600">Habitaciones</span>
                   <span className="font-medium text-[#e56e43]">{property.features.bedrooms}</span>
                 </li>
                 <li className="flex justify-between items-center">
-                  <span className="text-gray-600">Bathrooms</span>
+                  <span className="text-gray-600">Baños</span>
                   <span className="font-medium text-[#e56e43]">{property.features.bathrooms}</span>
                 </li>
                 <li className="flex justify-between items-center">
-                  <span className="text-gray-600">Area</span>
-                  <span className="font-medium text-[#e56e43]">{property.features.area} sq ft</span>
+                  <span className="text-gray-600">Área</span>
+                  <span className="font-medium text-[#e56e43]">{property.features.area} m²</span>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-800 mb-4">Amenities</h3>
+              <h3 className="font-semibold text-gray-800 mb-4">Amenidades</h3>
               <div className="grid grid-cols-2 gap-3">
                 {property.features.amenities?.map((amenity) => (
                   <div key={amenity} className="flex items-center">
@@ -292,7 +287,7 @@ function PropertyDetail() {
               />
             ) : (
               <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-                <p className="text-gray-500">Location coordinates not available</p>
+                <p className="text-gray-500">Coordenadas de ubicación no disponibles</p>
               </div>
             )}
           </div>
@@ -318,19 +313,19 @@ function PropertyDetail() {
             onClick={() => navigate(`/properties/edit/${id}`)}
             className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90 transition-colors duration-200 font-medium"
           >
-            Edit Property
+            Editar propiedad
           </button>
           <button
             onClick={() => setShowVisitModal(true)}
             className="px-4 py-2 border border-[#e56e43] text-[#e56e43] rounded-lg hover:bg-[#e56e43]/10 transition-colors duration-200 font-medium"
           >
-            Schedule Visit
+            Agendar visita
           </button>
           <button
             onClick={handleDelete}
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
           >
-            Delete Property
+            Eliminar propiedad
           </button>
         </div>
       </div>
@@ -355,7 +350,10 @@ function PropertyDetail() {
                     : 'text-gray-600 hover:text-gray-800'
                     }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab === 'details' && 'Detalles'}
+                  {tab === 'features' && 'Características'}
+                  {tab === 'location' && 'Ubicación'}
+                  {tab === 'documents' && 'Documentos'}
                 </button>
               ))}
             </div>
@@ -365,25 +363,25 @@ function PropertyDetail() {
 
         <div className="col-span-1 space-y-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Property Details</h3>
+            <h3 className="font-semibold text-gray-800 mb-4">Detalles de la propiedad</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Status</span>
+                <span className="text-gray-600">Estado</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${property.status === 'Available'
                   ? 'bg-[#e56e43]/10 text-[#e56e43]'
                   : property.status === 'Sold'
                     ? 'bg-red-100 text-red-800'
                     : 'bg-yellow-100 text-yellow-800'
                   }`}>
-                  {property.status}
+                  {property.status === 'Available' ? 'Disponible' : property.status === 'Sold' ? 'Vendido' : 'Reservado'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Type</span>
+                <span className="text-gray-600">Tipo</span>
                 <span className="font-medium text-gray-800">{property.type}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Listed Date</span>
+                <span className="text-gray-600">Fecha de publicación</span>
                 <span className="font-medium text-gray-800">
                   {new Date(property.createdAt).toLocaleDateString()}
                 </span>
@@ -392,19 +390,19 @@ function PropertyDetail() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Owner Information</h3>
+            <h3 className="font-semibold text-gray-800 mb-4">Información del propietario</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Name</span>
-                <span className="font-medium text-gray-800">{property.owner?.name || 'Not specified'}</span>
+                <span className="text-gray-600">Nombre</span>
+                <span className="font-medium text-gray-800">{property.owner?.name || 'No especificado'}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Email</span>
-                <span className="font-medium text-gray-800">{property.owner?.email || 'Not specified'}</span>
+                <span className="text-gray-600">Correo electrónico</span>
+                <span className="font-medium text-gray-800">{property.owner?.email || 'No especificado'}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Phone</span>
-                <span className="font-medium text-gray-800">{property.owner?.phone || 'Not specified'}</span>
+                <span className="text-gray-600">Teléfono</span>
+                <span className="font-medium text-gray-800">{property.owner?.phone || 'No especificado'}</span>
               </div>
             </div>
           </div>
@@ -418,7 +416,7 @@ function PropertyDetail() {
           <div className="bg-white rounded-lg max-w-md w-full m-4">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Schedule a Visit</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Agendar una visita</h3>
                 <button
                   onClick={() => setShowVisitModal(false)}
                   className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-1"

@@ -213,9 +213,9 @@ function CalendarPage() {
 
   // Find customer name by ID
   const getCustomerName = (customerId?: string) => {
-    if (!customerId) return 'Unassigned';
+    if (!customerId) return 'Sin asignar';
     const customer = customers.find(c => c.id === customerId);
-    return customer?.name || 'Unknown Customer';
+    return customer?.name || 'Cliente desconocido';
   };
 
   // Get priority class based on deadline
@@ -308,7 +308,7 @@ function CalendarPage() {
           </div>
           <div className="ml-2">
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${priorityClass}`}>
-              {event.deadline ? new Date(event.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No deadline'}
+              {event.deadline ? new Date(event.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Sin fecha límite'}
             </span>
           </div>
         </div>
@@ -340,7 +340,7 @@ function CalendarPage() {
           {events.map(event => renderTaskCard(event))}
           {events.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              No tasks in this column
+              No hay tareas en esta columna
             </div>
           )}
         </div>
@@ -374,7 +374,7 @@ function CalendarPage() {
           {events.map(event => renderTaskCard(event))}
           {events.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              No tasks for this customer
+              No hay tareas para este cliente
             </div>
           )}
         </div>
@@ -385,7 +385,7 @@ function CalendarPage() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Task Management</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">Gestión de tareas</h1>
         <div className="flex gap-3">
           {/* Export buttons - only visible to admins */}
           {user?.isAdmin && (
@@ -398,13 +398,13 @@ function CalendarPage() {
                   font-medium shadow-sm flex items-center gap-1`}
               >
                 {isExporting ? (
-                  <span className="animate-pulse">Exporting...</span>
+                  <span className="animate-pulse">Exportando...</span>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Export Excel
+                    Exportar Excel
                   </>
                 )}
               </button>
@@ -416,13 +416,13 @@ function CalendarPage() {
                   font-medium shadow-sm flex items-center gap-1`}
               >
                 {isExporting ? (
-                  <span className="animate-pulse">Exporting...</span>
+                  <span className="animate-pulse">Exportando...</span>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Export CSV
+                    Exportar CSV
                   </>
                 )}
               </button>
@@ -436,7 +436,7 @@ function CalendarPage() {
                 ? 'bg-[#e56e43] text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
-              By Status
+              Por estado
             </button>
             <button
               onClick={() => setActiveView('byCustomer')}
@@ -444,7 +444,7 @@ function CalendarPage() {
                 ? 'bg-[#e56e43] text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'}`}
             >
-              By Customer
+              Por cliente
             </button>
           </div>
 
@@ -456,11 +456,11 @@ function CalendarPage() {
               transition-colors duration-200 bg-white text-gray-800
               shadow-sm appearance-none cursor-pointer"
           >
-            <option value="All">All Tasks</option>
-            <option value="Visit">Visits</option>
-            <option value="Call">Calls</option>
+            <option value="All">Todas las tareas</option>
+            <option value="Visit">Visitas</option>
+            <option value="Call">Llamadas</option>
             <option value="Email">Emails</option>
-            <option value="Task">Tasks</option>
+            <option value="Task">Tareas</option>
           </select>
 
           <button
@@ -472,7 +472,7 @@ function CalendarPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Task
+            Agregar tarea
           </button>
         </div>
       </div>
@@ -485,10 +485,10 @@ function CalendarPage() {
         <>
           {activeView === 'all' ? (
             <div className="flex gap-4 overflow-x-auto pb-6">
-              {renderColumn('Requested', eventsByStatus.Requested, 'Pending')}
-              {renderColumn('In Progress', eventsByStatus.InProgress, 'Pending')}
-              {renderColumn('In Review', eventsByStatus.InReview, 'Pending')}
-              {renderColumn('Completed', eventsByStatus.Completed, 'Completed')}
+              {renderColumn('Solicitadas', eventsByStatus.Requested, 'Pending')}
+              {renderColumn('En progreso', eventsByStatus.InProgress, 'Pending')}
+              {renderColumn('En revisión', eventsByStatus.InReview, 'Pending')}
+              {renderColumn('Completadas', eventsByStatus.Completed, 'Completed')}
             </div>
           ) : (
             <div className="flex gap-4 overflow-x-auto pb-6">
@@ -506,7 +506,7 @@ function CalendarPage() {
           <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] flex flex-col">
             <div className="p-5 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-800">
-                {selectedEvent?.id ? 'Edit Task' : 'Add Task'}
+                {selectedEvent?.id ? 'Editar tarea' : 'Agregar tarea'}
               </h3>
               <button
                 onClick={() => {
@@ -540,7 +540,7 @@ function CalendarPage() {
                     hover:bg-red-600 transition-colors duration-200
                     font-medium shadow-sm"
                 >
-                  Delete Task
+                  Eliminar tarea
                 </button>
               </div>
             )}

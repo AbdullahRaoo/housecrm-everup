@@ -192,8 +192,8 @@ function Logs() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h3 className="text-3xl font-medium text-gray-700">System Logs</h3>
-          <p className="mt-1 text-sm text-gray-500">Track all activities in the CRM system</p>
+          <h3 className="text-3xl font-medium text-gray-700">Registros del sistema</h3>
+          <p className="mt-1 text-sm text-gray-500">Rastrea todas las actividades en el sistema CRM</p>
         </div>
         <div className="mt-4 md:mt-0 space-x-2 flex flex-wrap gap-2">
           <button
@@ -204,13 +204,13 @@ function Logs() {
               font-medium shadow-sm flex items-center gap-1`}
           >
             {isExporting ? (
-              <span className="animate-pulse">Exporting...</span>
+              <span className="animate-pulse">Exportando...</span>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Export Excel
+                Exportar Excel
               </>
             )}
           </button>
@@ -222,13 +222,13 @@ function Logs() {
               font-medium shadow-sm flex items-center gap-1`}
           >
             {isExporting ? (
-              <span className="animate-pulse">Exporting...</span>
+              <span className="animate-pulse">Exportando...</span>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Export CSV
+                Exportar CSV
               </>
             )}
           </button>
@@ -236,7 +236,7 @@ function Logs() {
             onClick={() => handleClearOldLogs(90)}
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
-            Clear Old Logs
+            Limpiar registros antiguos
           </button>
         </div>
       </div>
@@ -245,19 +245,19 @@ function Logs() {
       {stats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg shadow">
-            <h4 className="text-sm font-semibold text-gray-500">Total Logs</h4>
+            <h4 className="text-sm font-semibold text-gray-500">Registros totales</h4>
             <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
           </div>
           <div className="bg-white p-4 rounded-lg shadow">
-            <h4 className="text-sm font-semibold text-gray-500">Today</h4>
+            <h4 className="text-sm font-semibold text-gray-500">Hoy</h4>
             <p className="text-2xl font-bold text-gray-800">{stats.today}</p>
           </div>
           <div className="bg-white p-4 rounded-lg shadow">
-            <h4 className="text-sm font-semibold text-gray-500">This Week</h4>
+            <h4 className="text-sm font-semibold text-gray-500">Esta semana</h4>
             <p className="text-2xl font-bold text-gray-800">{stats.thisWeek}</p>
           </div>
           <div className="bg-white p-4 rounded-lg shadow">
-            <h4 className="text-sm font-semibold text-gray-500">This Month</h4>
+            <h4 className="text-sm font-semibold text-gray-500">Este mes</h4>
             <p className="text-2xl font-bold text-gray-800">{stats.thisMonth}</p>
           </div>
         </div>
@@ -265,50 +265,50 @@ function Logs() {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <h4 className="text-lg font-semibold text-gray-700 mb-4">Filters</h4>
+        <h4 className="text-lg font-semibold text-gray-700 mb-4">Filtros</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Acción</label>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
               value={filters.action || ''}
               onChange={(e) => handleFilterChange('action', e.target.value || undefined)}
             >
-              <option value="">All Actions</option>
-              <option value="LOGIN">Login</option>
-              <option value="LOGOUT">Logout</option>
-              <option value="CREATE">Create</option>
-              <option value="UPDATE">Update</option>
-              <option value="DELETE">Delete</option>
-              <option value="VIEW">View</option>
-              <option value="EXPORT">Export</option>
-              <option value="IMPORT">Import</option>
-              <option value="STATUS_CHANGE">Status Change</option>
+              <option value="">Todas las acciones</option>
+              <option value="LOGIN">Inicio de sesión</option>
+              <option value="LOGOUT">Cierre de sesión</option>
+              <option value="CREATE">Crear</option>
+              <option value="UPDATE">Actualizar</option>
+              <option value="DELETE">Eliminar</option>
+              <option value="VIEW">Ver</option>
+              <option value="EXPORT">Exportar</option>
+              <option value="IMPORT">Importar</option>
+              <option value="STATUS_CHANGE">Cambio de estado</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Entity Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de entidad</label>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
               value={filters.entityType || ''}
               onChange={(e) => handleFilterChange('entityType', e.target.value || undefined)}
             >
-              <option value="">All Entity Types</option>
-              <option value="USER">User</option>
-              <option value="CUSTOMER">Customer</option>
-              <option value="PROPERTY">Property</option>
-              <option value="OPPORTUNITY">Opportunity</option>
-              <option value="EVENT">Event</option>
-              <option value="SYSTEM">System</option>
+              <option value="">Todos los tipos de entidad</option>
+              <option value="USER">Usuario</option>
+              <option value="CUSTOMER">Cliente</option>
+              <option value="PROPERTY">Propiedad</option>
+              <option value="OPPORTUNITY">Oportunidad</option>
+              <option value="EVENT">Evento</option>
+              <option value="SYSTEM">Sistema</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
             <input
               type="text"
-              placeholder="Search in descriptions..."
+              placeholder="Buscar en descripciones..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
               value={filters.searchTerm || ''}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
@@ -316,7 +316,7 @@ function Logs() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de inicio</label>
             <input
               type="date"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
@@ -326,7 +326,7 @@ function Logs() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de fin</label>
             <input
               type="date"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
@@ -340,7 +340,7 @@ function Logs() {
               onClick={() => setFilters({ page: 1, limit: 50 })}
               className="px-4 py-2 border border-gray-300 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
             >
-              Reset Filters
+              Resetear filtros
             </button>
           </div>
         </div>
@@ -353,19 +353,19 @@ function Logs() {
             <thead className="bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Timestamp
+                  Fecha y hora
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
+                  Usuario
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
+                  Acción
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Entity Type
+                  Tipo de entidad
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
+                  Descripción
                 </th>
               </tr>
             </thead>
@@ -373,7 +373,7 @@ function Logs() {
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
-                    No logs found
+                    No se encontraron registros
                   </td>
                 </tr>
               ) : (
@@ -389,7 +389,7 @@ function Logs() {
                           <div className="text-xs text-gray-500">{log.userId.email}</div>
                         </div>
                       ) : (
-                        <span className="text-gray-500">System</span>
+                        <span className="text-gray-500">Sistema</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -418,11 +418,11 @@ function Logs() {
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
+                  Mostrando <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> a{' '}
                   <span className="font-medium">
                     {Math.min(pagination.page * pagination.limit, pagination.total)}
                   </span>{' '}
-                  of <span className="font-medium">{pagination.total}</span> results
+                  de <span className="font-medium">{pagination.total}</span> resultados
                 </p>
               </div>
               <div>

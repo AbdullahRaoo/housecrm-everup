@@ -2,6 +2,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import express from "express";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import xlsx from "xlsx";
 import { logManualActivity } from "../middleware/logger.js";
 import Customer from "../models/Customer.js";
@@ -238,6 +239,73 @@ router.get("/calendar", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching calendar events:", error);
     res.status(500).json({ error: "Failed to fetch calendar events" });
+  }
+});
+
+// GET /api/calendar/events - Get limited calendar events for notifications
+router.get("/calendar/events", authenticateToken, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Fetch recent events with activity logs to detect changes
+    const events = await Event.find()
+      .sort({ updatedAt: -1, start: 1 })
+      .limit(limit);
+
+    // Enhance events with change information from logs
+    const enhancedEvents = await Promise.all(
+      events.map(async (event) => {
+        // Find the most recent log entry for this event
+        const recentLog = await mongoose
+          .model("Log")
+          .findOne({
+            entityId: event._id,
+            entityType: "EVENT",
+          })
+          .sort({ createdAt: -1 });
+
+        let changeType = null;
+        let changedFields = [];
+
+        if (recentLog) {
+          // Determine type of change based on action
+          switch (recentLog.action) {
+            case "CREATE":
+              changeType = "added";
+              break;
+            case "UPDATE":
+              changeType = "edited";
+              // Check if status was specifically changed
+              if (
+                recentLog.details &&
+                recentLog.details.previousStatus &&
+                recentLog.details.previousStatus !== event.status
+              ) {
+                changeType = "status_changed";
+                changedFields.push("status");
+              } else if (recentLog.details && recentLog.details.changedFields) {
+                changedFields = recentLog.details.changedFields;
+              }
+              break;
+            case "DELETE":
+              changeType = "deleted";
+              break;
+          }
+        }
+
+        // Add the change information to the event
+        return {
+          ...event._doc,
+          changeType,
+          changedFields,
+        };
+      })
+    );
+
+    res.json(enhancedEvents);
+  } catch (error) {
+    console.error("Error fetching calendar events for notifications:", error);
+    res.status(500).json({ error: "Failed to fetch calendar notifications" });
   }
 });
 

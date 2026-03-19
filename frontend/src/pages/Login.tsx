@@ -22,7 +22,7 @@ function Login() {
       // No need to call navigate here, it's handled in the AuthContext
     } catch (err) {
       console.error('Login error:', err);
-      setError('Invalid email or password. Please try again.');
+      setError('Correo electrónico o contraseña inválidos. Por favor, inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -38,10 +38,10 @@ function Login() {
             className="w-48 mb-6"
           />
           <h2 className="text-center text-3xl font-bold text-gray-900">
-            Welcome Back
+            Bienvenido de nuevo
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account to continue
+            Inicia sesión en tu cuenta para continuar
           </p>
         </div>
 
@@ -64,7 +64,7 @@ function Login() {
           <div className="space-y-4">
             <div>
               <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                Email address
+                Correo electrónico
               </label>
               <input
                 id="email-address"
@@ -76,14 +76,14 @@ function Login() {
                   border-gray-300 rounded-md placeholder-gray-500 text-gray-900
                   focus:outline-none focus:ring-[#e56e43] focus:border-[#e56e43] focus:z-10
                   sm:text-sm transition-colors duration-200"
-                placeholder="Enter your email"
+                placeholder="Introduce tu correo electrónico"
                 value={credentials.email}
                 onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
               />
             </div>
             <div>
               <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
-                Password
+                Contraseña
               </label>
               <input
                 id="current-password"
@@ -95,7 +95,7 @@ function Login() {
                   border-gray-300 rounded-md placeholder-gray-500 text-gray-900
                   focus:outline-none focus:ring-[#e56e43] focus:border-[#e56e43] focus:z-10
                   sm:text-sm transition-colors duration-200"
-                placeholder="Enter your password"
+                placeholder="Introduce tu contraseña"
                 value={credentials.password}
                 onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
               />
@@ -123,14 +123,8 @@ function Login() {
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
-          </div>
-
-          <div className="text-center text-sm mt-4 text-gray-600">
-            <p>Demo credentials:</p>
-            <p><strong>Email:</strong> admin@example.com</p>
-            <p><strong>Password:</strong> admin123</p>
           </div>
         </form>
       </div>

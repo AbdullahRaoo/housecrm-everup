@@ -185,7 +185,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
     <>
       {/* Day headers */}
       <div className="grid grid-cols-7 bg-gray-50">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+        {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(day => (
           <div key={day} className="py-2 text-center text-sm font-medium text-gray-500">
             {day}
           </div>
@@ -455,7 +455,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
               onClick={navigateToday}
               className="px-4 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-md transition-all"
             >
-              Today
+              Hoy
             </button>
             <span className="text-lg font-semibold min-w-[200px] text-center">
               {currentDate.toLocaleString('default', {
@@ -482,7 +482,7 @@ export function Calendar({ events, onEventClick, onAddEvent }: CalendarProps) {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Add Event
+          Añadir evento
         </button>
       </div>
 

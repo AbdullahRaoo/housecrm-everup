@@ -10,15 +10,15 @@ export function BasicDetails({ register, errors }: BasicDetailsProps) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Property Title</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Título de la propiedad</label>
         <input
           type="text"
-          {...register('title', { required: 'Title is required' })}
+          {...register('title', { required: 'El título es obligatorio' })}
           className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-200
             focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
             transition-colors duration-200 bg-white text-gray-800
             placeholder-gray-400 shadow-sm"
-          placeholder="Enter property title"
+          placeholder="Ingrese el título de la propiedad"
         />
         {errors.title && (
           <p className="mt-2 text-sm text-red-500 flex items-center">
@@ -31,17 +31,17 @@ export function BasicDetails({ register, errors }: BasicDetailsProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Property Type</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Tipo de propiedad</label>
         <select
-          {...register('type', { required: 'Type is required' })}
+          {...register('type', { required: 'El tipo es obligatorio' })}
           className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-200
             focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
             transition-colors duration-200 bg-white text-gray-800
             shadow-sm appearance-none cursor-pointer"
         >
-          <option value="">Select property type</option>
-          <option value="Sale">For Sale</option>
-          <option value="Rent">For Rent</option>
+          <option value="">Seleccione el tipo de propiedad</option>
+          <option value="Sale">En venta</option>
+          <option value="Rent">En alquiler</option>
         </select>
         {errors.type && (
           <p className="mt-2 text-sm text-red-500 flex items-center">
@@ -54,17 +54,17 @@ export function BasicDetails({ register, errors }: BasicDetailsProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Price</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Precio</label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
           <input
             type="number"
-            {...register('price', { required: 'Price is required' })}
+            {...register('price', { required: 'El precio es obligatorio' })}
             className="mt-1 block w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200
               focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
               transition-colors duration-200 bg-white text-gray-800
               placeholder-gray-400 shadow-sm"
-            placeholder="Enter property price"
+            placeholder="Ingrese el precio de la propiedad"
           />
         </div>
         {errors.price && (
@@ -78,15 +78,15 @@ export function BasicDetails({ register, errors }: BasicDetailsProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Description</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Descripción</label>
         <textarea
-          {...register('description', { required: 'Description is required' })}
+          {...register('description', { required: 'La descripción es obligatoria' })}
           rows={4}
           className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-200
             focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
             transition-colors duration-200 bg-white text-gray-800
             placeholder-gray-400 shadow-sm resize-none"
-          placeholder="Enter property description"
+          placeholder="Ingrese la descripción de la propiedad"
         />
         {errors.description && (
           <p className="mt-2 text-sm text-red-500 flex items-center">

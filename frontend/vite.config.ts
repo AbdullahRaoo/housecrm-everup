@@ -17,11 +17,13 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // Proxy all API requests to the backend server
         "/api": {
-          target: "http://localhost:5001",
+          target: `${env.VITE_BACKEND_URL}`,
           changeOrigin: true,
           secure: false,
         },
       },
+      host: true,
+      port: parseInt(env.VITE_APP_PORT) || 3000,
     },
     // Add build configuration for production
     build: {
@@ -31,7 +33,7 @@ export default defineConfig(({ mode }) => {
     },
     // Preview config for production preview
     preview: {
-      port: 3000,
+      port: parseInt(env.VITE_APP_PORT) || 3000,
       host: true,
       strictPort: true,
     },

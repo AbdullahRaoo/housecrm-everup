@@ -2,11 +2,11 @@ module.exports = {
   apps: [
     {
       name: "crm-backend",
-      cwd: "/home/tabish/Projects/CRM_Realstate/server",
+      cwd: "/var/www/CRM_Realstate/server",
       script: "index.js",
       env: {
         NODE_ENV: "production",
-        PORT: 5001,
+        PORT: 5432,
       },
       watch: false,
       instances: 1,
@@ -14,7 +14,7 @@ module.exports = {
     },
     {
       name: "crm-frontend",
-      cwd: "/home/tabish/Projects/CRM_Realstate/frontend",
+      cwd: "/var/www/CRM_Realstate/frontend",
       script: "npm",
       args: "run preview",
       env: {

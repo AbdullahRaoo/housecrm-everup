@@ -285,7 +285,7 @@ function OpportunityForm() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-gray-700 text-3xl font-medium">
-          {isEditing ? 'Edit Opportunity' : 'Create New Opportunity'}
+          {isEditing ? 'Editar oportunidad' : 'Crear nueva oportunidad'}
         </h3>
       </div>
 
@@ -299,20 +299,20 @@ function OpportunityForm() {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Title *</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Título *</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                placeholder="Opportunity title"
+                placeholder="Título de la oportunidad"
                 className={inputClasses}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Customer *</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Cliente *</label>
               <select
                 name="customerId"
                 value={formData.customerId}
@@ -320,7 +320,7 @@ function OpportunityForm() {
                 className={inputClasses}
                 required
               >
-                <option value="">Select Customer</option>
+                <option value="">Seleccionar cliente</option>
                 {customers.map((customer: Customer) => (
                   <option key={customer._id || customer.id} value={customer._id || customer.id}>
                     {customer.name}
@@ -330,14 +330,14 @@ function OpportunityForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Property (Optional)</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Propiedad (opcional)</label>
               <select
                 name="propertyId"
                 value={formData.propertyId || ''}
                 onChange={handleInputChange}
                 className={inputClasses}
               >
-                <option value="">Select Property</option>
+                <option value="">Seleccionar propiedad</option>
                 {properties.map((property: Property) => (
                   <option key={property._id || property.id} value={property._id || property.id}>
                     {property.title}
@@ -347,23 +347,23 @@ function OpportunityForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Estado</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
                 className={inputClasses}
               >
-                <option value="Draft">Draft</option>
-                <option value="Proposed">Proposed</option>
-                <option value="Accepted">Accepted</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Expired">Expired</option>
+                <option value="Draft">Borrador</option>
+                <option value="Proposed">Propuesta</option>
+                <option value="Accepted">Aceptada</option>
+                <option value="Rejected">Rechazada</option>
+                <option value="Expired">Expirada</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Budget Amount *</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Monto del presupuesto *</label>
               <input
                 type="number"
                 name="budget.amount"
@@ -377,7 +377,7 @@ function OpportunityForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Currency</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Moneda</label>
               <select
                 name="budget.currency"
                 value={formData.budget.currency}
@@ -391,7 +391,7 @@ function OpportunityForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Valid Until</label>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Válido hasta</label>
               <input
                 type="date"
                 name="validUntil"
@@ -403,35 +403,35 @@ function OpportunityForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-gray-800 mb-2">Descripción</label>
             <textarea
               name="description"
               value={formData.description || ''}
               onChange={handleInputChange}
               rows={4}
               className={inputClasses}
-              placeholder="Describe the opportunity..."
+              placeholder="Describe la oportunidad..."
             ></textarea>
           </div>
 
           <div className="border-t border-gray-200 pt-6">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Income Scenarios</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Escenarios de ingreso</h4>
 
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Scenario Name *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre del escenario *</label>
                   <input
                     type="text"
                     name="name"
                     value={scenario.name}
                     onChange={handleScenarioChange}
-                    placeholder="e.g., Conservative estimate"
+                    placeholder="Ej: estimación conservadora"
                     className={inputClasses}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Probability (%)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Probabilidad (%)</label>
                   <input
                     type="number"
                     name="probability"
@@ -443,7 +443,7 @@ function OpportunityForm() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Income Amount *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Monto de ingreso *</label>
                   <input
                     type="number"
                     name="income"
@@ -454,7 +454,7 @@ function OpportunityForm() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Expenses</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Gastos</label>
                   <input
                     type="number"
                     name="expenses"
@@ -467,26 +467,26 @@ function OpportunityForm() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
                 <textarea
                   name="description"
                   value={scenario.description || ''}
                   onChange={handleScenarioChange}
                   rows={2}
                   className={inputClasses}
-                  placeholder="Describe this scenario..."
+                  placeholder="Describe este escenario..."
                 ></textarea>
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Notas</label>
                 <textarea
                   name="notes"
                   value={scenario.notes || ''}
                   onChange={handleScenarioChange}
                   rows={2}
                   className={inputClasses}
-                  placeholder="Additional notes..."
+                  placeholder="Notas adicionales..."
                 ></textarea>
               </div>
 
@@ -508,14 +508,14 @@ function OpportunityForm() {
                       }}
                       className="mr-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                     >
-                      Cancel
+                      Cancelar
                     </button>
                     <button
                       type="button"
                       onClick={updateScenario}
                       className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                     >
-                      Update Scenario
+                      Actualizar escenario
                     </button>
                   </>
                 ) : (
@@ -524,7 +524,7 @@ function OpportunityForm() {
                     onClick={addScenario}
                     className="px-4 py-2 bg-[#e56e43] text-white rounded-lg hover:bg-[#e56e43]/90"
                   >
-                    Add Scenario
+                    Agregar escenario
                   </button>
                 )}
               </div>
@@ -535,12 +535,12 @@ function OpportunityForm() {
                 <table className="min-w-full">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="px-4 py-2 text-left">Name</th>
-                      <th className="px-4 py-2 text-left">Income</th>
-                      <th className="px-4 py-2 text-left">Expenses</th>
+                      <th className="px-4 py-2 text-left">Nombre</th>
+                      <th className="px-4 py-2 text-left">Ingreso</th>
+                      <th className="px-4 py-2 text-left">Gastos</th>
                       <th className="px-4 py-2 text-left">ROI</th>
-                      <th className="px-4 py-2 text-left">Probability</th>
-                      <th className="px-4 py-2 text-left">Actions</th>
+                      <th className="px-4 py-2 text-left">Probabilidad</th>
+                      <th className="px-4 py-2 text-left">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -550,7 +550,7 @@ function OpportunityForm() {
                         <td className="px-4 py-2">{formatCurrency(s.income)}</td>
                         <td className="px-4 py-2">{formatCurrency(s.expenses)}</td>
                         <td className="px-4 py-2">
-                          {s.roi !== undefined ? `${s.roi.toFixed(2)}%` : 'N/A'}
+                          {s.roi !== undefined ? `${s.roi.toFixed(2)}%` : 'N/D'}
                         </td>
                         <td className="px-4 py-2">{s.probability}%</td>
                         <td className="px-4 py-2">
@@ -559,14 +559,14 @@ function OpportunityForm() {
                             onClick={() => editScenario(index)}
                             className="text-blue-600 hover:text-blue-900 mr-2"
                           >
-                            Edit
+                            Editar
                           </button>
                           <button
                             type="button"
                             onClick={() => removeScenario(index)}
                             className="text-red-600 hover:text-red-900"
                           >
-                            Delete
+                            Eliminar
                           </button>
                         </td>
                       </tr>
@@ -583,7 +583,7 @@ function OpportunityForm() {
               onClick={() => navigate('/opportunities')}
               className="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"
@@ -596,9 +596,9 @@ function OpportunityForm() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Saving...
+                  Guardando...
                 </span>
-              ) : isEditing ? 'Update Opportunity' : 'Create Opportunity'}
+              ) : isEditing ? 'Actualizar oportunidad' : 'Crear oportunidad'}
             </button>
           </div>
         </form>

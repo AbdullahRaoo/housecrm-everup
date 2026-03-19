@@ -8,46 +8,46 @@ interface FeaturesProps {
 
 export function Features({ register, errors }: FeaturesProps) {
   const amenities = [
-    'Parking',
-    'Pool',
-    'Garden',
-    'Security',
-    'Gym',
-    'Air Conditioning',
-    'Elevator',
-    'Balcony',
-    'Storage',
-    'Furnished',
-    'Pet Friendly',
+    'Estacionamiento',
+    'Piscina',
+    'Jardín',
+    'Seguridad',
+    'Gimnasio',
+    'Aire acondicionado',
+    'Ascensor',
+    'Balcón',
+    'Trastero',
+    'Amueblado',
+    'Se aceptan mascotas',
     'Internet',
-    'Cable TV',
-    'Washing Machine',
-    'Dishwasher'
+    'Televisión por cable',
+    'Lavadora',
+    'Lavavajillas'
   ];
 
   const propertyTypes = [
-    'Apartment',
-    'House',
+    'Apartamento',
+    'Casa',
     'Villa',
-    'Office',
-    'Commercial',
-    'Land',
+    'Oficina',
+    'Comercial',
+    'Terreno',
     'Industrial'
   ] as const;
 
   return (
     <div className="space-y-8">
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-2">Property Type</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-2">Tipo de propiedad</label>
         <select
-          {...register('propertyType', { required: 'Property type is required' })}
+          {...register('propertyType', { required: 'El tipo de propiedad es obligatorio' })}
           className={`mt-1 block w-full px-4 py-3 rounded-lg border
             ${errors.propertyType ? 'border-red-300' : 'border-gray-200'}
             focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
             transition-colors duration-200 bg-white text-gray-800
             shadow-sm appearance-none cursor-pointer`}
         >
-          <option value="">Select property type</option>
+          <option value="">Seleccione el tipo de propiedad</option>
           {propertyTypes.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
@@ -64,19 +64,19 @@ export function Features({ register, errors }: FeaturesProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Bedrooms</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Habitaciones</label>
           <input
             type="number"
             {...register('features.bedrooms', {
-              required: 'Bedrooms is required',
-              min: { value: 0, message: 'Bedrooms must be 0 or more' }
+              required: 'Las habitaciones son obligatorias',
+              min: { value: 0, message: 'Las habitaciones deben ser 0 o más' }
             })}
             className={`mt-1 block w-full px-4 py-3 rounded-lg border
               ${errors.features?.bedrooms ? 'border-red-300' : 'border-gray-200'}
               focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
               transition-colors duration-200 bg-white text-gray-800
               placeholder-gray-400 shadow-sm`}
-            placeholder="Number of bedrooms"
+            placeholder="Número de habitaciones"
           />
           {errors.features?.bedrooms && (
             <p className="mt-2 text-sm text-red-500 flex items-center">
@@ -89,19 +89,19 @@ export function Features({ register, errors }: FeaturesProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Bathrooms</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Baños</label>
           <input
             type="number"
             {...register('features.bathrooms', {
-              required: 'Bathrooms is required',
-              min: { value: 0, message: 'Bathrooms must be 0 or more' }
+              required: 'Los baños son obligatorios',
+              min: { value: 0, message: 'Los baños deben ser 0 o más' }
             })}
             className={`mt-1 block w-full px-4 py-3 rounded-lg border
               ${errors.features?.bathrooms ? 'border-red-300' : 'border-gray-200'}
               focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
               transition-colors duration-200 bg-white text-gray-800
               placeholder-gray-400 shadow-sm`}
-            placeholder="Number of bathrooms"
+            placeholder="Número de baños"
           />
           {errors.features?.bathrooms && (
             <p className="mt-2 text-sm text-red-500 flex items-center">
@@ -114,19 +114,19 @@ export function Features({ register, errors }: FeaturesProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Area (sq ft)</label>
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Área (m²)</label>
           <input
             type="number"
             {...register('features.area', {
-              required: 'Area is required',
-              min: { value: 1, message: 'Area must be greater than 0' }
+              required: 'El área es obligatoria',
+              min: { value: 1, message: 'El área debe ser mayor que 0' }
             })}
             className={`mt-1 block w-full px-4 py-3 rounded-lg border
               ${errors.features?.area ? 'border-red-300' : 'border-gray-200'}
               focus:border-[#e56e43] focus:ring-2 focus:ring-[#e56e43]/20
               transition-colors duration-200 bg-white text-gray-800
               placeholder-gray-400 shadow-sm`}
-            placeholder="Property area in sq ft"
+            placeholder="Área de la propiedad en m²"
           />
           {errors.features?.area && (
             <p className="mt-2 text-sm text-red-500 flex items-center">
@@ -140,7 +140,7 @@ export function Features({ register, errors }: FeaturesProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-4">Amenities</label>
+        <label className="block text-sm font-semibold text-gray-800 mb-4">Comodidades</label>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {amenities.map((amenity) => (
             <div key={amenity} className="flex items-center">

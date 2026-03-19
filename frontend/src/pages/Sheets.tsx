@@ -84,8 +84,8 @@ function Sheets() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-gray-700 text-3xl font-medium">Sheets</h3>
-          <p className="text-gray-500 mt-1">Compare and analyze opportunities and income data</p>
+          <h3 className="text-gray-700 text-3xl font-medium">Hojas</h3>
+          <p className="text-gray-500 mt-1">Compara y analiza oportunidades y datos de ingresos</p>
         </div>
 
         {/* Time frame selector */}
@@ -95,9 +95,9 @@ function Sheets() {
             onChange={(e) => setTimeFrame(e.target.value as TimeFrame)}
             className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#e56e43]"
           >
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="yearly">Yearly</option>
+            <option value="monthly">Mensual</option>
+            <option value="quarterly">Trimestral</option>
+            <option value="yearly">Anual</option>
           </select>
         </div>
       </div>
@@ -106,7 +106,7 @@ function Sheets() {
       {opportunityStats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Total Opportunities"
+            title="Total de oportunidades"
             value={opportunityStats.totalOpportunities}
             color="#3b82f6"
             icon={
@@ -116,7 +116,7 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Acceptance Rate"
+            title="Tasa de aceptación"
             value={formatPercentage(opportunityStats.acceptanceRate)}
             color="#10b981"
             icon={
@@ -126,7 +126,7 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Rejected Rate"
+            title="Tasa de rechazo"
             value={formatPercentage(opportunityStats.rejectionRate)}
             color="#ef4444"
             icon={
@@ -136,7 +136,7 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Average Budget"
+            title="Presupuesto total"
             value={formatCurrency(opportunityStats.avgBudget)}
             icon={
               <svg className="w-6 h-6" fill="none" stroke="#e56e43" viewBox="0 0 24 24">
@@ -151,9 +151,9 @@ function Sheets() {
       {incomeStats && incomeStats.monthlyData.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Total Projected Income"
+            title="Ingresos proyectados totales"
             value={formatCurrency(incomeStats.totalIncome)}
-            subtitle="From all income scenarios"
+            subtitle="De todos los escenarios de ingresos"
             color="#10b981"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="#10b981" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Total Expenses"
+            title="Gastos totales"
             value={formatCurrency(incomeStats.totalExpenses)}
             color="#ef4444"
             icon={
@@ -172,7 +172,7 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Net Income"
+            title="Ingresos netos"
             value={formatCurrency(incomeStats.netIncome)}
             color="#3b82f6"
             icon={
@@ -182,9 +182,9 @@ function Sheets() {
             }
           />
           <StatCard
-            title="Average ROI"
+            title="ROI promedio"
             value={formatPercentage(incomeStats.averageROI)}
-            subtitle={incomeStats.bestPerformingScenario ? `Best: ${incomeStats.bestPerformingScenario.name}` : ''}
+            subtitle={incomeStats.bestPerformingScenario ? `Mejor: ${incomeStats.bestPerformingScenario.name}` : ''}
             icon={
               <svg className="w-6 h-6" fill="none" stroke="#e56e43" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -197,7 +197,7 @@ function Sheets() {
       <div className="grid grid-cols-1 gap-8">
         {/* Opportunity Comparison Table */}
         <ComparisonTable
-          title="Opportunity Analysis"
+          title="Análisis de oportunidades"
           columns={opportunityTableData.columns}
           rows={opportunityTableData.rows}
         />
@@ -205,7 +205,7 @@ function Sheets() {
         {/* Income Comparison Table */}
         {incomeTableData.rows.length > 0 && (
           <ComparisonTable
-            title="Income Analysis"
+            title="Análisis de ingresos"
             columns={incomeTableData.columns}
             rows={incomeTableData.rows}
           />
@@ -215,8 +215,8 @@ function Sheets() {
       {/* No data message */}
       {opportunities.length === 0 && (
         <div className="mt-8 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-center">
-          <p className="font-medium">No opportunities data available</p>
-          <p className="text-sm mt-1">Create some opportunities to see analysis and comparison tables here.</p>
+          <p className="font-medium">No hay datos de oportunidades disponibles</p>
+          <p className="text-sm mt-1">Cree algunas oportunidades para ver análisis y tablas comparativas aquí.</p>
         </div>
       )}
     </div>

@@ -60,12 +60,12 @@ function Properties() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (window.confirm('Are you sure you want to delete this property?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta propiedad?')) {
       try {
         await deleteProperty(id);
       } catch (error) {
         console.error('Failed to delete property:', error);
-        alert('Failed to delete property. Please try again.');
+        alert('Error al eliminar la propiedad. Por favor, inténtalo de nuevo.');
       }
     }
   };
@@ -93,10 +93,10 @@ function Properties() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-gray-800 text-3xl font-semibold">Properties</h3>
+          <h3 className="text-gray-800 text-3xl font-semibold">Propiedades</h3>
           <p className="text-gray-600 mt-1">
-            {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'} found
-            {filteredProperties.length !== properties.length && ` (filtered from ${properties.length})`}
+            {filteredProperties.length} {filteredProperties.length === 1 ? 'propiedad' : 'propiedades'} encontradas
+            {filteredProperties.length !== properties.length && ` (filtrado de ${properties.length})`}
           </p>
         </div>
         <Link
@@ -107,7 +107,7 @@ function Properties() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Add Property
+          Añadir propiedad
         </Link>
       </div>
 
@@ -175,7 +175,7 @@ function Properties() {
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                    {property.status}
+                    {property.status === 'Available' ? 'Disponible' : property.status === 'Sold' ? 'Vendido' : 'Reservado'}
                   </span>
                 </div>
 
@@ -185,36 +185,36 @@ function Properties() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span>{property.features.bedrooms} beds</span>
+                    <span>{property.features.bedrooms} habitaciones</span>
                   </div>
                   <div className="flex items-center">
                     <svg className="w-4 h-4 mr-1 text-[#e56e43]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span>{property.features.bathrooms} baths</span>
+                    <span>{property.features.bathrooms} baños</span>
                   </div>
                   <div className="flex items-center">
                     <svg className="w-4 h-4 mr-1 text-[#e56e43]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     </svg>
-                    <span>{property.features.area} sq ft</span>
+                    <span>{property.features.area} m²</span>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-3 gap-2">
                   <div className="text-center">
                     <div className="font-medium text-[#e56e43]">{property.statistics.views}</div>
-                    <div className="text-xs text-gray-600">Views</div>
+                    <div className="text-xs text-gray-600">Vistas</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium text-[#e56e43]">{property.statistics.inquiries}</div>
-                    <div className="text-xs text-gray-600">Inquiries</div>
+                    <div className="text-xs text-gray-600">Consultas</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium text-[#e56e43]">{property.statistics.visits}</div>
-                    <div className="text-xs text-gray-600">Visits</div>
+                    <div className="text-xs text-gray-600">Visitas</div>
                   </div>
                 </div>
               </div>
@@ -228,8 +228,8 @@ function Properties() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No properties</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by creating a new property.</p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No hay propiedades</h3>
+            <p className="mt-1 text-sm text-gray-500">Comienza creando una nueva propiedad.</p>
             <div className="mt-6">
               <Link
                 to="/properties/new"
@@ -239,7 +239,7 @@ function Properties() {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Add Property
+                Añadir propiedad
               </Link>
             </div>
           </div>
@@ -251,8 +251,8 @@ function Properties() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No properties found</h3>
-            <p className="mt-1 text-sm text-gray-500">Try adjusting your search filters</p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No se encontraron propiedades</h3>
+            <p className="mt-1 text-sm text-gray-500">Intenta ajustar tus filtros de búsqueda</p>
           </div>
         )}
       </div>

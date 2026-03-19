@@ -82,7 +82,7 @@ function Dashboard() {
             {change > 0 ? '↑' : change < 0 ? '↓' : '−'}
             {Math.abs(change)}%
           </span>
-          <span className="text-xs text-gray-500">vs last month</span>
+          <span className="text-xs text-gray-500">vs el mes pasado</span>
         </div>
       </div>
     </div>
@@ -90,12 +90,12 @@ function Dashboard() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <h3 className="text-gray-800 text-3xl font-semibold">Dashboard</h3>
+      <h3 className="text-gray-800 text-3xl font-semibold">Panel</h3>
 
       <div className="mt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {renderStatsCard(
-            "Total Customers",
+            "Total de clientes",
             stats.totalCustomers,
             stats.monthlyComparison.customers,
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -104,7 +104,7 @@ function Dashboard() {
           )}
 
           {renderStatsCard(
-            "Active Deals",
+            "Negocios activos",
             stats.activeDeals,
             stats.monthlyComparison.deals,
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +113,7 @@ function Dashboard() {
           )}
 
           {renderStatsCard(
-            "Total Revenue",
+            "Ingresos totales",
             `$${stats.totalRevenue.toLocaleString()}`,
             stats.monthlyComparison.revenue,
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -122,7 +122,7 @@ function Dashboard() {
           )}
 
           {renderStatsCard(
-            "Pending Tasks",
+            "Tareas pendientes",
             stats.pendingTasks,
             stats.monthlyComparison.tasks,
             <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +135,7 @@ function Dashboard() {
       {/* Property Status and Performance Charts */}
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h4 className="text-xl font-semibold text-gray-800 mb-6">Property Status</h4>
+          <h4 className="text-xl font-semibold text-gray-800 mb-6">Estado de propiedades</h4>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={[{
               available: stats.propertyStats.available,
@@ -154,15 +154,15 @@ function Dashboard() {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
-            <h4 className="text-xl font-semibold text-gray-800">Property Performance</h4>
+            <h4 className="text-xl font-semibold text-gray-800">Rendimiento de propiedades</h4>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
               className="px-3 py-1 border rounded-lg text-sm"
             >
-              <option value="7">Last 7 days</option>
-              <option value="30">Last 30 days</option>
-              <option value="90">Last 90 days</option>
+              <option value="7">Últimos 7 días</option>
+              <option value="30">Últimos 30 días</option>
+              <option value="90">Últimos 90 días</option>
             </select>
           </div>
           <ResponsiveContainer width="100%" height={200}>
@@ -180,8 +180,8 @@ function Dashboard() {
       {/* Recent Properties */}
       <div className="mt-8">
         <div className="flex justify-between items-center mb-6">
-          <h4 className="text-xl font-semibold text-gray-800">Recent Properties</h4>
-          <Link to="/properties" className="text-[#e56e43] hover:text-[#e56e43]/80">View all</Link>
+          <h4 className="text-xl font-semibold text-gray-800">Propiedades recientes</h4>
+          <Link to="/properties" className="text-[#e56e43] hover:text-[#e56e43]/80">Ver todo</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {latestProperties.map(property => {
@@ -206,14 +206,14 @@ function Dashboard() {
                 />
                 <div className="p-4">
                   <h5 className="font-semibold text-gray-800">{property.title}</h5>
-                  <p className="text-gray-600 text-sm mt-1">{property.location?.address || 'Address not available'}</p>
+                  <p className="text-gray-600 text-sm mt-1">{property.location?.address || 'Dirección no disponible'}</p>
                   <div className="mt-2 flex justify-between items-center">
                     <span className="text-[#e56e43] font-bold">${(property.price || 0).toLocaleString()}</span>
                     <span className={`px-2 py-1 rounded-full text-xs ${property.status === 'Available'
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
                       }`}>
-                      {property.status || 'Status unknown'}
+                      {property.status === 'Available' ? 'Disponible' : property.status === 'Sold' ? 'Vendido' : 'Desconocido'}
                     </span>
                   </div>
                 </div>
@@ -225,6 +225,10 @@ function Dashboard() {
 
       {/* Upcoming Tasks */}
       <div className="mt-8">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="text-xl font-semibold text-gray-800">Próximas tareas</h4>
+          <Link to="/calender" className="text-[#e56e43] hover:text-[#e56e43]/80">Ver todo</Link>
+        </div>
         <div className="bg-white rounded-lg shadow-md divide-y">
           {upcomingTasks.map(task => (
             <div key={task.id} className="p-4 hover:bg-gray-50">
@@ -237,7 +241,7 @@ function Dashboard() {
                   ? 'bg-[#e56e43]/10 text-[#e56e43]'
                   : 'bg-blue-100 text-blue-800'
                   }`}>
-                  {task.type}
+                  {task.type === 'Visit' ? 'Visita' : task.type}
                 </span>
               </div>
               <div className="mt-2 text-sm text-gray-500">
@@ -251,8 +255,8 @@ function Dashboard() {
       {/* Active Clients */}
       <div className="mt-8 mb-8">
         <div className="flex justify-between items-center mb-6">
-          <h4 className="text-xl font-semibold text-gray-800">Active Clients</h4>
-          <Link to="/customers" className="text-[#e56e43] hover:text-[#e56e43]/80">View all</Link>
+          <h4 className="text-xl font-semibold text-gray-800">Clientes activos</h4>
+          <Link to="/customers" className="text-[#e56e43] hover:text-[#e56e43]/80">Ver todo</Link>
         </div>
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="divide-y divide-gray-200">
@@ -272,7 +276,7 @@ function Dashboard() {
                       {client.email}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Last active: {new Date(client.lastInteraction || '').toLocaleDateString()}
+                      Última actividad: {new Date(client.lastInteraction || '').toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center space-x-4">
@@ -280,10 +284,10 @@ function Dashboard() {
                       <span className="text-sm font-medium text-gray-900">
                         {client.propertiesViewed || 0}
                       </span>
-                      <p className="text-xs text-gray-500">Properties</p>
+                      <p className="text-xs text-gray-500">Propiedades</p>
                     </div>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Active
+                      Activo
                     </span>
                   </div>
                 </div>
