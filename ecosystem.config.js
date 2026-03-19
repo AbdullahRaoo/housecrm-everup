@@ -16,7 +16,7 @@ module.exports = {
       name: "crm-frontend",
       cwd: "/var/www/CRM_Realstate/frontend",
       script: "npm",
-      args: "run preview",
+      args: "run preview -- --host 0.0.0.0 --port 3000 --strictPort",
       env: {
         NODE_ENV: "production",
       },

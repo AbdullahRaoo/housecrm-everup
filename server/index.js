@@ -8,14 +8,6 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import apiRoutes from "./routes/api.js";
 import uploadRoutes from "./routes/uploads.js";
-import http from "http";
-import https from "https";
-
-// Load SSL certificates
-const sslOptions = {
-  key: fs.readFileSync("/etc/letsencrypt/live/housecrm.everup.net/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/housecrm.everup.net/fullchain.pem"),
-};
 
 // Load environment variables
 dotenv.config();
@@ -24,10 +16,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const HTTPS_PORT = process.env.PORT || 5432;
-const HTTP_PORT = 5431;  // Using non-standard HTTP port
-const HOST = process.env.HOST || 'localhost';
-const API_BASE_URL = `https://${HOST}:${HTTPS_PORT}`;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 5432;
+const HOST = process.env.HOST || "0.0.0.0";
 
 // Connect to MongoDB
 connectDB();
@@ -45,7 +35,12 @@ if (!fs.existsSync(imagesDir)) {
 // Get allowed origins from environment variable or use default development origins
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",")
-  : [`https://${HOST}`, `http://${HOST}`];
+  : [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ];
 
 // CORS configuration with environment variable support
 app.use(
@@ -75,29 +70,12 @@ app.use(
 app.use("/api", apiRoutes);
 app.use("/api/uploads", uploadRoutes);
 
-// Catch-all handler for client-side routing
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, "../dist/index.html"));
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
-// Create both HTTP and HTTPS servers
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(sslOptions, app);
-
-// Add HTTP to HTTPS redirect
-app.use((req, res, next) => {
-  if (!req.secure && process.env.NODE_ENV === 'production') {
-    return res.redirect(['https://', req.get('Host'), req.url].join(''));
-  }
-  next();
-});
-
-// Listen on different ports for HTTP and HTTPS
-httpServer.listen(HTTP_PORT, "0.0.0.0", () => {
-  console.log(`HTTP server running on port ${HTTP_PORT}`);
-});
-
-httpsServer.listen(HTTPS_PORT, "0.0.0.0", () => {
-  console.log(`HTTPS server running on port ${HTTPS_PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
 });
 
