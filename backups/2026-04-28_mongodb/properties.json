@@ -1,0 +1,56 @@
+[
+  {
+    "_id": "680e47e98f212f613d798d02",
+    "title": "Vivienda Telde Guillemet",
+    "description": "Alquiler de vivienda con dos habitaciones y un baño, amueblada y con certificado de eficiencia energética",
+    "type": "Rent",
+    "propertyType": "Apartment",
+    "purpose": "Rent",
+    "price": 500,
+    "location": {
+      "address": "Calle Jaime Balmes 19, Telde",
+      "coordinates": {
+        "lat": 51.5074,
+        "lng": -0.1278
+      },
+      "area": ""
+    },
+    "features": {
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "area": 64,
+      "amenities": [
+        "Parking"
+      ]
+    },
+    "media": {
+      "photos": [
+        "https://res.cloudinary.com/dfuaooduf/image/upload/v1745766360/real-estate-crm/properties/msgm21yz5we1j5jt1322.png"
+      ],
+      "videos": [],
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745766360/real-estate-crm/properties/msgm21yz5we1j5jt1322.png",
+          "public_id": "real-estate-crm/properties/msgm21yz5we1j5jt1322",
+          "isLocalFallback": false
+        }
+      ]
+    },
+    "status": "Available",
+    "owner": {
+      "id": "",
+      "name": "",
+      "email": "",
+      "phone": ""
+    },
+    "statistics": {
+      "views": 0,
+      "inquiries": 0,
+      "visits": 0,
+      "offers": []
+    },
+    "createdAt": "2025-04-27T15:06:16.859Z",
+    "updatedAt": "2025-04-27T15:06:16.859Z",
+    "__v": 0
+  }
+]

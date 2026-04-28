@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "6809b2e8946568a15355b4c6",
+    "title": "Venta Local Las Palmas de Gran Canaria",
+    "description": "Venta de local sito en Calle Venegas 43, bj",
+    "customerId": "6809af22946568a15355b457",
+    "budget": {
+      "amount": 150000,
+      "currency": "EUR"
+    },
+    "status": "Proposed",
+    "incomeScenarios": [
+      {
+        "name": "Estimación de venta",
+        "description": "Se propuso venta de la propiedad con objetivo de venta en 1 mes",
+        "income": 7500,
+        "expenses": 150,
+        "roi": 98,
+        "probability": 80,
+        "notes": "",
+        "_id": "6809b2e8946568a15355b4c7"
+      }
+    ],
+    "validUntil": "2025-06-04T00:00:00.000Z",
+    "createdBy": "6807c07e7c4320f7d304eea7",
+    "createdAt": "2025-04-24T03:41:28.997Z",
+    "updatedAt": "2025-04-24T03:41:28.997Z",
+    "__v": 0
+  }
+]

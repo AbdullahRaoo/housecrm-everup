@@ -1,0 +1,48 @@
+[
+  {
+    "_id": "6809af22946568a15355b457",
+    "name": "María de Los Angeles Quintana Cáceres",
+    "email": "mariaangeles1976@gmail.com",
+    "phone": "",
+    "address": "43767447B",
+    "status": "Active",
+    "notes": "",
+    "joinedDate": "2025-04-24T00:00:00.000Z",
+    "propertiesViewed": [],
+    "preferences": {
+      "budget": {
+        "min": 0,
+        "max": 0
+      },
+      "location": [],
+      "propertyType": [],
+      "features": []
+    },
+    "createdAt": "2025-04-24T03:25:22.019Z",
+    "updatedAt": "2025-04-24T03:25:22.019Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809af4e946568a15355b468",
+    "name": "Jorge Trujillo Guillemet",
+    "email": "jtguillem@gmail.com",
+    "phone": "",
+    "address": "78519045N",
+    "status": "Active",
+    "notes": "",
+    "joinedDate": "2025-04-24T00:00:00.000Z",
+    "propertiesViewed": [],
+    "preferences": {
+      "budget": {
+        "min": 0,
+        "max": 0
+      },
+      "location": [],
+      "propertyType": [],
+      "features": []
+    },
+    "createdAt": "2025-04-24T03:26:06.299Z",
+    "updatedAt": "2025-04-24T03:26:06.299Z",
+    "__v": 0
+  }
+]

@@ -1,0 +1,1395 @@
+[
+  {
+    "_id": "68095482946568a15355b401",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-23T20:58:42.042Z",
+    "updatedAt": "2025-04-23T20:58:42.042Z",
+    "__v": 0
+  },
+  {
+    "_id": "68095eba946568a15355b434",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-23T21:42:18.797Z",
+    "updatedAt": "2025-04-23T21:42:18.797Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809ae96946568a15355b440",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:23:02.383Z",
+    "updatedAt": "2025-04-24T03:23:02.383Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809af22946568a15355b459",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "CUSTOMER",
+    "entityId": "6809af22946568a15355b457",
+    "description": "Created new customer: María de Los Angeles Quintana Cáceres",
+    "details": {
+      "customer": "María de Los Angeles Quintana Cáceres",
+      "email": "mariaangeles1976@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:25:22.158Z",
+    "updatedAt": "2025-04-24T03:25:22.158Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809af4e946568a15355b46a",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "CUSTOMER",
+    "entityId": "6809af4e946568a15355b468",
+    "description": "Created new customer: Jorge Trujillo Guillemet",
+    "details": {
+      "customer": "Jorge Trujillo Guillemet",
+      "email": "jtguillem@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:26:06.430Z",
+    "updatedAt": "2025-04-24T03:26:06.430Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809b2e9946568a15355b4cc",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "OPPORTUNITY",
+    "entityId": "6809b2e8946568a15355b4c6",
+    "description": "Created new opportunity: Venta Local Las Palmas de Gran Canaria",
+    "details": {
+      "opportunity": "Venta Local Las Palmas de Gran Canaria",
+      "customer": "María de Los Angeles Quintana Cáceres",
+      "property": "Not selected"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:41:29.405Z",
+    "updatedAt": "2025-04-24T03:41:29.405Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809b31a946568a15355b4fc",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "6809b31a946568a15355b4fa",
+    "description": "Created new calendar event: Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "details": {
+      "event": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+      "type": "Visit",
+      "start": "4/25/2025, 2:41:00 AM",
+      "end": "4/25/2025, 3:41:00 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:42:18.826Z",
+    "updatedAt": "2025-04-24T03:42:18.826Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809b341946568a15355b500",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "6809b340946568a15355b4fe",
+    "description": "Created new calendar event: Firma en notaría de cancelación de hipoteca",
+    "details": {
+      "event": "Firma en notaría de cancelación de hipoteca",
+      "type": "Task",
+      "start": "4/30/2025, 2:42:00 AM",
+      "end": "4/30/2025, 3:42:00 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-24T03:42:57.032Z",
+    "updatedAt": "2025-04-24T03:42:57.032Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809b4ee946568a15355b544",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+    "createdAt": "2025-04-24T03:50:06.280Z",
+    "updatedAt": "2025-04-24T03:50:06.280Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a0488946568a15355b63b",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T09:29:44.307Z",
+    "updatedAt": "2025-04-24T09:29:44.307Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2dbbfe7582f2c03a5f06",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:25:31.824Z",
+    "updatedAt": "2025-04-24T12:25:31.824Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e1dfe7582f2c03a5fa2",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "PROPERTY",
+    "entityId": "680a2e1dfe7582f2c03a5fa0",
+    "description": "Created new property: 21312",
+    "details": {
+      "property": "21312",
+      "price": 123,
+      "address": "123213123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:27:09.550Z",
+    "updatedAt": "2025-04-24T12:27:09.550Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e38fe7582f2c03a6009",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "CUSTOMER",
+    "entityId": "680a2e38fe7582f2c03a6007",
+    "description": "Created new customer: Tabish Bin Ishfaq",
+    "details": {
+      "customer": "Tabish Bin Ishfaq",
+      "email": "tabishbinishfaq1122@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:27:36.634Z",
+    "updatedAt": "2025-04-24T12:27:36.634Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e3efe7582f2c03a6020",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "CUSTOMER",
+    "entityId": "680a2e38fe7582f2c03a6007",
+    "description": "Updated customer information: Tabish Bin Ishfaq",
+    "details": {
+      "customer": "Tabish Bin Ishfaq",
+      "email": "tabishbinishfaq1122@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:27:42.269Z",
+    "updatedAt": "2025-04-24T12:27:42.269Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e56fe7582f2c03a6052",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680a2e56fe7582f2c03a6050",
+    "description": "Created new calendar event: 12321",
+    "details": {
+      "event": "12321",
+      "type": "Task",
+      "start": "4/24/2025, 5:27:57 PM",
+      "end": "4/24/2025, 6:27:57 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:28:06.403Z",
+    "updatedAt": "2025-04-24T12:28:06.403Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e5ffe7582f2c03a606a",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "CUSTOMER",
+    "entityId": "680a2e38fe7582f2c03a6007",
+    "description": "Deleted customer: Tabish Bin Ishfaq",
+    "details": {
+      "customer": "Tabish Bin Ishfaq",
+      "email": "tabishbinishfaq1122@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:28:15.917Z",
+    "updatedAt": "2025-04-24T12:28:15.917Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2e67fe7582f2c03a6090",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680a2e56fe7582f2c03a6050",
+    "description": "Deleted calendar event: 12321",
+    "details": {
+      "event": "12321",
+      "type": "Task",
+      "start": "4/24/2025, 5:27:57 PM",
+      "end": "4/24/2025, 6:27:57 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:28:23.937Z",
+    "updatedAt": "2025-04-24T12:28:23.937Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2f05946568a15355b649",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:31:01.190Z",
+    "updatedAt": "2025-04-24T12:31:01.190Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a2f2a946568a15355b665",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "PROPERTY",
+    "entityId": "680a2f2a946568a15355b663",
+    "description": "Created new property: 12321",
+    "details": {
+      "property": "12321",
+      "price": 1231,
+      "address": "123213123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T12:31:38.687Z",
+    "updatedAt": "2025-04-24T12:31:38.687Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a3a4b946568a15355b704",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T13:19:07.383Z",
+    "updatedAt": "2025-04-24T13:19:07.383Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a5beb946568a15355b74a",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "PROPERTY",
+    "entityId": "680a5beb946568a15355b748",
+    "description": "Created new property: The Willow Retreat",
+    "details": {
+      "property": "The Willow Retreat",
+      "price": 26000,
+      "address": "spain"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T15:42:35.672Z",
+    "updatedAt": "2025-04-24T15:42:35.672Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a5c03946568a15355b772",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "PROPERTY",
+    "entityId": "680a2f2a946568a15355b663",
+    "description": "Deleted property: 12321",
+    "details": {
+      "property": "12321",
+      "price": 1231,
+      "address": "123213123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T15:42:59.480Z",
+    "updatedAt": "2025-04-24T15:42:59.480Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a5c78946568a15355b7c7",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b31a946568a15355b4fa",
+    "description": "Updated calendar event: Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "details": {
+      "event": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+      "type": "Visit",
+      "status": "Pending",
+      "start": "4/25/2025, 2:41:00 AM",
+      "end": "4/25/2025, 3:41:00 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T15:44:56.369Z",
+    "updatedAt": "2025-04-24T15:44:56.369Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a5c9b946568a15355b7d2",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b31a946568a15355b4fa",
+    "description": "Updated calendar event: Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "details": {
+      "event": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+      "type": "Visit",
+      "status": "Pending",
+      "start": "4/25/2025, 2:41:00 AM",
+      "end": "4/25/2025, 10:41:00 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T15:45:31.346Z",
+    "updatedAt": "2025-04-24T15:45:31.346Z",
+    "__v": 0
+  },
+  {
+    "_id": "680a5cb8946568a15355b7d5",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b31a946568a15355b4fa",
+    "description": "Updated calendar event: Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "details": {
+      "event": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+      "type": "Visit",
+      "status": "Pending",
+      "start": "4/25/2025, 9:41:00 PM",
+      "end": "4/26/2025, 5:41:00 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-24T15:46:00.970Z",
+    "updatedAt": "2025-04-24T15:46:00.970Z",
+    "__v": 0
+  },
+  {
+    "_id": "680adfaa946568a15355b804",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "PROPERTY",
+    "entityId": "680a2e1dfe7582f2c03a5fa0",
+    "description": "Deleted property: 21312",
+    "details": {
+      "property": "21312",
+      "price": 123,
+      "address": "123213123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:04:42.437Z",
+    "updatedAt": "2025-04-25T01:04:42.437Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae11d6fb8df54792c208c",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:10:53.491Z",
+    "updatedAt": "2025-04-25T01:10:53.491Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae13b6fb8df54792c20e1",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "PROPERTY",
+    "entityId": "680a5beb946568a15355b748",
+    "description": "Updated property: The Willow",
+    "details": {
+      "property": "The Willow",
+      "price": 26000,
+      "address": "spain"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:11:23.191Z",
+    "updatedAt": "2025-04-25T01:11:23.191Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae15c6fb8df54792c2100",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "PROPERTY",
+    "entityId": "680ae15c6fb8df54792c20fe",
+    "description": "Created new property: 23213",
+    "details": {
+      "property": "23213",
+      "price": 213,
+      "address": "123123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:11:56.339Z",
+    "updatedAt": "2025-04-25T01:11:56.339Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae2e06fb8df54792c21ee",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "CUSTOMER",
+    "entityId": "680ae2e06fb8df54792c21ec",
+    "description": "Created new customer: Tabish Bin Ishfaq",
+    "details": {
+      "customer": "Tabish Bin Ishfaq",
+      "email": "tabishbinishfaq1122@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:18:24.825Z",
+    "updatedAt": "2025-04-25T01:18:24.825Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae2e66fb8df54792c2204",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "CUSTOMER",
+    "entityId": "680ae2e06fb8df54792c21ec",
+    "description": "Deleted customer: Tabish Bin Ishfaq",
+    "details": {
+      "customer": "Tabish Bin Ishfaq",
+      "email": "tabishbinishfaq1122@gmail.com"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:18:30.103Z",
+    "updatedAt": "2025-04-25T01:18:30.103Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae4906fb8df54792c2220",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:25:36.889Z",
+    "updatedAt": "2025-04-25T01:25:36.889Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae4a26fb8df54792c2249",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680ae4a26fb8df54792c2247",
+    "description": "Created new calendar event: 12",
+    "details": {
+      "event": "12",
+      "type": "Task",
+      "start": "4/25/2025, 6:25:45 AM",
+      "end": "4/25/2025, 7:25:45 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:25:54.283Z",
+    "updatedAt": "2025-04-25T01:25:54.283Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae5266fb8df54792c2294",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "PROPERTY",
+    "entityId": "680ae15c6fb8df54792c20fe",
+    "description": "Deleted property: 23213",
+    "details": {
+      "property": "23213",
+      "price": 213,
+      "address": "123123"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:28:06.061Z",
+    "updatedAt": "2025-04-25T01:28:06.061Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae6006fb8df54792c22da",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "680ae4a26fb8df54792c2247",
+    "description": "Updated calendar event: 12",
+    "details": {
+      "event": "12",
+      "type": "Task",
+      "status": "Completed",
+      "start": "4/25/2025, 6:25:45 AM",
+      "end": "4/25/2025, 7:25:45 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:31:44.443Z",
+    "updatedAt": "2025-04-25T01:31:44.443Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae66c6fb8df54792c22de",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680ae66c6fb8df54792c22dc",
+    "description": "Created new calendar event: 12321",
+    "details": {
+      "event": "12321",
+      "type": "Task",
+      "start": "4/25/2025, 6:33:28 AM",
+      "end": "4/25/2025, 7:33:28 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:33:32.477Z",
+    "updatedAt": "2025-04-25T01:33:32.477Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae7ee6fb8df54792c2317",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680ae7ee6fb8df54792c2315",
+    "description": "Created new calendar event: 123213",
+    "details": {
+      "event": "123213",
+      "type": "Task",
+      "start": "4/25/2025, 6:39:54 AM",
+      "end": "4/25/2025, 7:39:54 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:39:58.748Z",
+    "updatedAt": "2025-04-25T01:39:58.748Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae8026fb8df54792c2348",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680ae66c6fb8df54792c22dc",
+    "description": "Deleted calendar event: 12321",
+    "details": {
+      "event": "12321",
+      "type": "Task",
+      "start": "4/25/2025, 6:33:28 AM",
+      "end": "4/25/2025, 7:33:28 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:40:18.516Z",
+    "updatedAt": "2025-04-25T01:40:18.516Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae8066fb8df54792c234b",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680ae7ee6fb8df54792c2315",
+    "description": "Deleted calendar event: 123213",
+    "details": {
+      "event": "123213",
+      "type": "Task",
+      "start": "4/25/2025, 6:39:54 AM",
+      "end": "4/25/2025, 7:39:54 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:40:22.118Z",
+    "updatedAt": "2025-04-25T01:40:22.118Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ae8096fb8df54792c234e",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680ae4a26fb8df54792c2247",
+    "description": "Deleted calendar event: 12",
+    "details": {
+      "event": "12",
+      "type": "Task",
+      "start": "4/25/2025, 6:25:45 AM",
+      "end": "4/25/2025, 7:25:45 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:40:25.567Z",
+    "updatedAt": "2025-04-25T01:40:25.567Z",
+    "__v": 0
+  },
+  {
+    "_id": "680aea9ed1b369d954ddaeb9",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680aea9ed1b369d954ddaeb7",
+    "description": "Created new calendar event: 3213",
+    "details": {
+      "event": "3213",
+      "type": "Task",
+      "start": "4/25/2025, 6:51:22 AM",
+      "end": "4/25/2025, 7:51:22 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:51:26.979Z",
+    "updatedAt": "2025-04-25T01:51:26.979Z",
+    "__v": 0
+  },
+  {
+    "_id": "680aeab8d1b369d954ddaf18",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "680aea9ed1b369d954ddaeb7",
+    "description": "Updated calendar event: 3213",
+    "details": {
+      "event": "3213",
+      "type": "Task",
+      "status": "Completed",
+      "start": "4/25/2025, 6:51:22 AM",
+      "end": "4/25/2025, 7:51:22 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:51:52.997Z",
+    "updatedAt": "2025-04-25T01:51:52.997Z",
+    "__v": 0
+  },
+  {
+    "_id": "680aeac4d1b369d954ddaf49",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680aea9ed1b369d954ddaeb7",
+    "description": "Deleted calendar event: 3213",
+    "details": {
+      "event": "3213",
+      "type": "Task",
+      "start": "4/25/2025, 6:51:22 AM",
+      "end": "4/25/2025, 7:51:22 AM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-25T01:52:04.648Z",
+    "updatedAt": "2025-04-25T01:52:04.648Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ccd64fdb7505db676d317",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T12:11:16.303Z",
+    "updatedAt": "2025-04-26T12:11:16.303Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ccdc5fdb7505db676d701",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T12:12:53.670Z",
+    "updatedAt": "2025-04-26T12:12:53.670Z",
+    "__v": 0
+  },
+  {
+    "_id": "680ccf3baee6fc06a7b81b39",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T12:19:07.366Z",
+    "updatedAt": "2025-04-26T12:19:07.366Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cd7beaee6fc06a7b866ed",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680cd7beaee6fc06a7b866eb",
+    "description": "Created new calendar event: 23143",
+    "details": {
+      "event": "23143",
+      "type": "Task",
+      "start": "4/26/2025, 5:55:17 PM",
+      "end": "4/26/2025, 6:55:17 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T12:55:26.501Z",
+    "updatedAt": "2025-04-26T12:55:26.501Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cd829aee6fc06a7b8672a",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680cd7beaee6fc06a7b866eb",
+    "description": "Deleted calendar event: 23143",
+    "details": {
+      "event": "23143",
+      "type": "Task",
+      "start": "4/26/2025, 5:55:17 PM",
+      "end": "4/26/2025, 6:55:17 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T12:57:13.526Z",
+    "updatedAt": "2025-04-26T12:57:13.526Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cd9e0b929ea46015144ff",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680cd9e0b929ea46015144fd",
+    "description": "Created new calendar event: wqe213",
+    "details": {
+      "event": "wqe213",
+      "type": "Task",
+      "start": "4/26/2025, 6:04:21 PM",
+      "end": "4/26/2025, 7:04:21 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:04:32.627Z",
+    "updatedAt": "2025-04-26T13:04:32.627Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cd9eeb929ea4601514532",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680cd9e0b929ea46015144fd",
+    "description": "Deleted calendar event: wqe213",
+    "details": {
+      "event": "wqe213",
+      "type": "Task",
+      "start": "4/26/2025, 6:04:21 PM",
+      "end": "4/26/2025, 7:04:21 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:04:46.737Z",
+    "updatedAt": "2025-04-26T13:04:46.737Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cdc7c8f838f4e5cada8dd",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:15:40.259Z",
+    "updatedAt": "2025-04-26T13:15:40.259Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cdc988f838f4e5cada8fa",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680cdc988f838f4e5cada8f8",
+    "description": "Created new calendar event: 2132",
+    "details": {
+      "event": "2132",
+      "type": "Task",
+      "start": "4/26/2025, 6:15:59 PM",
+      "end": "4/26/2025, 7:15:59 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:16:08.224Z",
+    "updatedAt": "2025-04-26T13:16:08.224Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cdca68f838f4e5cada943",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "680cdc988f838f4e5cada8f8",
+    "description": "Updated calendar event: 2132",
+    "details": {
+      "event": "2132",
+      "type": "Task",
+      "status": "Cancelled",
+      "start": "4/26/2025, 6:15:59 PM",
+      "end": "4/26/2025, 7:15:59 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:16:22.297Z",
+    "updatedAt": "2025-04-26T13:16:22.297Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cdcb68f838f4e5cada988",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "680cdc988f838f4e5cada8f8",
+    "description": "Updated calendar event: 2132",
+    "details": {
+      "event": "2132",
+      "type": "Task",
+      "status": "Pending",
+      "start": "4/26/2025, 6:15:59 PM",
+      "end": "4/26/2025, 7:15:59 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T13:16:38.402Z",
+    "updatedAt": "2025-04-26T13:16:38.402Z",
+    "__v": 0
+  },
+  {
+    "_id": "680cee8a8fa6c898d640100e",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "EVENT",
+    "entityId": "680cee8a8fa6c898d640100a",
+    "description": "Created new calendar event: 211`2",
+    "details": {
+      "event": "211`2",
+      "type": "Task",
+      "start": "4/26/2025, 7:32:22 PM",
+      "end": "4/26/2025, 8:32:22 PM"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T14:32:42.978Z",
+    "updatedAt": "2025-04-26T14:32:42.978Z",
+    "__v": 0
+  },
+  {
+    "_id": "680d16258f212f613d79851e",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-26T17:21:41.881Z",
+    "updatedAt": "2025-04-26T17:21:41.881Z",
+    "__v": 0
+  },
+  {
+    "_id": "680d990f8f212f613d798ad2",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-27T02:40:15.430Z",
+    "updatedAt": "2025-04-27T02:40:15.430Z",
+    "__v": 0
+  },
+  {
+    "_id": "680d99638f212f613d798af9",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-27T02:41:39.372Z",
+    "updatedAt": "2025-04-27T02:41:39.372Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e47728f212f613d798ca6",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:04:18.134Z",
+    "updatedAt": "2025-04-27T15:04:18.134Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e47898f212f613d798ce1",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "PROPERTY",
+    "entityId": "680a5beb946568a15355b748",
+    "description": "Deleted property: The Willow",
+    "details": {
+      "property": "The Willow",
+      "price": 26000,
+      "address": "spain"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:04:41.987Z",
+    "updatedAt": "2025-04-27T15:04:41.987Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e47e98f212f613d798d04",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "PROPERTY",
+    "entityId": "680e47e98f212f613d798d02",
+    "description": "Created new property: Vivienda Telde Guillemet",
+    "details": {
+      "property": "Vivienda Telde Guillemet",
+      "price": 500,
+      "address": "Calle Jaime Balmes 19, Telde"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:06:17.320Z",
+    "updatedAt": "2025-04-27T15:06:17.320Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e47ff8f212f613d798d2e",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680cdc988f838f4e5cada8f8",
+    "description": "Deleted calendar event: 2132",
+    "details": {
+      "event": "2132",
+      "type": "Task",
+      "start": "4/26/2025, 1:15:59 PM",
+      "end": "4/26/2025, 2:15:59 PM"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:06:39.754Z",
+    "updatedAt": "2025-04-27T15:06:39.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e48028f212f613d798d31",
+    "userId": null,
+    "action": "DELETE",
+    "entityType": "EVENT",
+    "entityId": "680cee8a8fa6c898d640100a",
+    "description": "Deleted calendar event: 211`2",
+    "details": {
+      "event": "211`2",
+      "type": "Task",
+      "start": "4/26/2025, 2:32:22 PM",
+      "end": "4/26/2025, 3:32:22 PM"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:06:42.847Z",
+    "updatedAt": "2025-04-27T15:06:42.847Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e48108f212f613d798d34",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b31a946568a15355b4fa",
+    "description": "Updated calendar event: Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "details": {
+      "event": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+      "type": "Visit",
+      "status": "Pending",
+      "start": "4/30/2025, 8:41:00 PM",
+      "end": "4/30/2025, 9:41:00 PM"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:06:56.207Z",
+    "updatedAt": "2025-04-27T15:06:56.207Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e48198f212f613d798d37",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b340946568a15355b4fe",
+    "description": "Updated calendar event: Firma en notaría de cancelación de hipoteca",
+    "details": {
+      "event": "Firma en notaría de cancelación de hipoteca",
+      "type": "Task",
+      "status": "Pending",
+      "start": "4/30/2025, 2:42:00 AM",
+      "end": "4/30/2025, 3:42:00 AM"
+    },
+    "ipAddress": "83.59.230.97",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+    "createdAt": "2025-04-27T15:07:05.171Z",
+    "updatedAt": "2025-04-27T15:07:05.171Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e4f9e28a35111686d8f5d",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-27T15:39:10.347Z",
+    "updatedAt": "2025-04-27T15:39:10.347Z",
+    "__v": 0
+  },
+  {
+    "_id": "680e4fc428a35111686d9075",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-27T15:39:48.697Z",
+    "updatedAt": "2025-04-27T15:39:48.697Z",
+    "__v": 0
+  },
+  {
+    "_id": "680fb5de8f212f613d798ea9",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "createdAt": "2025-04-28T17:07:42.384Z",
+    "updatedAt": "2025-04-28T17:07:42.384Z",
+    "__v": 0
+  },
+  {
+    "_id": "6838e2a48f212f613d798ebd",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+    "createdAt": "2025-05-29T22:41:40.989Z",
+    "updatedAt": "2025-05-29T22:41:40.989Z",
+    "__v": 0
+  },
+  {
+    "_id": "683b3afa8f212f613d799634",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+    "createdAt": "2025-05-31T17:23:06.187Z",
+    "updatedAt": "2025-05-31T17:23:06.187Z",
+    "__v": 0
+  },
+  {
+    "_id": "684571f98f212f613d799f18",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "83.59.218.127",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0",
+    "createdAt": "2025-06-08T11:20:25.229Z",
+    "updatedAt": "2025-06-08T11:20:25.229Z",
+    "__v": 0
+  },
+  {
+    "_id": "6845c0168f212f613d799faa",
+    "userId": null,
+    "action": "UPDATE",
+    "entityType": "EVENT",
+    "entityId": "6809b340946568a15355b4fe",
+    "description": "Updated calendar event: Firma en notaría de cancelación de hipoteca",
+    "details": {
+      "event": "Firma en notaría de cancelación de hipoteca",
+      "type": "Task",
+      "status": "Completed",
+      "start": "4/30/2025, 2:42:00 AM",
+      "end": "4/30/2025, 3:42:00 AM"
+    },
+    "ipAddress": "83.59.218.127",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0",
+    "createdAt": "2025-06-08T16:53:42.956Z",
+    "updatedAt": "2025-06-08T16:53:42.956Z",
+    "__v": 0
+  },
+  {
+    "_id": "68506b928f212f613d79a00d",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "createdAt": "2025-06-16T19:08:02.780Z",
+    "updatedAt": "2025-06-16T19:08:02.780Z",
+    "__v": 0
+  },
+  {
+    "_id": "68506bf08f212f613d79a05f",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "68506bcc8f212f613d79a031",
+    "description": "User logged in: Abdullah (abdullahsaleem75911@gmail.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "createdAt": "2025-06-16T19:09:36.934Z",
+    "updatedAt": "2025-06-16T19:09:36.934Z",
+    "__v": 0
+  },
+  {
+    "_id": "68506cb88f212f613d79a0c9",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "68506c908f212f613d79a0a8",
+    "description": "User logged in: Mattia (mattia@gmail.com)",
+    "details": {
+      "role": "agent"
+    },
+    "ipAddress": "175.107.255.44",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "createdAt": "2025-06-16T19:12:56.138Z",
+    "updatedAt": "2025-06-16T19:12:56.138Z",
+    "__v": 0
+  },
+  {
+    "_id": "69bb9d738f212f613d79a13b",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.9.1",
+    "createdAt": "2026-03-19T06:53:39.187Z",
+    "updatedAt": "2026-03-19T06:53:39.187Z",
+    "__v": 0
+  },
+  {
+    "_id": "69bbadc253db115a9ebc2e94",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.9.1",
+    "createdAt": "2026-03-19T08:03:14.655Z",
+    "updatedAt": "2026-03-19T08:03:14.655Z",
+    "__v": 0
+  },
+  {
+    "_id": "69bbadeb53db115a9ebc2e98",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "createdAt": "2026-03-19T08:03:55.897Z",
+    "updatedAt": "2026-03-19T08:03:55.897Z",
+    "__v": 0
+  },
+  {
+    "_id": "69bcc78a53db115a9ebc2efa",
+    "userId": null,
+    "action": "LOGIN",
+    "entityType": "USER",
+    "entityId": "6807c07e7c4320f7d304eea7",
+    "description": "User logged in: Admin User (admin@example.com)",
+    "details": {
+      "role": "admin"
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0",
+    "createdAt": "2026-03-20T04:05:30.733Z",
+    "updatedAt": "2026-03-20T04:05:30.733Z",
+    "__v": 0
+  }
+]

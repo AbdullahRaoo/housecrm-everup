@@ -1,0 +1,34 @@
+[
+  {
+    "_id": "6809b31a946568a15355b4fa",
+    "title": "Reunión con posibles vendedores en Salinetas, Las Palmas de G.C.",
+    "type": "Visit",
+    "start": "2025-04-30T20:41:00.000Z",
+    "end": "2025-04-30T21:41:00.000Z",
+    "description": "",
+    "propertyId": null,
+    "customerId": null,
+    "status": "Pending",
+    "deadline": "2025-04-30T00:00:00.000Z",
+    "isGoogleCalendarSync": false,
+    "createdAt": "2025-04-24T03:42:18.656Z",
+    "updatedAt": "2025-04-27T15:06:56.069Z",
+    "__v": 0
+  },
+  {
+    "_id": "6809b340946568a15355b4fe",
+    "title": "Firma en notaría de cancelación de hipoteca",
+    "type": "Task",
+    "start": "2025-04-30T02:42:00.000Z",
+    "end": "2025-04-30T03:42:00.000Z",
+    "description": "Posibles clientes según firma a realizar",
+    "propertyId": null,
+    "customerId": null,
+    "status": "Completed",
+    "deadline": "2025-04-30T00:00:00.000Z",
+    "isGoogleCalendarSync": false,
+    "createdAt": "2025-04-24T03:42:56.900Z",
+    "updatedAt": "2025-06-08T16:53:42.795Z",
+    "__v": 0
+  }
+]

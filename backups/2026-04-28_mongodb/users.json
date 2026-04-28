@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "6807c07e7c4320f7d304eea7",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "admin",
+    "isAdmin": true,
+    "lastLogin": "2026-03-20T04:05:30.575Z",
+    "profileImage": "https://res.cloudinary.com/demo/image/upload/v1580125009/samples/people/smiling-man.jpg",
+    "__v": 0,
+    "createdAt": "2025-04-22T16:14:54.436Z",
+    "updatedAt": "2026-03-20T04:05:30.581Z"
+  },
+  {
+    "_id": "68506bcc8f212f613d79a031",
+    "name": "Abdullah",
+    "email": "abdullahsaleem75911@gmail.com",
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "admin",
+    "isAdmin": true,
+    "createdAt": "2025-06-16T19:09:00.364Z",
+    "updatedAt": "2025-06-16T19:09:36.797Z",
+    "__v": 0,
+    "lastLogin": "2025-06-16T19:09:36.797Z"
+  },
+  {
+    "_id": "68506c908f212f613d79a0a8",
+    "name": "Mattia",
+    "email": "mattia@gmail.com",
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "agent",
+    "isAdmin": true,
+    "createdAt": "2025-06-16T19:12:16.592Z",
+    "updatedAt": "2025-06-16T19:12:56.001Z",
+    "__v": 0,
+    "lastLogin": "2025-06-16T19:12:56.000Z"
+  }
+]

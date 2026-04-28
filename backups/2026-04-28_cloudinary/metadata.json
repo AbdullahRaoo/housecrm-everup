@@ -1,0 +1,157 @@
+[
+  {
+    "asset_id": "4f0d55ae393a1ab16ebdb3abfd4d7d3d",
+    "public_id": "real-estate-crm/properties/msgm21yz5we1j5jt1322",
+    "asset_folder": "real-estate-crm/properties",
+    "filename": "msgm21yz5we1j5jt1322",
+    "display_name": "msgm21yz5we1j5jt1322",
+    "format": "png",
+    "version": 1745766360,
+    "resource_type": "image",
+    "type": "upload",
+    "created_at": "2025-04-27T15:06:00+00:00",
+    "uploaded_at": "2025-04-27T15:06:00+00:00",
+    "bytes": 6975880,
+    "backup_bytes": 0,
+    "width": 3836,
+    "height": 1680,
+    "aspect_ratio": 2.28333,
+    "pixels": 6444480,
+    "url": "http://res.cloudinary.com/dfuaooduf/image/upload/v1745766360/real-estate-crm/properties/msgm21yz5we1j5jt1322.png",
+    "secure_url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745766360/real-estate-crm/properties/msgm21yz5we1j5jt1322.png",
+    "status": "active",
+    "access_mode": "public",
+    "access_control": null,
+    "etag": "91dbb42483358fb90fc6cc7b58ed0f8c",
+    "created_by": {
+      "access_key": "726922423648737"
+    },
+    "uploaded_by": {
+      "access_key": "726922423648737"
+    }
+  },
+  {
+    "asset_id": "6b42cafeb4aa65a55a70bcf4445b173d",
+    "public_id": "real-estate-crm/properties/zgseui4f5imfvcmw3kjy",
+    "asset_folder": "real-estate-crm/properties",
+    "filename": "zgseui4f5imfvcmw3kjy",
+    "display_name": "zgseui4f5imfvcmw3kjy",
+    "format": "png",
+    "version": 1745543514,
+    "resource_type": "image",
+    "type": "upload",
+    "created_at": "2025-04-25T01:11:54+00:00",
+    "uploaded_at": "2025-04-25T01:11:54+00:00",
+    "bytes": 347326,
+    "backup_bytes": 0,
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": 1.77778,
+    "pixels": 2073600,
+    "url": "http://res.cloudinary.com/dfuaooduf/image/upload/v1745543514/real-estate-crm/properties/zgseui4f5imfvcmw3kjy.png",
+    "secure_url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745543514/real-estate-crm/properties/zgseui4f5imfvcmw3kjy.png",
+    "status": "active",
+    "access_mode": "public",
+    "access_control": null,
+    "etag": "27ea5c155157fc256afa8e6f4a8215a7",
+    "created_by": {
+      "access_key": "726922423648737"
+    },
+    "uploaded_by": {
+      "access_key": "726922423648737"
+    }
+  },
+  {
+    "asset_id": "6dbca7b4beeab1334be63747b27c03d6",
+    "public_id": "real-estate-crm/properties/wzbtpmgyccyzfq7q622e",
+    "asset_folder": "real-estate-crm/properties",
+    "filename": "wzbtpmgyccyzfq7q622e",
+    "display_name": "wzbtpmgyccyzfq7q622e",
+    "format": "jpg",
+    "version": 1745509351,
+    "resource_type": "image",
+    "type": "upload",
+    "created_at": "2025-04-24T15:42:31+00:00",
+    "uploaded_at": "2025-04-24T15:42:31+00:00",
+    "bytes": 661121,
+    "backup_bytes": 0,
+    "width": 1866,
+    "height": 1244,
+    "aspect_ratio": 1.5,
+    "pixels": 2321304,
+    "url": "http://res.cloudinary.com/dfuaooduf/image/upload/v1745509351/real-estate-crm/properties/wzbtpmgyccyzfq7q622e.jpg",
+    "secure_url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745509351/real-estate-crm/properties/wzbtpmgyccyzfq7q622e.jpg",
+    "status": "active",
+    "access_mode": "public",
+    "access_control": null,
+    "etag": "14e8428cc3135a8b5bfb243dc143e657",
+    "created_by": {
+      "access_key": "726922423648737"
+    },
+    "uploaded_by": {
+      "access_key": "726922423648737"
+    }
+  },
+  {
+    "asset_id": "018112ac3be3d0a637928e06fb0d6697",
+    "public_id": "real-estate-crm/properties/mlqiahh3jw6msacwd6zh",
+    "asset_folder": "real-estate-crm/properties",
+    "filename": "mlqiahh3jw6msacwd6zh",
+    "display_name": "mlqiahh3jw6msacwd6zh",
+    "format": "png",
+    "version": 1745497892,
+    "resource_type": "image",
+    "type": "upload",
+    "created_at": "2025-04-24T12:31:32+00:00",
+    "uploaded_at": "2025-04-24T12:31:32+00:00",
+    "bytes": 347326,
+    "backup_bytes": 0,
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": 1.77778,
+    "pixels": 2073600,
+    "url": "http://res.cloudinary.com/dfuaooduf/image/upload/v1745497892/real-estate-crm/properties/mlqiahh3jw6msacwd6zh.png",
+    "secure_url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745497892/real-estate-crm/properties/mlqiahh3jw6msacwd6zh.png",
+    "status": "active",
+    "access_mode": "public",
+    "access_control": null,
+    "etag": "27ea5c155157fc256afa8e6f4a8215a7",
+    "created_by": {
+      "access_key": "726922423648737"
+    },
+    "uploaded_by": {
+      "access_key": "726922423648737"
+    }
+  },
+  {
+    "asset_id": "7d2ab84566bb0830520d12ddc04c281f",
+    "public_id": "real-estate-crm/properties/zorvyuci5barlugkxeev",
+    "asset_folder": "real-estate-crm/properties",
+    "filename": "zorvyuci5barlugkxeev",
+    "display_name": "zorvyuci5barlugkxeev",
+    "format": "png",
+    "version": 1745497624,
+    "resource_type": "image",
+    "type": "upload",
+    "created_at": "2025-04-24T12:27:04+00:00",
+    "uploaded_at": "2025-04-24T12:27:04+00:00",
+    "bytes": 347326,
+    "backup_bytes": 0,
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": 1.77778,
+    "pixels": 2073600,
+    "url": "http://res.cloudinary.com/dfuaooduf/image/upload/v1745497624/real-estate-crm/properties/zorvyuci5barlugkxeev.png",
+    "secure_url": "https://res.cloudinary.com/dfuaooduf/image/upload/v1745497624/real-estate-crm/properties/zorvyuci5barlugkxeev.png",
+    "status": "active",
+    "access_mode": "public",
+    "access_control": null,
+    "etag": "27ea5c155157fc256afa8e6f4a8215a7",
+    "created_by": {
+      "access_key": "726922423648737"
+    },
+    "uploaded_by": {
+      "access_key": "726922423648737"
+    }
+  }
+]
